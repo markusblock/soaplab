@@ -1,0 +1,27 @@
+{
+  "soaplabApp": {
+    "soapReceipt": {
+      "home": {
+        "title": "Soap Receipts",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Soap Receipt erstellen",
+        "createOrEditLabel": "Soap Receipt erstellen oder bearbeiten",
+        "notFound": "Keine Soap Receipts gefunden"
+      },
+      "created": "Soap Receipt erstellt mit ID {{ param }}",
+      "updated": "Soap Receipt aktualisiert mit ID {{ param }}",
+      "deleted": "Soap Receipt gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Soap Receipt {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Soap Receipt"
+      },
+      "id": "ID",
+      "name": "Name",
+      "liquid": "Liquid",
+      "superfat": "Superfat",
+      "fats": "Fats"
+    }
+  }
+}

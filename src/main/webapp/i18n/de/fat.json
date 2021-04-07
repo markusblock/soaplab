@@ -1,0 +1,38 @@
+{
+  "soaplabApp": {
+    "fat": {
+      "home": {
+        "title": "Fats",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Fat erstellen",
+        "createOrEditLabel": "Fat erstellen oder bearbeiten",
+        "notFound": "Keine Fats gefunden"
+      },
+      "created": "Fat erstellt mit ID {{ param }}",
+      "updated": "Fat aktualisiert mit ID {{ param }}",
+      "deleted": "Fat gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Fat {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Fat"
+      },
+      "id": "ID",
+      "name": "Name",
+      "inci": "Inci",
+      "sapNaoh": "Sap Naoh",
+      "sapKoh": "Sap Koh",
+      "lauric": "Lauric",
+      "myristic": "Myristic",
+      "palmitic": "Palmitic",
+      "stearic": "Stearic",
+      "ricinoleic": "Ricinoleic",
+      "oleic": "Oleic",
+      "linoleic": "Linoleic",
+      "linolenic": "Linolenic",
+      "iodine": "Iodine",
+      "ins": "Ins",
+      "receipt": "Receipt"
+    }
+  }
+}

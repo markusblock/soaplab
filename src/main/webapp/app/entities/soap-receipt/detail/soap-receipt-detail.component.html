@@ -1,0 +1,47 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <div *ngIf="soapReceipt">
+      <h2 data-cy="soapReceiptDetailsHeading"><span jhiTranslate="soaplabApp.soapReceipt.detail.title">Soap Receipt</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="global.field.id">ID</span></dt>
+        <dd>
+          <span>{{ soapReceipt.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="soaplabApp.soapReceipt.name">Name</span></dt>
+        <dd>
+          <span>{{ soapReceipt.name }}</span>
+        </dd>
+        <dt><span jhiTranslate="soaplabApp.soapReceipt.liquid">Liquid</span></dt>
+        <dd>
+          <span>{{ soapReceipt.liquid }}</span>
+        </dd>
+        <dt><span jhiTranslate="soaplabApp.soapReceipt.superfat">Superfat</span></dt>
+        <dd>
+          <span>{{ soapReceipt.superfat }}</span>
+        </dd>
+        <dt><span jhiTranslate="soaplabApp.soapReceipt.fats">Fats</span></dt>
+        <dd>
+          <span *ngFor="let fats of soapReceipt.fats; let last = last">
+            <a [routerLink]="['/fat', fats?.id, 'view']">{{ fats.name }}</a
+            >{{ last ? '' : ', ' }}
+          </span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/soap-receipt', soapReceipt.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

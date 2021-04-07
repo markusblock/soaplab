@@ -1,0 +1,26 @@
+{
+  "soaplabApp": {
+    "fragrance": {
+      "home": {
+        "title": "Fragrances",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Fragrance erstellen",
+        "createOrEditLabel": "Fragrance erstellen oder bearbeiten",
+        "notFound": "Keine Fragrances gefunden"
+      },
+      "created": "Fragrance erstellt mit ID {{ param }}",
+      "updated": "Fragrance aktualisiert mit ID {{ param }}",
+      "deleted": "Fragrance gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Fragrance {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Fragrance"
+      },
+      "id": "ID",
+      "name": "Name",
+      "inci": "Inci",
+      "typ": "Typ"
+    }
+  }
+}

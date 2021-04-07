@@ -1,0 +1,25 @@
+{
+  "soaplabApp": {
+    "acid": {
+      "home": {
+        "title": "Acids",
+        "refreshListLabel": "Liste aktualisieren",
+        "createLabel": "Acid erstellen",
+        "createOrEditLabel": "Acid erstellen oder bearbeiten",
+        "notFound": "Keine Acids gefunden"
+      },
+      "created": "Acid erstellt mit ID {{ param }}",
+      "updated": "Acid aktualisiert mit ID {{ param }}",
+      "deleted": "Acid gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Acid {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Acid"
+      },
+      "id": "ID",
+      "name": "Name",
+      "inci": "Inci"
+    }
+  }
+}
