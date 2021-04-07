@@ -41,6 +41,8 @@
     "jwtSecretKey": "ZmI5NzFjZmY4ZTMyZDNjMzNjMDk2ZGQ4NWVhZDY4YTI4NmFiZTYyN2ExMjM4OWQxMWQ3MDI4MDNhZTRhZjNkNjliYzhjOGMzM2ZiNmY2OWEzM2Q0OWE3NzQ2OGNmYzc5NjFhZjQ4YjRjMWNiNDRmMDc4Y2JmN2JmZGNmZWJkOGM=",
     "clientPackageManager": "npm",
     "clientThemeVariant": "",
-    "languages": ["en", "de"]
+    "languages": ["en", "de"],
+    "entities": ["SoapReceipt", "Fat", "Acid", "Fragrance"],
+    "lastLiquibaseTimestamp": 1617690416000
   }
 }
