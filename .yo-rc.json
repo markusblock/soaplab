@@ -9,7 +9,7 @@
     "skipServer": false,
     "skipUserManagement": false,
     "skipCheckLengthOfIdentifier": false,
-    "skipFakeData": false,
+    "skipFakeData": true,
     "jhiPrefix": "jhi",
     "entitySuffix": "",
     "dtoSuffix": "DTO",

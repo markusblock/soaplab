@@ -48,6 +48,12 @@ public class CacheConfiguration {
             createCache(cm, org.soaplab.domain.User.class.getName());
             createCache(cm, org.soaplab.domain.Authority.class.getName());
             createCache(cm, org.soaplab.domain.User.class.getName() + ".authorities");
+            createCache(cm, org.soaplab.domain.SoapReceipt.class.getName());
+            createCache(cm, org.soaplab.domain.SoapReceipt.class.getName() + ".fats");
+            createCache(cm, org.soaplab.domain.Fat.class.getName());
+            createCache(cm, org.soaplab.domain.Fat.class.getName() + ".receipts");
+            createCache(cm, org.soaplab.domain.Acid.class.getName());
+            createCache(cm, org.soaplab.domain.Fragrance.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }
