@@ -1,8 +1,0 @@
-{
-  "generator-jhipster:7.0.0": {
-    "promptValues": {
-      "packageName": "org.soaplab",
-      "nativeLanguage": "en"
-    }
-  }
-}
