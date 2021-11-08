@@ -4,6 +4,7 @@ package org.soaplab.domain;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,13 +35,13 @@ public class SoapReceipt extends NamedEntity {
 	 */
 	private Percentage kOHPurity;
 	/**
-	 * The total liquid amount in percentage regarding total oil
+	 * Liquid in regards to the total amount of fats
 	 */
-	private Percentage liquidTotal;
+	private Percentage liquidToFatRatio;
 	/**
-	 * oils total
+	 * Weight of fats in total
 	 */
-	private Weight oilsTotal;
+	private Weight fatsTotal;
 	/**
 	 * Amount of superfat in percentage
 	 */
@@ -50,8 +51,8 @@ public class SoapReceipt extends NamedEntity {
 	 */
 	private Percentage fragranceTotal;
 	private String notes;
-	private Map<Long, ReceiptEntry<Fat>> fats = new HashMap<>();
-	private Map<Long, ReceiptEntry<Fragrance>> fragrances = new HashMap<>();
-	private Map<Long, ReceiptEntry<Acid>> acids = new HashMap<>();
-
+	private Map<UUID, ReceiptEntry<Fat>> fats = new HashMap<>();
+	private Map<UUID, ReceiptEntry<Acid>> acids = new HashMap<>();
+	private Map<UUID, ReceiptEntry<Fragrance>> fragrances = new HashMap<>();
+	private Map<UUID, ReceiptEntry<Liquid>> liquids = new HashMap<>();
 }

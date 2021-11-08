@@ -2,7 +2,7 @@ package org.soaplab.repository.microstream;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.soaplab.domain.NamedEntity;
@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements EntityRepository<T> {
 
-	protected final Map<Long, T> idToEntity;
+	protected final Map<UUID, T> idToEntity;
 	protected final MicrostreamRepository repository;
 
 	public EntityRepositoryMSImpl(MicrostreamRepository repository) {
@@ -24,18 +24,18 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 		this.idToEntity = getIdToEntityMapping();
 	}
 
-	protected abstract Map<Long, T> getIdToEntityMapping();
+	protected abstract Map<UUID, T> getIdToEntityMapping();
 
 	@Override
-	public T get(Long id) {
+	public T get(UUID id) {
 		T entity = idToEntity.get(id);
-		// throwNotFoundExceptionIfRequired(fat);
+		// TODO throwNotFoundExceptionIfRequired(fat);
 		return entity;
 	}
 
 	@Override
-	public Long add(T entity) {
-		entity.setId(new Random().nextLong());
+	public UUID create(T entity) {
+		entity.setId(UUID.randomUUID());
 		log.info("Adding new entity " + entity);
 		this.idToEntity.put(entity.getId(), entity);
 		storeAll();
@@ -43,7 +43,13 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 	}
 
 	@Override
-	public void delete(Long id) {
+	public void update(T entity) {
+		get(entity.getId());
+		repository.getStorage().store(entity);
+	}
+
+	@Override
+	public void delete(UUID id) {
 		T entity = get(id);
 		log.info("Deleting entity " + entity);
 		this.idToEntity.remove(id);
@@ -62,9 +68,9 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 	}
 
 	@Override
-	public void add(T... entities) {
+	public void create(T... entities) {
 		for (T entity : entities) {
-			add(entity);
+			create(entity);
 		}
 	}
 

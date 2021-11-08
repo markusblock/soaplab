@@ -29,6 +29,11 @@ public class ReceiptEntry<T extends Ingredient> {
 	 */
 	private Percentage percentage;
 
+	/**
+	 * The cost for this amount of ingridient
+	 */
+	private Price price;
+
 	private T ingredient;
 
 }

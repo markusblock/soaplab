@@ -1,6 +1,7 @@
 package org.soaplab.api.rest;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.soaplab.domain.Fat;
 import org.soaplab.repository.FatRepository;
@@ -32,16 +33,16 @@ public class FatController {
 	}
 
 	@GetMapping(value = "/{id}")
-	public Fat findById(@PathVariable("id") Long id) {
+	public Fat findById(@PathVariable("id") UUID id) {
 		// TODO proper exception handling not found
 		return repository.get(id);
 	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Long create(@RequestBody Fat resource) {
+	public UUID create(@RequestBody Fat resource) {
 		// Preconditions.checkNotNull(resource);
-		return repository.add(resource);
+		return repository.create(resource);
 	}
 
 //    @PutMapping(value = "/{id}")
@@ -54,7 +55,7 @@ public class FatController {
 
 	@DeleteMapping(value = "/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public void delete(@PathVariable("id") Long id) {
+	public void delete(@PathVariable("id") UUID id) {
 		repository.delete(id);
 	}
 }

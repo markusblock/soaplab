@@ -1,5 +1,5 @@
 package org.soaplab.domain;
 
-public enum Unit {
+public enum WeightUnit {
 	GRAMS
 }

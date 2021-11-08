@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.soaplab.domain.Acid;
 import org.soaplab.domain.Fat;
@@ -13,10 +14,12 @@ import org.soaplab.domain.FragranceType;
 import org.soaplab.domain.Percentage;
 import org.soaplab.domain.ReceiptEntry;
 import org.soaplab.domain.SoapReceipt;
-import org.soaplab.domain.Unit;
 import org.soaplab.domain.Weight;
+import org.soaplab.domain.WeightUnit;
+import org.soaplab.repository.AcidRepository;
 import org.soaplab.repository.FatRepository;
-import org.soaplab.repository.SoapReceiptRepository;
+import org.soaplab.repository.FragranceRepository;
+import org.soaplab.repository.SoapRecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,14 +35,20 @@ import lombok.extern.slf4j.Slf4j;
 public class TestDataController {
 
 	private FatRepository fatRepository;
-	private SoapReceiptRepository soapReceiptRepository;
+	private AcidRepository acidRepository;
+	private FragranceRepository fragranceRepository;
+	private SoapRecipeRepository soapReceiptRepository;
 	private Fat oliveOil;
 	private Fat coconutOil;
 	private SoapReceipt oliveSoap;
 	private Fragrance lavendelFragrance;
+	private Acid citricAcid;
 
 	@Autowired
-	public TestDataController(FatRepository fatRepository, SoapReceiptRepository soapReceiptRepository) {
+	public TestDataController(FatRepository fatRepository, AcidRepository acidRepository,
+			FragranceRepository fragranceRepository, SoapRecipeRepository soapReceiptRepository) {
+		this.acidRepository = acidRepository;
+		this.fragranceRepository = fragranceRepository;
 		this.soapReceiptRepository = soapReceiptRepository;
 		this.fatRepository = fatRepository;
 	}
@@ -63,31 +72,34 @@ public class TestDataController {
 				.build();
 		ReceiptEntry<Fragrance> lavendel = ReceiptEntry.<Fragrance>builder().percentage(Percentage.of(100))
 				.ingredient(lavendelFragrance).build();
+		ReceiptEntry<Acid> cidric = ReceiptEntry.<Acid>builder().percentage(Percentage.of(4)).ingredient(citricAcid)
+				.build();
 		oliveSoap = SoapReceipt.builder().name("Olive Soap").manufacturingDate(Date.from(Instant.now()))
-				.oilsTotal(Weight.of(100, Unit.GRAMS)).liquidTotal(Percentage.of(33)).superFat(Percentage.of(10))
-				.fragranceTotal(Percentage.of(3)).fats(createFatEntriesMap(olive, coconut))
-				.fragrances(createFragranceEntriesMap(lavendel)).build();
-		soapReceiptRepository.add(oliveSoap);
+				.fatsTotal(Weight.of(100, WeightUnit.GRAMS)).liquidToFatRatio(Percentage.of(33))
+				.superFat(Percentage.of(10)).fragranceTotal(Percentage.of(3)).fats(createFatEntriesMap(olive, coconut))
+				.acids(createAcidEntriesMap(cidric)).fragrances(createFragranceEntriesMap(lavendel)).build();
+		soapReceiptRepository.create(oliveSoap);
 	}
 
 	private void createAcids() {
-
+		citricAcid = Acid.builder().name("Cidric Acid anhydrat").inci("Citric Acid").sapNaoh(0.625).build();
+		acidRepository.create(citricAcid);
 	}
 
-	private Map<Long, ReceiptEntry<Acid>> createAcidEntriesMap(ReceiptEntry<Acid>... acidEntries) {
-		Map<Long, ReceiptEntry<Acid>> acidEntriesMap = new HashMap<>();
+	private Map<UUID, ReceiptEntry<Acid>> createAcidEntriesMap(ReceiptEntry<Acid>... acidEntries) {
+		Map<UUID, ReceiptEntry<Acid>> acidEntriesMap = new HashMap<>();
 		Set.of(acidEntries).forEach(acidEntry -> acidEntriesMap.put(acidEntry.getIngredient().getId(), acidEntry));
 		return acidEntriesMap;
 	}
 
-	private Map<Long, ReceiptEntry<Fat>> createFatEntriesMap(ReceiptEntry<Fat>... fatEntries) {
-		Map<Long, ReceiptEntry<Fat>> fatEntriesMap = new HashMap<>();
+	private Map<UUID, ReceiptEntry<Fat>> createFatEntriesMap(ReceiptEntry<Fat>... fatEntries) {
+		Map<UUID, ReceiptEntry<Fat>> fatEntriesMap = new HashMap<>();
 		Set.of(fatEntries).forEach(fatEntry -> fatEntriesMap.put(fatEntry.getIngredient().getId(), fatEntry));
 		return fatEntriesMap;
 	}
 
-	private Map<Long, ReceiptEntry<Fragrance>> createFragranceEntriesMap(ReceiptEntry<Fragrance>... fragranceEntries) {
-		Map<Long, ReceiptEntry<Fragrance>> fragranceEntriesMap = new HashMap<>();
+	private Map<UUID, ReceiptEntry<Fragrance>> createFragranceEntriesMap(ReceiptEntry<Fragrance>... fragranceEntries) {
+		Map<UUID, ReceiptEntry<Fragrance>> fragranceEntriesMap = new HashMap<>();
 		Set.of(fragranceEntries).forEach(
 				fragranceEntry -> fragranceEntriesMap.put(fragranceEntry.getIngredient().getId(), fragranceEntry));
 		return fragranceEntriesMap;
@@ -97,10 +109,11 @@ public class TestDataController {
 		oliveOil = Fat.builder().name("Olive Oil").inci("Olea Europaea Fruit Oil").sapNaoh(0.1345d).build();
 		coconutOil = Fat.builder().name("Coconut Oil").inci("Cocos Nucifera Oil").sapNaoh(0.183d).build();
 
-		fatRepository.add(oliveOil, coconutOil);
+		fatRepository.create(oliveOil, coconutOil);
 	}
 
 	private void createFragrances() {
 		lavendelFragrance = Fragrance.builder().name("Lavendel").inci("").typ(FragranceType.VOLATILE_OIL).build();
+		fragranceRepository.create(lavendelFragrance);
 	}
 }

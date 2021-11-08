@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.soaplab.domain.Percentage;
-import org.soaplab.domain.Unit;
+import org.soaplab.domain.WeightUnit;
 import org.soaplab.domain.Weight;
 
 class WeightTest {
@@ -32,11 +32,11 @@ class WeightTest {
 	}
 
 	private Weight createWeightInGrams(int weight) {
-		return Weight.of(weight, Unit.GRAMS);
+		return Weight.of(weight, WeightUnit.GRAMS);
 	}
 
 	private Weight createWeight(double weight) {
-		return Weight.of(weight, Unit.GRAMS);
+		return Weight.of(weight, WeightUnit.GRAMS);
 	}
 
 }

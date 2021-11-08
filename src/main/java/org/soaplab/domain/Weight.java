@@ -12,17 +12,17 @@ import lombok.ToString;
 public class Weight {
 
 	private Double weight;
-	private Unit unit;
+	private WeightUnit unit;
 
-	public Weight(int weight, Unit unit) {
+	public Weight(int weight, WeightUnit unit) {
 		this(Double.valueOf(weight), unit);
 	}
 
-	public static Weight of(int weight, Unit unit) {
+	public static Weight of(int weight, WeightUnit unit) {
 		return new Weight(weight, unit);
 	}
 
-	public static Weight of(double weight, Unit unit) {
+	public static Weight of(double weight, WeightUnit unit) {
 		return new Weight(weight, unit);
 	}
 
@@ -32,6 +32,10 @@ public class Weight {
 
 	public Weight multiply(Double multiplicator) {
 		return new Weight(weight * multiplicator, unit);
+	}
+
+	public Weight divide(Double divisor) {
+		return new Weight(weight / divisor, unit);
 	}
 
 	public Weight subtract(Weight subtractor) {

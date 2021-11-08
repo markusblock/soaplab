@@ -1,18 +1,21 @@
 package org.soaplab.repository;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.soaplab.domain.NamedEntity;
 
 public interface EntityRepository<T extends NamedEntity> {
 
-	Long add(T entity);
+	UUID create(T entity);
 
-	void add(T... entities);
+	void create(T... entities);
 
-	void delete(Long id);
+	void update(T entity);
 
-	T get(Long id);
+	void delete(UUID id);
+
+	T get(UUID id);
 
 	List<T> findAll();
 

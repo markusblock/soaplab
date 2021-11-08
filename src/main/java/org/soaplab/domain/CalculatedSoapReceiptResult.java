@@ -15,5 +15,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 public class CalculatedSoapReceiptResult extends NamedEntity {
-	String s;
+	private Weight naohTotal;
+	private Weight kohTotal;
+	private Weight liquidTotal;
 }

@@ -1,8 +1,6 @@
 
 package org.soaplab.domain;
 
-import java.util.UUID;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -14,15 +12,16 @@ import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@ToString
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
 @SuperBuilder
-public abstract class NamedEntity {
-
-	@EqualsAndHashCode.Include
-	private UUID id;
-
-	private String name;
+public class Liquid extends Ingredient {
+	/**
+	 * sapNaoh value is the numeric value that allow you to calculate the precise
+	 * amount of sodium hydroxide (NaOH) required to fully saponify a given weight
+	 * of oil/s.
+	 */
+	private Double sapNaoh;
 }
