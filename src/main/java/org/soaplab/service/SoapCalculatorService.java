@@ -34,9 +34,9 @@ public class SoapCalculatorService {
 			Weight naohReduction = naoh100.calculatePercentage(superFat);
 			Weight naohPerFat = naoh100.subtract(naohReduction);
 
-			naohForFats.plus(naohPerFat);
+			naohForFats = naohForFats.plus(naohPerFat);
 			fatentry.setWeight(fatWeight);
-			totalWeight.plus(fatWeight);
+			totalWeight = totalWeight.plus(fatWeight);
 		}
 
 		Weight naohForAcids = Weight.of(0, WeightUnit.GRAMS);
@@ -48,12 +48,13 @@ public class SoapCalculatorService {
 			Weight acidWeight = fatsTotal.calculatePercentage(acidPercentage);
 			Weight naoh100 = acidWeight.multiply(sapNaoh);
 
-			naohForAcids.plus(naoh100);
+			naohForAcids = naohForAcids.plus(naoh100);
 			acidEntry.setWeight(acidWeight);
-			totalWeight.plus(acidWeight);
+			totalWeight = totalWeight.plus(acidWeight);
 		}
 
 		Weight naohForLiquids = Weight.of(0, WeightUnit.GRAMS);
+		Weight liquidTotal = Weight.of(0, WeightUnit.GRAMS);
 		for (ReceiptEntry<Liquid> liquidEntry : soapReceipt.getLiquids().values()) {
 			Percentage liquidPercentage = liquidEntry.getPercentage();
 			Liquid liquid = liquidEntry.getIngredient();
@@ -61,25 +62,28 @@ public class SoapCalculatorService {
 			Percentage liquidToFatRatio = soapReceipt.getLiquidToFatRatio();
 			Weight liquidWeight = fatsTotal.calculatePercentage(liquidToFatRatio).calculatePercentage(liquidPercentage);
 			liquidEntry.setWeight(liquidWeight);
-			totalWeight.plus(liquidWeight);
+			liquidTotal = liquidTotal.plus(liquidWeight);
+			totalWeight = totalWeight.plus(liquidWeight);
 
 			Double sapNaoh = liquid.getSapNaoh();
 			if (sapNaoh != null) {
 				Weight naoh100 = liquidWeight.multiply(sapNaoh);
-				naohForLiquids.plus(naoh100);
+				naohForLiquids = naohForLiquids.plus(naoh100);
 			}
 		}
 
-		Percentage naohPercentage = soapReceipt.getNaOH();
+		Percentage naohPercentage = soapReceipt.getNaOHToKOHRatio();
 		Weight naohForFatsAndAcidsAndLiquids = naohForFats.plus(naohForAcids).plus(naohForLiquids);
 		Weight naohTotal = naohForFatsAndAcidsAndLiquids.calculatePercentage(naohPercentage);
-		Percentage kohPercentage = soapReceipt.getKOH();
-		Percentage kohPurity = soapReceipt.getKOHPurity();
-		Double naohToKohConversion = Double.valueOf(1.40272);
-		Weight kohTotal = naohForFatsAndAcidsAndLiquids.multiply(naohToKohConversion)
-				.multiply(kohPercentage.getNumber() / kohPurity.getNumber());
+		Percentage kohPercentage = Percentage.of(100).minus(soapReceipt.getNaOHToKOHRatio());
 
-		Weight liquidTotal = soapReceipt.getFatsTotal().calculatePercentage(soapReceipt.getLiquidToFatRatio());
+		Weight kohTotal = Weight.of(0, WeightUnit.GRAMS);
+		if (kohPercentage.getNumber() > 0) {
+			Percentage kohPurity = soapReceipt.getKOHPurity();
+			Double naohToKohConversion = Double.valueOf(1.40272);
+			kohTotal = naohForFatsAndAcidsAndLiquids.multiply(naohToKohConversion)
+					.multiply(kohPercentage.getNumber() / kohPurity.getNumber());
+		}
 
 		return CalculatedSoapReceiptResult.builder().naohTotal(naohTotal).kohTotal(kohTotal).liquidTotal(liquidTotal)
 				.build();

@@ -23,13 +23,9 @@ import lombok.experimental.SuperBuilder;
 public class SoapReceipt extends NamedEntity {
 	private Date manufacturingDate;
 	/**
-	 * KOH and NaOH ratio. The NaOH part in Percentage.
+	 * NaOH to KOH ratio in Percentage. 80% means 80% NaOH and 20% KOH.
 	 */
-	private Percentage naOH;
-	/**
-	 * KOH and NaOH ratio. The KOH part in Percentage.
-	 */
-	private Percentage kOH;
+	private Percentage naOHToKOHRatio;
 	/**
 	 * The purity of the KOH
 	 */

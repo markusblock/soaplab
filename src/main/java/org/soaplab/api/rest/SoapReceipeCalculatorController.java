@@ -4,8 +4,11 @@ import org.soaplab.domain.CalculatedSoapReceiptResult;
 import org.soaplab.domain.SoapReceipt;
 import org.soaplab.service.SoapCalculatorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -20,7 +23,8 @@ public class SoapReceipeCalculatorController {
 	}
 
 	@PostMapping
-	public CalculatedSoapReceiptResult calculcate(SoapReceipt soapReceipt) {
+	@ResponseStatus(HttpStatus.CREATED)
+	public CalculatedSoapReceiptResult calculcate(@RequestBody SoapReceipt soapReceipt) {
 		return soapCalculatorService.calculate(soapReceipt);
 	}
 

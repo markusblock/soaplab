@@ -11,6 +11,8 @@ import org.soaplab.domain.Acid;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
 import org.soaplab.domain.FragranceType;
+import org.soaplab.domain.Ingredient;
+import org.soaplab.domain.Liquid;
 import org.soaplab.domain.Percentage;
 import org.soaplab.domain.ReceiptEntry;
 import org.soaplab.domain.SoapReceipt;
@@ -19,9 +21,11 @@ import org.soaplab.domain.WeightUnit;
 import org.soaplab.repository.AcidRepository;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.FragranceRepository;
+import org.soaplab.repository.LiquidRepository;
 import org.soaplab.repository.SoapRecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -34,22 +38,34 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TestDataController {
 
+	private static final String APPLE_VINEGAR_NAME = "Apple Vinegar 5,1%";
+	private static final String WATER_NAME = "Water";
+	private static final String LAVENDEL_NAME = "Lavendel";
+	private static final String CIDRIC_ACID_ANHYDRAT_NAME = "Cidric Acid anhydrat";
+	private static final String COCONUT_OIL_NAME = "Coconut Oil";
+	private static final String OLIVE_OIL_NAME = "Olive Oil";
+	private static final String OLIVE_SOAP_RECIPE_NAME = "Olive Soap";
 	private FatRepository fatRepository;
 	private AcidRepository acidRepository;
+	private LiquidRepository liquidRepository;
 	private FragranceRepository fragranceRepository;
-	private SoapRecipeRepository soapReceiptRepository;
+	private SoapRecipeRepository soapRecipeRepository;
 	private Fat oliveOil;
 	private Fat coconutOil;
 	private SoapReceipt oliveSoap;
 	private Fragrance lavendelFragrance;
 	private Acid citricAcid;
+	private Liquid water;
+	private Liquid appleVinegar;
 
 	@Autowired
 	public TestDataController(FatRepository fatRepository, AcidRepository acidRepository,
-			FragranceRepository fragranceRepository, SoapRecipeRepository soapReceiptRepository) {
+			LiquidRepository liquidRepository, FragranceRepository fragranceRepository,
+			SoapRecipeRepository soapReceiptRepository) {
 		this.acidRepository = acidRepository;
+		this.liquidRepository = liquidRepository;
 		this.fragranceRepository = fragranceRepository;
-		this.soapReceiptRepository = soapReceiptRepository;
+		this.soapRecipeRepository = soapReceiptRepository;
 		this.fatRepository = fatRepository;
 	}
 
@@ -61,59 +77,68 @@ public class TestDataController {
 		createFats();
 		createFragrances();
 		createAcids();
+		createLiquids();
 		createSoapReceipts();
+	}
 
+	@DeleteMapping
+	public void delete() {
+		soapRecipeRepository.delete(soapRecipeRepository.findByName(OLIVE_SOAP_RECIPE_NAME).get(0).getId());
+		liquidRepository.delete(liquidRepository.findByName(WATER_NAME).get(0).getId());
+		liquidRepository.delete(liquidRepository.findByName(APPLE_VINEGAR_NAME).get(0).getId());
+		acidRepository.delete(acidRepository.findByName(CIDRIC_ACID_ANHYDRAT_NAME).get(0).getId());
+		fatRepository.delete(fatRepository.findByName(OLIVE_OIL_NAME).get(0).getId());
+		fatRepository.delete(fatRepository.findByName(COCONUT_OIL_NAME).get(0).getId());
+		fragranceRepository.delete(fragranceRepository.findByName(LAVENDEL_NAME).get(0).getId());
 	}
 
 	private void createSoapReceipts() {
-		ReceiptEntry<Fat> olive = ReceiptEntry.<Fat>builder().percentage(Percentage.of(80)).ingredient(oliveOil)
-				.build();
-		ReceiptEntry<Fat> coconut = ReceiptEntry.<Fat>builder().percentage(Percentage.of(20)).ingredient(coconutOil)
-				.build();
-		ReceiptEntry<Fragrance> lavendel = ReceiptEntry.<Fragrance>builder().percentage(Percentage.of(100))
-				.ingredient(lavendelFragrance).build();
-		ReceiptEntry<Acid> cidric = ReceiptEntry.<Acid>builder().percentage(Percentage.of(4)).ingredient(citricAcid)
-				.build();
-		oliveSoap = SoapReceipt.builder().name("Olive Soap").manufacturingDate(Date.from(Instant.now()))
-				.fatsTotal(Weight.of(100, WeightUnit.GRAMS)).liquidToFatRatio(Percentage.of(33))
-				.superFat(Percentage.of(10)).fragranceTotal(Percentage.of(3)).fats(createFatEntriesMap(olive, coconut))
-				.acids(createAcidEntriesMap(cidric)).fragrances(createFragranceEntriesMap(lavendel)).build();
-		soapReceiptRepository.create(oliveSoap);
+		oliveSoap = SoapReceipt.builder().name(OLIVE_SOAP_RECIPE_NAME).manufacturingDate(Date.from(Instant.now()))
+				.naOHToKOHRatio(Percentage.of(100)).fatsTotal(Weight.of(100, WeightUnit.GRAMS))
+				.liquidToFatRatio(Percentage.of(33)).superFat(Percentage.of(10)).fragranceTotal(Percentage.of(3)).fats(//
+						createIngredientEntriesMap( //
+								createReceiptEntry(oliveOil, 80d), //
+								createReceiptEntry(coconutOil, 20d)))
+				.acids(createIngredientEntriesMap(createReceiptEntry(citricAcid, 4d)))
+				.liquids(createIngredientEntriesMap(//
+						createReceiptEntry(water, 50d), //
+						createReceiptEntry(appleVinegar, 50d)))
+				.fragrances(createIngredientEntriesMap(createReceiptEntry(lavendelFragrance, 100d))).build();
+		soapRecipeRepository.create(oliveSoap);
 	}
 
-	private void createAcids() {
-		citricAcid = Acid.builder().name("Cidric Acid anhydrat").inci("Citric Acid").sapNaoh(0.625).build();
-		acidRepository.create(citricAcid);
+	private <T extends Ingredient> ReceiptEntry<T> createReceiptEntry(T ingredient, Double percentage) {
+		return ReceiptEntry.<T>builder().ingredient(ingredient).percentage(Percentage.of(percentage)).build();
 	}
 
-	private Map<UUID, ReceiptEntry<Acid>> createAcidEntriesMap(ReceiptEntry<Acid>... acidEntries) {
-		Map<UUID, ReceiptEntry<Acid>> acidEntriesMap = new HashMap<>();
-		Set.of(acidEntries).forEach(acidEntry -> acidEntriesMap.put(acidEntry.getIngredient().getId(), acidEntry));
-		return acidEntriesMap;
-	}
-
-	private Map<UUID, ReceiptEntry<Fat>> createFatEntriesMap(ReceiptEntry<Fat>... fatEntries) {
-		Map<UUID, ReceiptEntry<Fat>> fatEntriesMap = new HashMap<>();
-		Set.of(fatEntries).forEach(fatEntry -> fatEntriesMap.put(fatEntry.getIngredient().getId(), fatEntry));
-		return fatEntriesMap;
-	}
-
-	private Map<UUID, ReceiptEntry<Fragrance>> createFragranceEntriesMap(ReceiptEntry<Fragrance>... fragranceEntries) {
-		Map<UUID, ReceiptEntry<Fragrance>> fragranceEntriesMap = new HashMap<>();
-		Set.of(fragranceEntries).forEach(
-				fragranceEntry -> fragranceEntriesMap.put(fragranceEntry.getIngredient().getId(), fragranceEntry));
-		return fragranceEntriesMap;
+	private <T extends Ingredient> Map<UUID, ReceiptEntry<T>> createIngredientEntriesMap(
+			ReceiptEntry<T>... ingredientEntries) {
+		Map<UUID, ReceiptEntry<T>> entriesMap = new HashMap<>();
+		Set.of(ingredientEntries).forEach(entry -> entriesMap.put(entry.getIngredient().getId(), entry));
+		return entriesMap;
 	}
 
 	private void createFats() {
-		oliveOil = Fat.builder().name("Olive Oil").inci("Olea Europaea Fruit Oil").sapNaoh(0.1345d).build();
-		coconutOil = Fat.builder().name("Coconut Oil").inci("Cocos Nucifera Oil").sapNaoh(0.183d).build();
+		oliveOil = Fat.builder().name(OLIVE_OIL_NAME).inci("Olea Europaea Fruit Oil").sapNaoh(0.1345d).build();
+		coconutOil = Fat.builder().name(COCONUT_OIL_NAME).inci("Cocos Nucifera Oil").sapNaoh(0.183d).build();
 
 		fatRepository.create(oliveOil, coconutOil);
 	}
 
+	private void createAcids() {
+		citricAcid = Acid.builder().name(CIDRIC_ACID_ANHYDRAT_NAME).inci("Citric Acid").sapNaoh(0.625d).build();
+		acidRepository.create(citricAcid);
+	}
+
 	private void createFragrances() {
-		lavendelFragrance = Fragrance.builder().name("Lavendel").inci("").typ(FragranceType.VOLATILE_OIL).build();
+		lavendelFragrance = Fragrance.builder().name(LAVENDEL_NAME).inci("").typ(FragranceType.VOLATILE_OIL).build();
 		fragranceRepository.create(lavendelFragrance);
+	}
+
+	private void createLiquids() {
+		water = Liquid.builder().name(WATER_NAME).inci("Aqua").build();
+		appleVinegar = Liquid.builder().name(APPLE_VINEGAR_NAME).inci("").sapNaoh(0.666d * 0.051d).build();
+
+		liquidRepository.create(water, appleVinegar);
 	}
 }
