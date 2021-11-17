@@ -1,14 +1,17 @@
 package org.soaplab.domain;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class Percentage {
 
 	private Double number;
@@ -25,6 +28,14 @@ public class Percentage {
 		return new Percentage(number);
 	}
 
+	public Percentage minus(Percentage percentage) {
+		return Percentage.of(number - percentage.getNumber());
+	}
+
+	public Percentage plus(Percentage percentage) {
+		return Percentage.of(number + percentage.getNumber());
+	}
+
 	public void validate(Double number) {
 		if (number < 0d) {
 			throw new NumberFormatException("Percentage not allowed to be < 0%");
@@ -33,5 +44,4 @@ public class Percentage {
 			throw new NumberFormatException("Percentage not allowed to be > 100%");
 		}
 	}
-
 }
