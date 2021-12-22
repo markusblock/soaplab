@@ -20,7 +20,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
 @SuperBuilder
-public class SoapReceipt extends NamedEntity {
+public class SoapRecipe extends NamedEntity {
 	private Date manufacturingDate;
 	/**
 	 * NaOH to KOH ratio in Percentage. 80% means 80% NaOH and 20% KOH.
@@ -47,8 +47,9 @@ public class SoapReceipt extends NamedEntity {
 	 */
 	private Percentage fragranceTotal;
 	private String notes;
-	private Map<UUID, ReceiptEntry<Fat>> fats = new HashMap<>();
-	private Map<UUID, ReceiptEntry<Acid>> acids = new HashMap<>();
-	private Map<UUID, ReceiptEntry<Fragrance>> fragrances = new HashMap<>();
-	private Map<UUID, ReceiptEntry<Liquid>> liquids = new HashMap<>();
+	private Map<UUID, RecipeEntry<Fat>> fats = new HashMap<>();
+	private Map<UUID, RecipeEntry<Acid>> acids = new HashMap<>();
+	private Map<UUID, RecipeEntry<Fragrance>> fragrances = new HashMap<>();
+	private Map<UUID, RecipeEntry<Liquid>> liquids = new HashMap<>();
+	// customAdditives
 }

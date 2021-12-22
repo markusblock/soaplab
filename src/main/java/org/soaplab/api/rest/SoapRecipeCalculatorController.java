@@ -1,7 +1,7 @@
 package org.soaplab.api.rest;
 
-import org.soaplab.domain.CalculatedSoapReceiptResult;
-import org.soaplab.domain.SoapReceipt;
+import org.soaplab.domain.CalculatedSoapRecipeResult;
+import org.soaplab.domain.SoapRecipe;
 import org.soaplab.service.SoapCalculatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,18 +13,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/calculator")
-public class SoapReceipeCalculatorController {
+public class SoapRecipeCalculatorController {
 
 	private SoapCalculatorService soapCalculatorService;
 
 	@Autowired
-	public SoapReceipeCalculatorController(SoapCalculatorService soapCalculatorService) {
+	public SoapRecipeCalculatorController(SoapCalculatorService soapCalculatorService) {
 		this.soapCalculatorService = soapCalculatorService;
 	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public CalculatedSoapReceiptResult calculcate(@RequestBody SoapReceipt soapReceipt) {
+	public CalculatedSoapRecipeResult calculcate(@RequestBody SoapRecipe soapReceipt) {
 		return soapCalculatorService.calculate(soapReceipt);
 	}
 

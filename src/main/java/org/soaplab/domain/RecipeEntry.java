@@ -17,12 +17,7 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
 @Builder
-public class ReceiptEntry<T extends Ingredient> {
-
-	/**
-	 * Weight in grams. Value >0;
-	 */
-	private Weight weight;
+public class RecipeEntry<T extends Ingredient> {
 
 	/**
 	 * Percentage of the {@link Ingredient}.
@@ -30,10 +25,8 @@ public class ReceiptEntry<T extends Ingredient> {
 	private Percentage percentage;
 
 	/**
-	 * The cost for this amount of ingridient
+	 * The {@link Ingredient}.
 	 */
-	private Price price;
-
 	private T ingredient;
 
 }

@@ -3,7 +3,7 @@ package org.soaplab.api.rest;
 import java.util.List;
 import java.util.UUID;
 
-import org.soaplab.domain.SoapReceipt;
+import org.soaplab.domain.SoapRecipe;
 import org.soaplab.repository.SoapRecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,12 +26,12 @@ public class SoapRecipeController {
 	}
 
 	@GetMapping
-	public List<SoapReceipt> findAll() {
+	public List<SoapRecipe> findAll() {
 		return repository.findAll();
 	}
 
 	@GetMapping(value = "/{id}")
-	public SoapReceipt findById(@PathVariable("id") UUID id) {
+	public SoapRecipe findById(@PathVariable("id") UUID id) {
 		// TODO proper exception handling not found
 		return repository.get(id);
 	}

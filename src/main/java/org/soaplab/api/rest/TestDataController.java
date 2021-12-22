@@ -14,8 +14,8 @@ import org.soaplab.domain.FragranceType;
 import org.soaplab.domain.Ingredient;
 import org.soaplab.domain.Liquid;
 import org.soaplab.domain.Percentage;
-import org.soaplab.domain.ReceiptEntry;
-import org.soaplab.domain.SoapReceipt;
+import org.soaplab.domain.RecipeEntry;
+import org.soaplab.domain.SoapRecipe;
 import org.soaplab.domain.Weight;
 import org.soaplab.domain.WeightUnit;
 import org.soaplab.repository.AcidRepository;
@@ -52,7 +52,7 @@ public class TestDataController {
 	private SoapRecipeRepository soapRecipeRepository;
 	private Fat oliveOil;
 	private Fat coconutOil;
-	private SoapReceipt oliveSoap;
+	private SoapRecipe oliveSoap;
 	private Fragrance lavendelFragrance;
 	private Acid citricAcid;
 	private Liquid water;
@@ -61,11 +61,11 @@ public class TestDataController {
 	@Autowired
 	public TestDataController(FatRepository fatRepository, AcidRepository acidRepository,
 			LiquidRepository liquidRepository, FragranceRepository fragranceRepository,
-			SoapRecipeRepository soapReceiptRepository) {
+			SoapRecipeRepository soapRecipeRepository) {
 		this.acidRepository = acidRepository;
 		this.liquidRepository = liquidRepository;
 		this.fragranceRepository = fragranceRepository;
-		this.soapRecipeRepository = soapReceiptRepository;
+		this.soapRecipeRepository = soapRecipeRepository;
 		this.fatRepository = fatRepository;
 	}
 
@@ -78,7 +78,7 @@ public class TestDataController {
 		createFragrances();
 		createAcids();
 		createLiquids();
-		createSoapReceipts();
+		createSoapRecipe();
 	}
 
 	@DeleteMapping
@@ -92,10 +92,11 @@ public class TestDataController {
 		fragranceRepository.delete(fragranceRepository.findByName(LAVENDEL_NAME).get(0).getId());
 	}
 
-	private void createSoapReceipts() {
-		oliveSoap = SoapReceipt.builder().name(OLIVE_SOAP_RECIPE_NAME).manufacturingDate(Date.from(Instant.now()))
-				.naOHToKOHRatio(Percentage.of(100)).fatsTotal(Weight.of(100, WeightUnit.GRAMS))
-				.liquidToFatRatio(Percentage.of(33)).superFat(Percentage.of(10)).fragranceTotal(Percentage.of(3)).fats(//
+	private void createSoapRecipe() {
+		oliveSoap = SoapRecipe.builder().name(OLIVE_SOAP_RECIPE_NAME).manufacturingDate(Date.from(Instant.now()))
+				.naOHToKOHRatio(Percentage.of(100)).kOHPurity(Percentage.of(89.5))
+				.fatsTotal(Weight.of(100, WeightUnit.GRAMS)).liquidToFatRatio(Percentage.of(33))
+				.superFat(Percentage.of(10)).fragranceTotal(Percentage.of(3)).fats(//
 						createIngredientEntriesMap( //
 								createReceiptEntry(oliveOil, 80d), //
 								createReceiptEntry(coconutOil, 20d)))
@@ -107,13 +108,13 @@ public class TestDataController {
 		soapRecipeRepository.create(oliveSoap);
 	}
 
-	private <T extends Ingredient> ReceiptEntry<T> createReceiptEntry(T ingredient, Double percentage) {
-		return ReceiptEntry.<T>builder().ingredient(ingredient).percentage(Percentage.of(percentage)).build();
+	private <T extends Ingredient> RecipeEntry<T> createReceiptEntry(T ingredient, Double percentage) {
+		return RecipeEntry.<T>builder().ingredient(ingredient).percentage(Percentage.of(percentage)).build();
 	}
 
-	private <T extends Ingredient> Map<UUID, ReceiptEntry<T>> createIngredientEntriesMap(
-			ReceiptEntry<T>... ingredientEntries) {
-		Map<UUID, ReceiptEntry<T>> entriesMap = new HashMap<>();
+	private <T extends Ingredient> Map<UUID, RecipeEntry<T>> createIngredientEntriesMap(
+			RecipeEntry<T>... ingredientEntries) {
+		Map<UUID, RecipeEntry<T>> entriesMap = new HashMap<>();
 		Set.of(ingredientEntries).forEach(entry -> entriesMap.put(entry.getIngredient().getId(), entry));
 		return entriesMap;
 	}

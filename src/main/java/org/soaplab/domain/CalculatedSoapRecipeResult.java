@@ -1,5 +1,9 @@
 package org.soaplab.domain;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,8 +18,16 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
 @SuperBuilder
-public class CalculatedSoapReceiptResult extends NamedEntity {
+public class CalculatedSoapRecipeResult extends NamedEntity {
 	private Weight naohTotal;
 	private Weight kohTotal;
 	private Weight liquidTotal;
+	private Weight weightTotal;
+	private Price priceTotal;
+
+	private Map<UUID, CalculatedRecipeEntry<Fat>> fats = new HashMap<>();
+	private Map<UUID, CalculatedRecipeEntry<Acid>> acids = new HashMap<>();
+	private Map<UUID, CalculatedRecipeEntry<Fragrance>> fragrances = new HashMap<>();
+	private Map<UUID, CalculatedRecipeEntry<Liquid>> liquids = new HashMap<>();
+
 }

@@ -1,7 +1,7 @@
 package org.soaplab.repository;
 
-import org.soaplab.domain.SoapReceipt;
+import org.soaplab.domain.SoapRecipe;
 
-public interface SoapRecipeRepository extends EntityRepository<SoapReceipt> {
+public interface SoapRecipeRepository extends EntityRepository<SoapRecipe> {
 
 }
