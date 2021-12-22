@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.5.5</version>
+		<version>2.6.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.soaplab</groupId>
@@ -33,7 +33,7 @@
 		<dependency>
 			<groupId>one.microstream</groupId>
 			<artifactId>microstream-storage-embedded</artifactId>
-			<version>05.00.02-MS-GA</version>
+			<version>06.01.00-MS-GA</version>
 		</dependency>
 		
 		<!-- LOMBOK -->
@@ -46,7 +46,7 @@
 		<dependency>
 		    <groupId>nl.jqno.equalsverifier</groupId>
 		    <artifactId>equalsverifier</artifactId>
-		    <version>3.7.1</version>
+		    <version>3.8.1</version>
 		    <scope>test</scope>
 		</dependency>	
 		
