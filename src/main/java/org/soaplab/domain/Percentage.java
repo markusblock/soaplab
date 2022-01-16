@@ -44,4 +44,8 @@ public class Percentage {
 			throw new NumberFormatException("Percentage not allowed to be > 100%");
 		}
 	}
+
+	public static boolean isGreaterThanZero(Percentage percentage) {
+		return percentage != null && percentage.number > 0d;
+	}
 }

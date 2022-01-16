@@ -17,6 +17,7 @@ import org.soaplab.domain.SoapRecipe;
 import org.soaplab.domain.Weight;
 import org.soaplab.domain.WeightUnit;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 @Component
 public class SoapCalculatorService {
@@ -51,17 +52,19 @@ public class SoapCalculatorService {
 		}
 
 		Weight naohForAcids = Weight.of(0, WeightUnit.GRAMS);
-		for (RecipeEntry<Acid> acidEntry : soapReceipt.getAcids().values()) {
-			Percentage acidPercentage = acidEntry.getPercentage();
-			Acid acid = acidEntry.getIngredient();
-			Double sapNaoh = acid.getSapNaoh();
-			Weight fatsTotal = soapReceipt.getFatsTotal();
-			Weight acidWeight = fatsTotal.calculatePercentage(acidPercentage);
-			Weight naoh100 = acidWeight.multiply(sapNaoh);
+		if (!CollectionUtils.isEmpty(soapReceipt.getAcids())) {
+			for (RecipeEntry<Acid> acidEntry : soapReceipt.getAcids().values()) {
+				Percentage acidPercentage = acidEntry.getPercentage();
+				Acid acid = acidEntry.getIngredient();
+				Double sapNaoh = acid.getSapNaoh();
+				Weight fatsTotal = soapReceipt.getFatsTotal();
+				Weight acidWeight = fatsTotal.calculatePercentage(acidPercentage);
+				Weight naoh100 = acidWeight.multiply(sapNaoh);
 
-			naohForAcids = naohForAcids.plus(naoh100);
-			addToIngredientMap(acids, acidEntry, acidWeight);
-			totalWeight = totalWeight.plus(acidWeight);
+				naohForAcids = naohForAcids.plus(naoh100);
+				addToIngredientMap(acids, acidEntry, acidWeight);
+				totalWeight = totalWeight.plus(acidWeight);
+			}
 		}
 
 		Weight naohForLiquids = Weight.of(0, WeightUnit.GRAMS);
@@ -83,14 +86,17 @@ public class SoapCalculatorService {
 			}
 		}
 
-		for (RecipeEntry<Fragrance> fragranceEntry : soapReceipt.getFragrances().values()) {
-			Percentage fragrancePercentage = fragranceEntry.getPercentage();
-			Weight fatsTotal = soapReceipt.getFatsTotal();
-			Percentage fragranceTotalPercentage = soapReceipt.getFragranceTotal();
-			Weight fragranceWeight = fatsTotal.calculatePercentage(fragranceTotalPercentage)
-					.calculatePercentage(fragrancePercentage);
-			addToIngredientMap(fragrances, fragranceEntry, fragranceWeight);
-			totalWeight = totalWeight.plus(fragranceWeight);
+		Percentage fragranceTotalPercentage = soapReceipt.getFragranceTotal();
+		if (!CollectionUtils.isEmpty(soapReceipt.getFragrances())
+				&& Percentage.isGreaterThanZero(fragranceTotalPercentage)) {
+			for (RecipeEntry<Fragrance> fragranceEntry : soapReceipt.getFragrances().values()) {
+				Percentage fragrancePercentage = fragranceEntry.getPercentage();
+				Weight fatsTotal = soapReceipt.getFatsTotal();
+				Weight fragranceWeight = fatsTotal.calculatePercentage(fragranceTotalPercentage)
+						.calculatePercentage(fragrancePercentage);
+				addToIngredientMap(fragrances, fragranceEntry, fragranceWeight);
+				totalWeight = totalWeight.plus(fragranceWeight);
+			}
 		}
 
 		Percentage naohPercentage = soapReceipt.getNaOHToKOHRatio();
@@ -107,7 +113,7 @@ public class SoapCalculatorService {
 		}
 
 		return CalculatedSoapRecipeResult.builder().naohTotal(naohTotal).kohTotal(kohTotal).liquidTotal(liquidTotal)
-				.fats(fats).acids(acids).fragrances(fragrances).liquids(liquids).build();
+				.weightTotal(totalWeight).fats(fats).acids(acids).fragrances(fragrances).liquids(liquids).build();
 	}
 
 	private static <T extends Ingredient> void addToIngredientMap(
