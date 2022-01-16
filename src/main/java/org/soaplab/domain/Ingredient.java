@@ -16,7 +16,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public abstract class Ingredient extends NamedEntity {
 
 	private String inci;

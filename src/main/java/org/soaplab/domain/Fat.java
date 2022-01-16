@@ -16,7 +16,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public class Fat extends Ingredient {
 	/**
 	 * sapNaoh value is the numeric value that allow you to calculate the precise

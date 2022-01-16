@@ -18,7 +18,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public abstract class NamedEntity {
 
 	@EqualsAndHashCode.Include
