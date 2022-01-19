@@ -3,9 +3,8 @@ package org.soaplab.service;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.soaplab.assertions.WeightAssert;
 import org.soaplab.domain.CalculatedSoapRecipeResult;
-import org.soaplab.domain.Weight;
-import org.soaplab.domain.WeightUnit;
 import org.soaplab.testdata.OliveOilSoapBasicRecipeTestData;
 import org.soaplab.testdata.OliveOilSoapRecipeTestData;
 
@@ -31,13 +30,13 @@ public class SoapCalculatorServiceTest {
 		CalculatedSoapRecipeResult calculatedSoapRecipeResult = calculatorService
 				.calculate(oliveOilSoapRecipe.getSoapRecipe());
 
-		Assertions.assertThat(calculatedSoapRecipeResult.getNaohTotal()).isEqualTo(Weight.of(12.15, WeightUnit.GRAMS));
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getNaohTotal()).isEqualToWeightInGrams(12.15);
 		Assertions.assertThat(calculatedSoapRecipeResult.getLiquids().size()).isEqualTo(1);
-		Assertions
+		WeightAssert
 				.assertThat(
 						calculatedSoapRecipeResult.getLiquids().get(oliveOilSoapRecipe.getWater().getId()).getWeight())
-				.isEqualTo(Weight.of(33, WeightUnit.GRAMS));
-		Assertions.assertThat(calculatedSoapRecipeResult.getLiquidTotal()).isEqualTo(Weight.of(33, WeightUnit.GRAMS));
+				.isEqualToWeightInGrams(33);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquidTotal()).isEqualToWeightInGrams(33);
 	}
 
 	@Test
@@ -46,14 +45,13 @@ public class SoapCalculatorServiceTest {
 		CalculatedSoapRecipeResult calculatedSoapRecipeResult = calculatorService
 				.calculate(oliveOilSoapRecipe.getSoapRecipe());
 
-		Assertions.assertThat(calculatedSoapRecipeResult.getNaohTotal())
-				.isEqualTo(Weight.of(15.298d, WeightUnit.GRAMS));
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getNaohTotal()).isEqualToWeightInGrams(15.298d);
 		Assertions.assertThat(calculatedSoapRecipeResult.getLiquids().size()).isEqualTo(1);
-		Assertions
+		WeightAssert
 				.assertThat(
 						calculatedSoapRecipeResult.getLiquids().get(oliveOilSoapRecipe.getWater().getId()).getWeight())
-				.isEqualTo(Weight.of(33, WeightUnit.GRAMS));
-		Assertions.assertThat(calculatedSoapRecipeResult.getLiquidTotal()).isEqualTo(Weight.of(33, WeightUnit.GRAMS));
+				.isEqualToWeightInGrams(33);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquidTotal()).isEqualToWeightInGrams(33);
 	}
 
 }

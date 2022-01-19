@@ -1,5 +1,7 @@
 package org.soaplab.domain;
 
+import java.math.BigDecimal;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -14,10 +16,10 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class Percentage {
 
-	private Double number;
+	private BigDecimal number;
 
 	public Percentage(int number) {
-		this(Double.valueOf(number));
+		this(BigDecimal.valueOf(number));
 	}
 
 	public static Percentage of(int number) {
@@ -25,15 +27,15 @@ public class Percentage {
 	}
 
 	public static Percentage of(double number) {
-		return new Percentage(number);
+		return new Percentage(BigDecimal.valueOf(number));
 	}
 
 	public Percentage minus(Percentage percentage) {
-		return Percentage.of(number - percentage.getNumber());
+		return new Percentage(number.subtract(percentage.getNumber()));
 	}
 
 	public Percentage plus(Percentage percentage) {
-		return Percentage.of(number + percentage.getNumber());
+		return new Percentage(number.add(percentage.getNumber()));
 	}
 
 	public void validate(Double number) {
@@ -46,6 +48,6 @@ public class Percentage {
 	}
 
 	public static boolean isGreaterThanZero(Percentage percentage) {
-		return percentage != null && percentage.number > 0d;
+		return percentage != null && percentage.getNumber().compareTo(BigDecimal.ZERO) > 0;
 	}
 }

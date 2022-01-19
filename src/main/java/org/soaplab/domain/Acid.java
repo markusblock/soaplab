@@ -1,6 +1,8 @@
 
 package org.soaplab.domain;
 
+import java.math.BigDecimal;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +18,23 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 public class Acid extends Ingredient {
-	private Double sapNaoh;
-	private Double sapKoh;
+
+	private BigDecimal sapNaoh;
+
+	/**
+	 * {@link AcidBuilder} adds custom methods to lombok generated builder class.
+	 */
+	public static abstract class AcidBuilder<C extends Acid, B extends AcidBuilder<C, B>>
+			extends IngredientBuilder<C, B> {
+
+		public B sapNaoh(BigDecimal sapNaoh) {
+			this.sapNaoh = sapNaoh;
+			return self();
+		}
+
+		public B sapNaoh(double sapNaoh) {
+			sapNaoh(BigDecimal.valueOf(sapNaoh));
+			return self();
+		}
+	}
 }

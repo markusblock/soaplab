@@ -1,5 +1,7 @@
 package org.soaplab.domain;
 
+import java.math.BigDecimal;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -14,11 +16,11 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class Weight {
 
-	private Double weight;
+	private BigDecimal weight;
 	private WeightUnit unit;
 
 	public Weight(int weight, WeightUnit unit) {
-		this(Double.valueOf(weight), unit);
+		this(BigDecimal.valueOf(weight), unit);
 	}
 
 	public static Weight of(int weight, WeightUnit unit) {
@@ -26,27 +28,27 @@ public class Weight {
 	}
 
 	public static Weight of(double weight, WeightUnit unit) {
-		return new Weight(weight, unit);
+		return new Weight(BigDecimal.valueOf(weight), unit);
 	}
 
 	public Weight calculatePercentage(Percentage percentage) {
-		return new Weight(weight * percentage.getNumber() / 100, unit);
+		return new Weight(weight.multiply(percentage.getNumber().divide(BigDecimal.valueOf(100))), unit);
 	}
 
-	public Weight multiply(Double multiplicator) {
-		return new Weight(weight * multiplicator, unit);
+	public Weight multiply(BigDecimal multiplicator) {
+		return new Weight(weight.multiply(multiplicator), unit);
 	}
 
-	public Weight divide(Double divisor) {
-		return new Weight(weight / divisor, unit);
+	public Weight divide(BigDecimal divisor) {
+		return new Weight(weight.divide(divisor), unit);
 	}
 
 	public Weight subtract(Weight subtractor) {
-		return new Weight(weight - subtractor.getWeight(), unit);
+		return new Weight(weight.subtract(subtractor.getWeight()), unit);
 	}
 
 	public Weight plus(Weight summand) {
-		return new Weight(weight + summand.getWeight(), unit);
+		return new Weight(weight.add(summand.getWeight()), unit);
 	}
 
 }

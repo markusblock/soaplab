@@ -1,37 +1,36 @@
 package org.soaplab.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
-import org.soaplab.domain.Percentage;
-import org.soaplab.domain.WeightUnit;
-import org.soaplab.domain.Weight;
+import org.soaplab.assertions.WeightAssert;
 
 class WeightTest {
 
 	@Test
 	void plus() {
-		assertThat(createWeightInGrams(0).plus(createWeightInGrams(0))).isEqualTo(createWeightInGrams(0));
-		assertThat(createWeight(1.5).plus(createWeight(0.5))).isEqualTo(createWeightInGrams(2));
-		assertThat(createWeight(1.9999).plus(createWeight(0.0002))).isEqualTo(createWeight(2.0001));
+		WeightAssert.assertThat(createWeight(0).plus(createWeight(0))).isEqualToWeightInGrams(0);
+		WeightAssert.assertThat(createWeight(1.5).plus(createWeight(0.5))).isEqualToWeightInGrams(2);
+		WeightAssert.assertThat(createWeight(1.9999).plus(createWeight(0.0002))).isEqualToWeightInGrams(2.0001);
 	}
 
 	@Test
 	void multiply() {
-		assertThat(createWeightInGrams(0).multiply(0d)).isEqualTo(createWeightInGrams(0));
-		assertThat(createWeight(1.5).multiply(2d)).isEqualTo(createWeightInGrams(3));
-		assertThat(createWeight(1.9999).multiply(0.5)).isEqualTo(createWeight(0.99995));
+		WeightAssert.assertThat(createWeight(0).multiply(BigDecimal.ZERO)).isEqualToWeightInGrams(0);
+		WeightAssert.assertThat(createWeight(1.5).multiply(BigDecimal.valueOf(2))).isEqualToWeightInGrams(3);
+		WeightAssert.assertThat(createWeight(1.9999).multiply(BigDecimal.valueOf(0.5d)))
+				.isEqualToWeightInGrams(0.99995);
 	}
 
 	@Test
 	void percentage() {
-		assertThat(createWeightInGrams(0).calculatePercentage(Percentage.of(0))).isEqualTo(createWeightInGrams(0));
-		assertThat(createWeightInGrams(100).calculatePercentage(Percentage.of(10))).isEqualTo(createWeightInGrams(10));
-		assertThat(createWeightInGrams(100).calculatePercentage(Percentage.of(0.5))).isEqualTo(createWeight(0.5));
+		WeightAssert.assertThat(createWeight(0).calculatePercentage(Percentage.of(0))).isEqualToWeightInGrams(0);
+		WeightAssert.assertThat(createWeight(100).calculatePercentage(Percentage.of(10))).isEqualToWeightInGrams(10);
+		WeightAssert.assertThat(createWeight(100).calculatePercentage(Percentage.of(0.5))).isEqualToWeightInGrams(0.5);
 
 	}
 
-	private Weight createWeightInGrams(int weight) {
+	private Weight createWeight(int weight) {
 		return Weight.of(weight, WeightUnit.GRAMS);
 	}
 

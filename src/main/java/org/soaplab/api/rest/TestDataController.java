@@ -127,7 +127,7 @@ public class TestDataController {
 	}
 
 	private void createAcids() {
-		citricAcid = Acid.builder().name(CIDRIC_ACID_ANHYDRAT_NAME).inci("Citric Acid").sapNaoh(0.625d).build();
+		citricAcid = Acid.builder().name(CIDRIC_ACID_ANHYDRAT_NAME).inci("Citric Acid").sapNaoh(0.571d).build();
 		acidRepository.create(citricAcid);
 	}
 

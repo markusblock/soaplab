@@ -1,5 +1,6 @@
 package org.soaplab.domain;
 
+import java.math.BigDecimal;
 import java.util.Currency;
 
 import lombok.AccessLevel;
@@ -16,6 +17,6 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Price {
 
-	private Double value;
+	private BigDecimal value;
 	private Currency currency;
 }

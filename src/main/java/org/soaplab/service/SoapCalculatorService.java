@@ -1,5 +1,6 @@
 package org.soaplab.service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -38,7 +39,7 @@ public class SoapCalculatorService {
 		for (RecipeEntry<Fat> fatentry : soapReceipt.getFats().values()) {
 			Percentage fatPercentage = fatentry.getPercentage();
 			Fat fat = fatentry.getIngredient();
-			Double sapNaoh = fat.getSapNaoh();
+			BigDecimal sapNaoh = fat.getSapNaoh();
 			Weight fatsTotal = soapReceipt.getFatsTotal();
 			Weight fatWeight = fatsTotal.calculatePercentage(fatPercentage);
 			Weight naoh100 = fatWeight.multiply(sapNaoh);
@@ -56,7 +57,7 @@ public class SoapCalculatorService {
 			for (RecipeEntry<Acid> acidEntry : soapReceipt.getAcids().values()) {
 				Percentage acidPercentage = acidEntry.getPercentage();
 				Acid acid = acidEntry.getIngredient();
-				Double sapNaoh = acid.getSapNaoh();
+				BigDecimal sapNaoh = acid.getSapNaoh();
 				Weight fatsTotal = soapReceipt.getFatsTotal();
 				Weight acidWeight = fatsTotal.calculatePercentage(acidPercentage);
 				Weight naoh100 = acidWeight.multiply(sapNaoh);
@@ -79,7 +80,7 @@ public class SoapCalculatorService {
 			liquidTotal = liquidTotal.plus(liquidWeight);
 			totalWeight = totalWeight.plus(liquidWeight);
 
-			Double sapNaoh = liquid.getSapNaoh();
+			BigDecimal sapNaoh = liquid.getSapNaoh();
 			if (sapNaoh != null) {
 				Weight naoh100 = liquidWeight.multiply(sapNaoh);
 				naohForLiquids = naohForLiquids.plus(naoh100);
@@ -105,11 +106,11 @@ public class SoapCalculatorService {
 		Percentage kohPercentage = Percentage.of(100).minus(soapReceipt.getNaOHToKOHRatio());
 
 		Weight kohTotal = Weight.of(0, WeightUnit.GRAMS);
-		if (kohPercentage.getNumber() > 0) {
+		if (Percentage.isGreaterThanZero(kohPercentage)) {
 			Percentage kohPurity = soapReceipt.getKOHPurity();
-			Double naohToKohConversion = Double.valueOf(1.40272);
+			BigDecimal naohToKohConversion = BigDecimal.valueOf(1.40272);
 			kohTotal = naohForFatsAndAcidsAndLiquids.multiply(naohToKohConversion)
-					.multiply(kohPercentage.getNumber() / kohPurity.getNumber());
+					.multiply(kohPercentage.getNumber().divide(kohPurity.getNumber()));
 		}
 
 		return CalculatedSoapRecipeResult.builder().naohTotal(naohTotal).kohTotal(kohTotal).liquidTotal(liquidTotal)

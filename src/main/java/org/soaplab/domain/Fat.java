@@ -1,6 +1,8 @@
 
 package org.soaplab.domain;
 
+import java.math.BigDecimal;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -23,13 +25,13 @@ public class Fat extends Ingredient {
 	 * amount of sodium hydroxide (NaOH) required to fully saponify a given weight
 	 * of oil/s.
 	 */
-	private Double sapNaoh;
+	private BigDecimal sapNaoh;
 	/**
 	 * sapNaoh value is the numeric value that allow you to calculate the precise
 	 * amount of potassium hydroxide (KOH) required to fully saponify a given weight
 	 * of oil/s.
 	 */
-	private Double sapKoh;
+	private BigDecimal sapKoh;
 	private Integer lauric;
 	private Integer myristic;
 	private Integer palmitic;
@@ -41,4 +43,19 @@ public class Fat extends Ingredient {
 	private Integer iodine;
 	private Integer ins;
 
+	/**
+	 * {@link FatBuilder} adds custom methods to lombok generated builder class.
+	 */
+	public static abstract class FatBuilder<C extends Fat, B extends FatBuilder<C, B>> extends IngredientBuilder<C, B> {
+
+		public B sapNaoh(BigDecimal sapNaoh) {
+			this.sapNaoh = sapNaoh;
+			return self();
+		}
+
+		public B sapNaoh(double sapNaoh) {
+			sapNaoh(BigDecimal.valueOf(sapNaoh));
+			return self();
+		}
+	}
 }
