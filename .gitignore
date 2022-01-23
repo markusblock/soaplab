@@ -153,3 +153,16 @@ Desktop.ini
 .eslintcache
 /.apt_generated/
 /.apt_generated_tests/
+
+######################
+# Vaadin
+######################
+/frontend
+package.json
+/pnpm-lock.yaml
+/pnpmfile.js
+/tsconfig.json
+/types.d.ts
+/webpack.config.js
+/webpack.generated.js
+/.npmrc
