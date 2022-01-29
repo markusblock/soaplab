@@ -132,7 +132,7 @@ public class TestDataController {
 	}
 
 	private void createFragrances() {
-		lavendelFragrance = Fragrance.builder().name(LAVENDEL_NAME).inci("").typ(FragranceType.VOLATILE_OIL).build();
+		lavendelFragrance = Fragrance.builder().name(LAVENDEL_NAME).inci("").type(FragranceType.VOLATILE_OIL).build();
 		fragranceRepository.create(lavendelFragrance);
 	}
 

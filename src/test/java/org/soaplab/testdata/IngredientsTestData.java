@@ -48,7 +48,7 @@ public class IngredientsTestData {
 	}
 
 	public static FragranceBuilder<?, ?> getLavendelFragranceBuilder() {
-		return Fragrance.builder().id(UUID.randomUUID()).name(LAVENDEL_NAME).inci("").typ(FragranceType.VOLATILE_OIL);
+		return Fragrance.builder().id(UUID.randomUUID()).name(LAVENDEL_NAME).inci("").type(FragranceType.VOLATILE_OIL);
 	}
 
 }

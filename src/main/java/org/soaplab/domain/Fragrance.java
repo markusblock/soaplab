@@ -15,5 +15,5 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 public class Fragrance extends Ingredient {
-	private FragranceType typ;
+	private FragranceType type;
 }
