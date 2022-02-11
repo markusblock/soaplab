@@ -18,12 +18,15 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class TranslationProvider implements I18NProvider {
 
-	public static final String BUNDLE_PREFIX = "translation";
+	public static final String RESOURCE_BUNDLE_NAME = "translation";
 
-	public final Locale LOCALE_DE = new Locale("de", "DE");
-	public final Locale LOCALE_EN = new Locale("en", "GB");
+	public static final Locale LOCALE_EN = new Locale("en", "GB");
+//	public static final Locale LOCALE_DE = new Locale("de", "DE");
 
-	private List<Locale> locales = Collections.unmodifiableList(Arrays.asList(LOCALE_EN, LOCALE_DE));
+	private static final ResourceBundle RESOURCE_BUNDLE_EN = ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, LOCALE_EN);
+//	private static final ResourceBundle RESOURCE_BUNDLE_DE = ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, LOCALE_DE);
+
+	private List<Locale> locales = Collections.unmodifiableList(Arrays.asList(LOCALE_EN));
 
 	public TranslationProvider() {
 
@@ -50,11 +53,11 @@ public class TranslationProvider implements I18NProvider {
 			return "";
 		}
 
-		final ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_PREFIX, locale);
+		ResourceBundle resourceBundle = RESOURCE_BUNDLE_EN;
 
 		String value;
 		try {
-			value = bundle.getString(key);
+			value = resourceBundle.getString(key);
 		} catch (final MissingResourceException e) {
 			log.warn("Missing resource", e);
 			return "!" + locale.getLanguage() + ": " + key;

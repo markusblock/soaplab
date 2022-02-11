@@ -16,6 +16,8 @@ public class MenuBar extends Div {
 	private Tabs menuComponentItems;
 
 	public MenuBar() {
+		super();
+
 		menuComponentItems = new Tabs();
 		menuComponentItems.setOrientation(Tabs.Orientation.VERTICAL);
 	}

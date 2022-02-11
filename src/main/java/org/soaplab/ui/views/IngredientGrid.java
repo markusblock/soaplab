@@ -7,14 +7,16 @@ import com.vaadin.flow.component.grid.GridVariant;
 
 public class IngredientGrid<T extends Ingredient> extends Grid<T> {
 
+	private static final long serialVersionUID = 1L;
+
 	public IngredientGrid() {
+		super();
 
 		addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
 
 		setSelectionMode(SelectionMode.SINGLE);
-		addColumn(Ingredient::getId).setHeader("domain.ingredient.id");
-		addColumn(Ingredient::getName).setHeader("domain.ingredient.name");
-		addColumn(Ingredient::getInci).setHeader("domain.ingredient.inci");
+//		addColumn(T::getId).setHeader(getTranslation("domain.ingredient.id"));
+		addColumn(T::getName).setHeader(getTranslation("domain.ingredient.name"));
+		addColumn(T::getInci).setHeader(getTranslation("domain.ingredient.inci"));
 	}
-
 }

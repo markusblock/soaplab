@@ -28,4 +28,9 @@ public class LiquidsView extends IngredientsView<Liquid> {
 	protected IngredientGrid<Liquid> createIngredientGrid() {
 		return new LiquidGrid();
 	}
+
+	@Override
+	protected LiquidDetailsPanel createIngredientDetailsPanel() {
+		return new LiquidDetailsPanel();
+	}
 }

@@ -5,7 +5,11 @@ import org.soaplab.ui.views.IngredientGrid;
 
 public class FragranceGrid extends IngredientGrid<Fragrance> {
 
+	private static final long serialVersionUID = 1L;
+
 	public FragranceGrid() {
-		addColumn(Fragrance::getType).setHeader(getTranslation("domain.fragrance.type"));
+		super();
+
+//		addColumn(Fragrance::getType).setHeader(getTranslation("domain.fragrance.type"));
 	}
 }

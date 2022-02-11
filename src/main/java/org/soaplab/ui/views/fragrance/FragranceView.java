@@ -3,7 +3,6 @@ package org.soaplab.ui.views.fragrance;
 import org.soaplab.domain.Fragrance;
 import org.soaplab.repository.FragranceRepository;
 import org.soaplab.ui.MainAppLayout;
-import org.soaplab.ui.views.IngredientGrid;
 import org.soaplab.ui.views.IngredientsView;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,7 +24,12 @@ public class FragranceView extends IngredientsView<Fragrance> {
 	}
 
 	@Override
-	protected IngredientGrid<Fragrance> createIngredientGrid() {
+	protected FragranceGrid createIngredientGrid() {
 		return new FragranceGrid();
+	}
+
+	@Override
+	protected FragranceDetailsPanel createIngredientDetailsPanel() {
+		return new FragranceDetailsPanel();
 	}
 }

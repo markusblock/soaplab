@@ -3,7 +3,6 @@ package org.soaplab.ui.views.acid;
 import org.soaplab.domain.Acid;
 import org.soaplab.repository.AcidRepository;
 import org.soaplab.ui.MainAppLayout;
-import org.soaplab.ui.views.IngredientGrid;
 import org.soaplab.ui.views.IngredientsView;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,11 +20,16 @@ public class AcidsView extends IngredientsView<Acid> {
 
 	@Override
 	protected String getHeader() {
-		return getTranslation("domain.fats");
+		return getTranslation("domain.acids");
 	}
 
 	@Override
-	protected IngredientGrid<Acid> createIngredientGrid() {
+	protected AcidDetailsPanel createIngredientDetailsPanel() {
+		return new AcidDetailsPanel();
+	}
+
+	@Override
+	protected AcidGrid createIngredientGrid() {
 		return new AcidGrid();
 	}
 }

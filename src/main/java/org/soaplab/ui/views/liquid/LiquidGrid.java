@@ -5,7 +5,11 @@ import org.soaplab.ui.views.IngredientGrid;
 
 public class LiquidGrid extends IngredientGrid<Liquid> {
 
+	private static final long serialVersionUID = 1L;
+
 	public LiquidGrid() {
-		addColumn(Liquid::getSapNaoh).setHeader(getTranslation("domain.ingredient.sapnaoh"));
+		super();
+
+//		addColumn(Liquid::getSapNaoh).setHeader(getTranslation("domain.ingredient.sapnaoh"));
 	}
 }

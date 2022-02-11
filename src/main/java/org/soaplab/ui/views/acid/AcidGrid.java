@@ -5,7 +5,11 @@ import org.soaplab.ui.views.IngredientGrid;
 
 public class AcidGrid extends IngredientGrid<Acid> {
 
+	private static final long serialVersionUID = 1L;
+
 	public AcidGrid() {
-		addColumn(Acid::getSapNaoh).setHeader(getTranslation("domain.ingredient.sapnaoh"));
+		super();
+
+//		addColumn(Acid::getSapNaoh).setHeader(getTranslation("domain.ingredient.sapnaoh"));
 	}
 }

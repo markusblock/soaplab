@@ -1,38 +1,99 @@
 package org.soaplab.ui.views;
 
+import java.util.List;
+
 import org.soaplab.domain.Ingredient;
 import org.soaplab.repository.IngredientRepository;
 
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.CallbackDataProvider;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.selection.SingleSelect;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 
-public abstract class IngredientsView<T extends Ingredient> extends Div {
+public abstract class IngredientsView<T extends Ingredient> extends VerticalLayout implements BeforeEnterObserver {
 
 	private static final long serialVersionUID = 1L;
 
-	private VerticalLayout content;
 	private H1 title;
-	private IngredientGrid<T> grid;
+
+	private IngredientDetailsPanel<T> detailsPanel;
+	private IngredientGrid<T> ingredientGrid;
+	private IngredientRepository<T> repository;
 
 	public IngredientsView(IngredientRepository<T> repository) {
-		content = new VerticalLayout();
+		super();
+		this.repository = repository;
 
 		title = new H1(getHeader());
 		title.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
-		content.add(title);
+		add(title);
 
-		grid = createIngredientGrid();
-		content.add(grid);
+		HorizontalLayout masterDetail = new HorizontalLayout();
+		masterDetail.setSizeFull();
 
-		add(content);
+		ingredientGrid = createIngredientGrid();
+		addSelectionListener();
+		masterDetail.add(ingredientGrid);
+		detailsPanel = createIngredientDetailsPanel();
+		masterDetail.add(detailsPanel);
 
-		grid.setItems(new ListDataProvider<T>(repository.findAll()));
+		masterDetail.setFlexGrow(0.8, ingredientGrid);
+		add(masterDetail);
+	}
+
+	private void addSelectionListener() {
+		ingredientGrid.setSelectionMode(SelectionMode.SINGLE);
+		SingleSelect<Grid<T>, T> personSelect = ingredientGrid.asSingleSelect();
+		// personSelect can now be used with Binder or
+		// HasValue interface
+		personSelect.addValueChangeListener(e -> {
+			T selectedIngredient = e.getValue();
+			detailsPanel.setData(selectedIngredient);
+		});
+
 	}
 
 	protected abstract String getHeader();
 
 	protected abstract IngredientGrid<T> createIngredientGrid();
 
+	protected abstract IngredientDetailsPanel<T> createIngredientDetailsPanel();
+
+//	public void setData(IngredientRepository<T> repository) {
+//		ingredientGrid.setData(repository);
+//	}
+
+	@Override
+	public void beforeEnter(BeforeEnterEvent event) {
+		ingredientGrid.setItems(getDataProvider());
+		refreshGrid();
+	}
+
+	private void refreshGrid() {
+		ingredientGrid.select(null);
+		ingredientGrid.getLazyDataView().refreshAll();
+	}
+
+	CallbackDataProvider<T, Void> getDataProvider() {
+		return DataProvider.fromCallbacks(
+				// First callback fetches items based on a query
+				query -> {
+					// The index of the first item to load
+					int offset = query.getOffset();
+
+					// The number of items to load
+					int limit = query.getLimit();
+					List<T> persons = repository.findAll();
+					return persons.stream();
+				},
+				// Second callback fetches the total number of items currently in the Grid.
+				// The grid can then use it to properly adjust the scrollbars.
+				query -> repository.findAll().size());
+	}
 }
