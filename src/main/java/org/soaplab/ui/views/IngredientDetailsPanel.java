@@ -1,11 +1,17 @@
 package org.soaplab.ui.views;
 
+import java.math.BigDecimal;
+
 import org.soaplab.domain.Ingredient;
 
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.Setter;
+import com.vaadin.flow.data.converter.StringToBigDecimalConverter;
+import com.vaadin.flow.data.converter.StringToIntegerConverter;
+import com.vaadin.flow.function.ValueProvider;
 
 public abstract class IngredientDetailsPanel<T extends Ingredient> extends Div {
 
@@ -21,38 +27,41 @@ public abstract class IngredientDetailsPanel<T extends Ingredient> extends Div {
 		content = new FormLayout();
 		add(content);
 
-		TextField id = new TextField(getTranslation("domain.ingredient.id"));
-		content.add(id);
-
-		TextField name = new TextField(getTranslation("domain.ingredient.name"));
-		content.add(name);
-
-		TextField inci = new TextField(getTranslation("domain.ingredient.inci"));
-		content.add(inci);
-
 		binder = new Binder<>();
-		binder.forField(id).bindReadOnly(ingredient -> ingredient.getId().toString());
-		binder.forField(name).bind(T::getName, T::setName);
-		binder.forField(inci).bind(T::getInci, T::setInci);
 
-	}
+		TextField idField = new TextField(getTranslation("domain.ingredient.id"));
+		content.add(idField);
+		binder.forField(idField).bindReadOnly(ingredient -> ingredient.getId().toString());
 
-	protected void addProperty(String propertyName) {
-		addProperty(propertyName, null);
-	}
+		addPropertyStringField("domain.ingredient.name", T::getName, T::setName);
+		addPropertyStringField("domain.ingredient.inci", T::getInci, T::setInci);
 
-	protected void addProperty(String propertyName, String propertyValue) {
-		TextField textField = new TextField(propertyName);
-		if (propertyValue == null) {
-			textField.clear();
-		} else {
-			textField.setValue(propertyValue);
-		}
-		content.add(textField);
 	}
 
 	public void setData(T ingredient) {
 		binder.readBean(ingredient);
+	}
+
+	protected void addPropertyStringField(String messageId, ValueProvider<T, String> getter, Setter<T, String> setter) {
+		TextField propertyField = new TextField(getTranslation(messageId));
+		content.add(propertyField);
+		binder.forField(propertyField).bind(getter, setter);
+	}
+
+	protected void addPropertyIntegerField(String messageId, ValueProvider<T, Integer> getter,
+			Setter<T, Integer> setter) {
+		TextField propertyField = new TextField(getTranslation(messageId));
+		content.add(propertyField);
+		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToIntegerConverter(""))
+				.bind(getter, setter);
+	}
+
+	protected void addPropertyBigDecimalField(String messageId, ValueProvider<T, BigDecimal> getter,
+			Setter<T, BigDecimal> setter) {
+		TextField propertyField = new TextField(getTranslation(messageId));
+		content.add(propertyField);
+		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToBigDecimalConverter(""))
+				.bind(getter, setter);
 	}
 
 }

@@ -9,7 +9,5 @@ public class AcidGrid extends IngredientGrid<Acid> {
 
 	public AcidGrid() {
 		super();
-
-//		addColumn(Acid::getSapNaoh).setHeader(getTranslation("domain.ingredient.sapnaoh"));
 	}
 }

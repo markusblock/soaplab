@@ -9,6 +9,8 @@ public class AcidDetailsPanel extends IngredientDetailsPanel<Acid> {
 
 	public AcidDetailsPanel() {
 		super();
+
+		addPropertyBigDecimalField("domain.ingredient.sapnaoh", Acid::getSapNaoh, Acid::setSapNaoh);
 	}
 
 }

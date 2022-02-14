@@ -5,6 +5,7 @@ import java.util.List;
 import org.soaplab.domain.Ingredient;
 import org.soaplab.repository.IngredientRepository;
 
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.html.H1;
@@ -38,6 +39,7 @@ public abstract class IngredientsView<T extends Ingredient> extends VerticalLayo
 		masterDetail.setSizeFull();
 
 		ingredientGrid = createIngredientGrid();
+		ingredientGrid.setMinWidth(50, Unit.PERCENTAGE);
 		addSelectionListener();
 		masterDetail.add(ingredientGrid);
 		detailsPanel = createIngredientDetailsPanel();
@@ -49,10 +51,8 @@ public abstract class IngredientsView<T extends Ingredient> extends VerticalLayo
 
 	private void addSelectionListener() {
 		ingredientGrid.setSelectionMode(SelectionMode.SINGLE);
-		SingleSelect<Grid<T>, T> personSelect = ingredientGrid.asSingleSelect();
-		// personSelect can now be used with Binder or
-		// HasValue interface
-		personSelect.addValueChangeListener(e -> {
+		SingleSelect<Grid<T>, T> ingredientSelect = ingredientGrid.asSingleSelect();
+		ingredientSelect.addValueChangeListener(e -> {
 			T selectedIngredient = e.getValue();
 			detailsPanel.setData(selectedIngredient);
 		});
@@ -64,10 +64,6 @@ public abstract class IngredientsView<T extends Ingredient> extends VerticalLayo
 	protected abstract IngredientGrid<T> createIngredientGrid();
 
 	protected abstract IngredientDetailsPanel<T> createIngredientDetailsPanel();
-
-//	public void setData(IngredientRepository<T> repository) {
-//		ingredientGrid.setData(repository);
-//	}
 
 	@Override
 	public void beforeEnter(BeforeEnterEvent event) {
