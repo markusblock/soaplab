@@ -5,11 +5,11 @@ import org.soaplab.domain.Ingredient;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 
-public class IngredientGrid<T extends Ingredient> extends Grid<T> {
+public class IngredientList<T extends Ingredient> extends Grid<T> {
 
 	private static final long serialVersionUID = 1L;
 
-	public IngredientGrid() {
+	public IngredientList() {
 		super();
 
 		addThemeVariants(GridVariant.LUMO_ROW_STRIPES);

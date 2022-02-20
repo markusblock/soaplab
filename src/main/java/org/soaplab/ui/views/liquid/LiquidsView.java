@@ -3,7 +3,7 @@ package org.soaplab.ui.views.liquid;
 import org.soaplab.domain.Liquid;
 import org.soaplab.repository.LiquidRepository;
 import org.soaplab.ui.MainAppLayout;
-import org.soaplab.ui.views.IngredientGrid;
+import org.soaplab.ui.views.IngredientList;
 import org.soaplab.ui.views.IngredientsView;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,7 +25,7 @@ public class LiquidsView extends IngredientsView<Liquid> {
 	}
 
 	@Override
-	protected IngredientGrid<Liquid> createIngredientGrid() {
+	protected IngredientList<Liquid> createIngredientGrid() {
 		return new LiquidGrid();
 	}
 

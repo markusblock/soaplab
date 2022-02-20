@@ -1,9 +1,9 @@
 package org.soaplab.ui.views.fragrance;
 
 import org.soaplab.domain.Fragrance;
-import org.soaplab.ui.views.IngredientGrid;
+import org.soaplab.ui.views.IngredientList;
 
-public class FragranceGrid extends IngredientGrid<Fragrance> {
+public class FragranceGrid extends IngredientList<Fragrance> {
 
 	private static final long serialVersionUID = 1L;
 

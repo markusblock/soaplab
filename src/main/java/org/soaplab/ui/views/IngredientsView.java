@@ -23,8 +23,8 @@ public abstract class IngredientsView<T extends Ingredient> extends VerticalLayo
 
 	private H1 title;
 
-	private IngredientDetailsPanel<T> detailsPanel;
-	private IngredientGrid<T> ingredientGrid;
+	private IngredientDetails<T> detailsPanel;
+	private IngredientList<T> ingredientList;
 	private IngredientRepository<T> repository;
 
 	public IngredientsView(IngredientRepository<T> repository) {
@@ -38,20 +38,20 @@ public abstract class IngredientsView<T extends Ingredient> extends VerticalLayo
 		HorizontalLayout masterDetail = new HorizontalLayout();
 		masterDetail.setSizeFull();
 
-		ingredientGrid = createIngredientGrid();
-		ingredientGrid.setMinWidth(50, Unit.PERCENTAGE);
+		ingredientList = createIngredientGrid();
+		ingredientList.setMinWidth(50, Unit.PERCENTAGE);
 		addSelectionListener();
-		masterDetail.add(ingredientGrid);
+		masterDetail.add(ingredientList);
 		detailsPanel = createIngredientDetailsPanel();
 		masterDetail.add(detailsPanel);
 
-		masterDetail.setFlexGrow(0.8, ingredientGrid);
+		masterDetail.setFlexGrow(0.8, ingredientList);
 		add(masterDetail);
 	}
 
 	private void addSelectionListener() {
-		ingredientGrid.setSelectionMode(SelectionMode.SINGLE);
-		SingleSelect<Grid<T>, T> ingredientSelect = ingredientGrid.asSingleSelect();
+		ingredientList.setSelectionMode(SelectionMode.SINGLE);
+		SingleSelect<Grid<T>, T> ingredientSelect = ingredientList.asSingleSelect();
 		ingredientSelect.addValueChangeListener(e -> {
 			T selectedIngredient = e.getValue();
 			detailsPanel.setData(selectedIngredient);
@@ -61,19 +61,19 @@ public abstract class IngredientsView<T extends Ingredient> extends VerticalLayo
 
 	protected abstract String getHeader();
 
-	protected abstract IngredientGrid<T> createIngredientGrid();
+	protected abstract IngredientList<T> createIngredientGrid();
 
-	protected abstract IngredientDetailsPanel<T> createIngredientDetailsPanel();
+	protected abstract IngredientDetails<T> createIngredientDetailsPanel();
 
 	@Override
 	public void beforeEnter(BeforeEnterEvent event) {
-		ingredientGrid.setItems(getDataProvider());
+		ingredientList.setItems(getDataProvider());
 		refreshGrid();
 	}
 
 	private void refreshGrid() {
-		ingredientGrid.select(null);
-		ingredientGrid.getLazyDataView().refreshAll();
+		ingredientList.select(null);
+		ingredientList.getLazyDataView().refreshAll();
 	}
 
 	CallbackDataProvider<T, Void> getDataProvider() {
