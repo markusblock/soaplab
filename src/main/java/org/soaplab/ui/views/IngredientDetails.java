@@ -3,10 +3,10 @@ package org.soaplab.ui.views;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.soaplab.domain.Ingredient;
 
-import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
@@ -39,8 +39,11 @@ public abstract class IngredientDetails<T extends Ingredient> extends Div implem
 
 	private T ingredient;
 
-	public IngredientDetails() {
+	private IngredientsViewControllerCallback<T> controllerCallback;
+
+	public IngredientDetails(IngredientsViewControllerCallback<T> controllerCallback) {
 		super();
+		this.controllerCallback = controllerCallback;
 
 		editablePropertyFields = new ArrayList<>();
 
@@ -51,21 +54,22 @@ public abstract class IngredientDetails<T extends Ingredient> extends Div implem
 		editButton = new Button();
 		editButton.setIcon(VaadinIcon.PENCIL.create());
 		editButton.addClickListener(event -> {
-			enterEditMode(event);
+			enterEditMode();
 		});
 		buttonPanel.add(editButton);
 
 		saveButton = new Button();
 		saveButton.setIcon(VaadinIcon.CHECK.create());
 		saveButton.addClickListener(event -> {
-			leaveEditMode(event);
+			leaveEditMode(true);
+			controllerCallback.onSaveIngredient(ingredient);
 		});
 		buttonPanel.add(saveButton);
 
 		cancelButton = new Button();
 		cancelButton.setIcon(VaadinIcon.CLOSE.create());
 		cancelButton.addClickListener(event -> {
-			leaveEditMode(event);
+			leaveEditMode(false);
 		});
 		buttonPanel.add(cancelButton);
 
@@ -81,33 +85,33 @@ public abstract class IngredientDetails<T extends Ingredient> extends Div implem
 
 		TextField idField = createPropertyTextField();
 		detailsPanel.addFormItem(idField, getTranslation("domain.ingredient.id"));
-		binder.forField(idField).bindReadOnly(ingredient -> ingredient.getId().toString());
+		binder.forField(idField).bindReadOnly(ingredient -> Objects.toString(ingredient.getId(), ""));
 
 		addPropertyStringField("domain.ingredient.name", T::getName, T::setName);
 		addPropertyStringField("domain.ingredient.inci", T::getInci, T::setInci);
 
 	}
 
-	private void enterEditMode(ClickEvent<Button> event) {
+	private void enterEditMode() {
 		editablePropertyFields.forEach(tf -> tf.setEnabled(true));
 		editButton.setVisible(false);
 		saveButton.setVisible(true);
 		cancelButton.setVisible(true);
 	}
 
-	private void leaveEditMode(ClickEvent<Button> event) {
+	private void leaveEditMode(boolean save) {
 		editablePropertyFields.forEach(tf -> tf.setEnabled(false));
 		editButton.setVisible(true);
 		editButton.setEnabled(ingredient != null);
 		saveButton.setVisible(false);
 		cancelButton.setVisible(false);
 
-		if (event != null && event.getSource() == saveButton) {
+		if (save) {
 			saveData();
 		}
 	}
 
-	public void setData(T ingredient) {
+	public void setIngredient(T ingredient) {
 		this.ingredient = ingredient;
 		binder.readBean(ingredient);
 		editButton.setEnabled(ingredient != null);
@@ -151,7 +155,12 @@ public abstract class IngredientDetails<T extends Ingredient> extends Div implem
 
 	@Override
 	public void beforeEnter(BeforeEnterEvent event) {
-		leaveEditMode(null);
+		leaveEditMode(false);
+	}
+
+	public void createIngredient(T newEntity) {
+		setIngredient(newEntity);
+		enterEditMode();
 	}
 
 }

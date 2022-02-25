@@ -6,24 +6,22 @@ import org.soaplab.domain.Ingredient;
 import org.soaplab.repository.IngredientRepository;
 
 import com.vaadin.flow.component.Unit;
-import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.CallbackDataProvider;
 import com.vaadin.flow.data.provider.DataProvider;
-import com.vaadin.flow.data.selection.SingleSelect;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 
-public abstract class IngredientsView<T extends Ingredient> extends VerticalLayout implements BeforeEnterObserver {
+public abstract class IngredientsView<T extends Ingredient> extends VerticalLayout
+		implements BeforeEnterObserver, IngredientsViewControllerCallback<T> {
 
 	private static final long serialVersionUID = 1L;
 
 	private H1 title;
 
-	private IngredientDetails<T> detailsPanel;
+	private IngredientDetails<T> ingredientDetails;
 	private IngredientList<T> ingredientList;
 	private IngredientRepository<T> repository;
 
@@ -38,43 +36,55 @@ public abstract class IngredientsView<T extends Ingredient> extends VerticalLayo
 		HorizontalLayout masterDetail = new HorizontalLayout();
 		masterDetail.setSizeFull();
 
-		ingredientList = createIngredientGrid();
+		ingredientList = createIngredientList(this);
 		ingredientList.setMinWidth(50, Unit.PERCENTAGE);
 		addSelectionListener();
 		masterDetail.add(ingredientList);
-		detailsPanel = createIngredientDetailsPanel();
-		masterDetail.add(detailsPanel);
+		ingredientDetails = createIngredientDetails(this);
+		masterDetail.add(ingredientDetails);
 
 		masterDetail.setFlexGrow(0.8, ingredientList);
 		add(masterDetail);
 	}
 
 	private void addSelectionListener() {
-		ingredientList.setSelectionMode(SelectionMode.SINGLE);
-		SingleSelect<Grid<T>, T> ingredientSelect = ingredientList.asSingleSelect();
-		ingredientSelect.addValueChangeListener(e -> {
+		ingredientList.addSelectionListener(e -> {
 			T selectedIngredient = e.getValue();
-			detailsPanel.setData(selectedIngredient);
+			ingredientDetails.setIngredient(selectedIngredient);
 		});
-
 	}
 
 	protected abstract String getHeader();
 
-	protected abstract IngredientList<T> createIngredientGrid();
+	protected abstract IngredientList<T> createIngredientList(IngredientsViewControllerCallback<T> callback);
 
-	protected abstract IngredientDetails<T> createIngredientDetailsPanel();
+	protected abstract IngredientDetails<T> createIngredientDetails(IngredientsViewControllerCallback<T> callback);
 
 	@Override
 	public void beforeEnter(BeforeEnterEvent event) {
 		ingredientList.setItems(getDataProvider());
-		refreshGrid();
+		ingredientList.selectFirstIngredient();
 	}
 
-	private void refreshGrid() {
-		ingredientList.select(null);
-		ingredientList.getLazyDataView().refreshAll();
+	@Override
+	public void onSaveIngredient(T ingredient) {
+		if (ingredient.getId() == null) {
+			repository.create(ingredient);
+			ingredientList.refreshAll();
+			ingredientList.select(ingredient);
+		} else {
+			repository.update(ingredient);
+		}
 	}
+
+	@Override
+	public void onCreateNewIngredient() {
+		T newEntity = createNewEntity();
+		ingredientList.select(null);
+		ingredientDetails.createIngredient(newEntity);
+	}
+
+	protected abstract T createNewEntity();
 
 	CallbackDataProvider<T, Void> getDataProvider() {
 		return DataProvider.fromCallbacks(

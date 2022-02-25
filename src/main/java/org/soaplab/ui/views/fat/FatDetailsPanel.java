@@ -2,13 +2,14 @@ package org.soaplab.ui.views.fat;
 
 import org.soaplab.domain.Fat;
 import org.soaplab.ui.views.IngredientDetails;
+import org.soaplab.ui.views.IngredientsViewControllerCallback;
 
 public class FatDetailsPanel extends IngredientDetails<Fat> {
 
 	private static final long serialVersionUID = 1L;
 
-	public FatDetailsPanel() {
-		super();
+	public FatDetailsPanel(IngredientsViewControllerCallback<Fat> callback) {
+		super(callback);
 
 		addPropertyIntegerField("domain.fat.ins", Fat::getIns, Fat::setIns);
 		addPropertyBigDecimalField("domain.ingredient.sapnaoh", Fat::getSapNaoh, Fat::setSapNaoh);

@@ -3,7 +3,9 @@ package org.soaplab.ui.views.fat;
 import org.soaplab.domain.Fat;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.ui.MainAppLayout;
+import org.soaplab.ui.views.IngredientList;
 import org.soaplab.ui.views.IngredientsView;
+import org.soaplab.ui.views.IngredientsViewControllerCallback;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
@@ -13,30 +15,30 @@ public class FatsView extends IngredientsView<Fat> {
 
 	private static final long serialVersionUID = 1L;
 
-	private FatGrid ingredientGrid;
-
-	private FatDetailsPanel detailsPanel;
-
 	@Autowired
 	public FatsView(FatRepository repository) {
 		super(repository);
 
 	}
 
-//	@Override
+	@Override
 	protected String getHeader() {
 		return getTranslation("domain.fats");
 	}
 
-//	@Override
-	protected FatGrid createIngredientGrid() {
-		ingredientGrid = new FatGrid();
-		return ingredientGrid;
+	@Override
+	protected IngredientList<Fat> createIngredientList(IngredientsViewControllerCallback<Fat> callback) {
+		return new IngredientList<Fat>(callback);
 	}
 
-//	@Override
-	protected FatDetailsPanel createIngredientDetailsPanel() {
-		return new FatDetailsPanel();
+	@Override
+	protected FatDetailsPanel createIngredientDetails(IngredientsViewControllerCallback<Fat> callback) {
+		return new FatDetailsPanel(callback);
+	}
+
+	@Override
+	protected Fat createNewEntity() {
+		return Fat.builder().build();
 	}
 
 }

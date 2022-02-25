@@ -44,6 +44,7 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 
 	@Override
 	public void update(T entity) {
+		log.info("Updating entity " + entity);
 		get(entity.getId());
 		repository.getStorage().store(entity);
 	}
