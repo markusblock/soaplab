@@ -5,7 +5,8 @@ import org.soaplab.repository.FatRepository;
 import org.soaplab.ui.MainAppLayout;
 import org.soaplab.ui.views.IngredientList;
 import org.soaplab.ui.views.IngredientsView;
-import org.soaplab.ui.views.IngredientsViewControllerCallback;
+import org.soaplab.ui.views.IngredientsViewDetailsControllerCallback;
+import org.soaplab.ui.views.IngredientsViewListControllerCallback;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
@@ -27,17 +28,17 @@ public class FatsView extends IngredientsView<Fat> {
 	}
 
 	@Override
-	protected IngredientList<Fat> createIngredientList(IngredientsViewControllerCallback<Fat> callback) {
+	protected IngredientList<Fat> createIngredientList(IngredientsViewListControllerCallback<Fat> callback) {
 		return new IngredientList<Fat>(callback);
 	}
 
 	@Override
-	protected FatDetailsPanel createIngredientDetails(IngredientsViewControllerCallback<Fat> callback) {
+	protected FatDetailsPanel createIngredientDetails(IngredientsViewDetailsControllerCallback<Fat> callback) {
 		return new FatDetailsPanel(callback);
 	}
 
 	@Override
-	protected Fat createNewEntity() {
+	protected Fat createNewEmptyIngredient() {
 		return Fat.builder().build();
 	}
 

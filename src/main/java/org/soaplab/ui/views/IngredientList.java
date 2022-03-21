@@ -1,15 +1,15 @@
 package org.soaplab.ui.views;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.soaplab.domain.Ingredient;
 
-import com.vaadin.flow.component.HasValue.ValueChangeEvent;
-import com.vaadin.flow.component.HasValue.ValueChangeListener;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -24,9 +24,9 @@ public class IngredientList<T extends Ingredient> extends Div {
 
 	private Grid<T> ingredientGrid;
 
-	private IngredientsViewControllerCallback<T> callback;
+	private IngredientsViewListControllerCallback<T> callback;
 
-	public IngredientList(IngredientsViewControllerCallback<T> callback) {
+	public IngredientList(IngredientsViewListControllerCallback<T> callback) {
 		super();
 		this.callback = callback;
 
@@ -39,18 +39,16 @@ public class IngredientList<T extends Ingredient> extends Div {
 		TextField searchField = new TextField();
 		toolPanel.add(searchField);
 
-		Button addButton = new Button();
-		addButton.setIcon(VaadinIcon.PLUS.create());
-		addButton.addClickListener(event -> callback.onCreateNewIngredient());
-		toolPanel.add(addButton);
-
 		ingredientGrid = new Grid<T>();
+		ingredientGrid.setId("ingredientlist.grid");
 		ingredientGrid.setSelectionMode(SelectionMode.SINGLE);
 		ingredientGrid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
 		ingredientGrid.setSelectionMode(SelectionMode.SINGLE);
 		ingredientGrid.addColumn(T::getName).setHeader(getTranslation("domain.ingredient.name"));
 		ingredientGrid.addColumn(T::getInci).setHeader(getTranslation("domain.ingredient.inci"));
 		content.add(ingredientGrid);
+
+		addSelectionListener();
 	}
 
 	public void setItems(CallbackDataProvider<T, Void> dataProvider) {
@@ -61,16 +59,44 @@ public class IngredientList<T extends Ingredient> extends Div {
 		ingredientGrid.select(selectIngredient);
 	}
 
+	public void deselectAll() {
+		ingredientGrid.deselectAll();
+	}
+
 	public void refreshAll() {
 		ingredientGrid.getLazyDataView().refreshAll();
 	}
 
-	void addSelectionListener(ValueChangeListener<ValueChangeEvent<T>> listener) {
+	public void refresh(T ingredient) {
+		ingredientGrid.getLazyDataView().refreshItem(ingredient);
+	}
+
+	void addSelectionListener() {
 		SingleSelect<Grid<T>, T> ingredientSelect = ingredientGrid.asSingleSelect();
-		ingredientSelect.addValueChangeListener(listener);
+		ingredientSelect.addValueChangeListener(e -> {
+			callback.ingredientSelected(e.getValue());
+		});
 	}
 
 	public void selectFirstIngredient() {
-		select(ingredientGrid.getLazyDataView().getItem(0));
+		List<T> ingredients = ingredientGrid.getLazyDataView().getItems().collect(Collectors.toList());
+		if (ingredients.size() > 0) {
+			select(ingredients.get(0));
+		} else {
+			select(null);
+		}
+	}
+
+	public Optional<T> getSelectedEntity() {
+		SingleSelect<Grid<T>, T> ingredientSelect = ingredientGrid.asSingleSelect();
+		return ingredientSelect.getOptionalValue();
+	}
+
+	public void listenToSelectionChanges() {
+		ingredientGrid.setEnabled(true);
+	}
+
+	public void ignoreSelectionChanges() {
+		ingredientGrid.setEnabled(false);
 	}
 }

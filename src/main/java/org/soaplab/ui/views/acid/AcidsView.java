@@ -5,7 +5,8 @@ import org.soaplab.repository.AcidRepository;
 import org.soaplab.ui.MainAppLayout;
 import org.soaplab.ui.views.IngredientList;
 import org.soaplab.ui.views.IngredientsView;
-import org.soaplab.ui.views.IngredientsViewControllerCallback;
+import org.soaplab.ui.views.IngredientsViewDetailsControllerCallback;
+import org.soaplab.ui.views.IngredientsViewListControllerCallback;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
@@ -26,17 +27,17 @@ public class AcidsView extends IngredientsView<Acid> {
 	}
 
 	@Override
-	protected AcidDetailsPanel createIngredientDetails(IngredientsViewControllerCallback<Acid> callback) {
+	protected AcidDetailsPanel createIngredientDetails(IngredientsViewDetailsControllerCallback<Acid> callback) {
 		return new AcidDetailsPanel(callback);
 	}
 
 	@Override
-	protected IngredientList<Acid> createIngredientList(IngredientsViewControllerCallback<Acid> callback) {
+	protected IngredientList<Acid> createIngredientList(IngredientsViewListControllerCallback<Acid> callback) {
 		return new IngredientList<Acid>(callback);
 	}
 
 	@Override
-	protected Acid createNewEntity() {
+	protected Acid createNewEmptyIngredient() {
 		return Acid.builder().build();
 	}
 }

@@ -5,7 +5,8 @@ import org.soaplab.repository.LiquidRepository;
 import org.soaplab.ui.MainAppLayout;
 import org.soaplab.ui.views.IngredientList;
 import org.soaplab.ui.views.IngredientsView;
-import org.soaplab.ui.views.IngredientsViewControllerCallback;
+import org.soaplab.ui.views.IngredientsViewDetailsControllerCallback;
+import org.soaplab.ui.views.IngredientsViewListControllerCallback;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
@@ -26,17 +27,17 @@ public class LiquidsView extends IngredientsView<Liquid> {
 	}
 
 	@Override
-	protected IngredientList<Liquid> createIngredientList(IngredientsViewControllerCallback<Liquid> callback) {
+	protected IngredientList<Liquid> createIngredientList(IngredientsViewListControllerCallback<Liquid> callback) {
 		return new IngredientList<Liquid>(callback);
 	}
 
 	@Override
-	protected LiquidDetailsPanel createIngredientDetails(IngredientsViewControllerCallback<Liquid> callback) {
+	protected LiquidDetailsPanel createIngredientDetails(IngredientsViewDetailsControllerCallback<Liquid> callback) {
 		return new LiquidDetailsPanel(callback);
 	}
 
 	@Override
-	protected Liquid createNewEntity() {
+	protected Liquid createNewEmptyIngredient() {
 		return Liquid.builder().build();
 	}
 }

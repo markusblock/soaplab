@@ -5,7 +5,8 @@ import org.soaplab.repository.FragranceRepository;
 import org.soaplab.ui.MainAppLayout;
 import org.soaplab.ui.views.IngredientList;
 import org.soaplab.ui.views.IngredientsView;
-import org.soaplab.ui.views.IngredientsViewControllerCallback;
+import org.soaplab.ui.views.IngredientsViewDetailsControllerCallback;
+import org.soaplab.ui.views.IngredientsViewListControllerCallback;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
@@ -26,17 +27,19 @@ public class FragranceView extends IngredientsView<Fragrance> {
 	}
 
 	@Override
-	protected IngredientList<Fragrance> createIngredientList(IngredientsViewControllerCallback<Fragrance> callback) {
+	protected IngredientList<Fragrance> createIngredientList(
+			IngredientsViewListControllerCallback<Fragrance> callback) {
 		return new IngredientList<Fragrance>(callback);
 	}
 
 	@Override
-	protected FragranceDetailsPanel createIngredientDetails(IngredientsViewControllerCallback<Fragrance> callback) {
+	protected FragranceDetailsPanel createIngredientDetails(
+			IngredientsViewDetailsControllerCallback<Fragrance> callback) {
 		return new FragranceDetailsPanel(callback);
 	}
 
 	@Override
-	protected Fragrance createNewEntity() {
+	protected Fragrance createNewEmptyIngredient() {
 		return Fragrance.builder().build();
 	}
 }
