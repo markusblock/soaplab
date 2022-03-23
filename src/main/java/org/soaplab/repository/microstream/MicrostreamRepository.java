@@ -22,7 +22,7 @@ public class MicrostreamRepository {
 	private final DataRoot root;
 
 	public MicrostreamRepository(@Value("${microstream.store.location}") final String location) {
-		log.info("location " + location);
+		log.info("storage location " + location);
 		root = new DataRoot();
 
 		this.storage = EmbeddedStorage.Foundation(Paths.get(location)).onConnectionFoundation(cf -> cf
@@ -32,7 +32,7 @@ public class MicrostreamRepository {
 
 	@PreDestroy
 	public void destroy() {
-		System.err.println("Shutting down storage");
+		log.error("Shutting down storage");
 		storage.shutdown();
 	}
 }

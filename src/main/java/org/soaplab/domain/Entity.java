@@ -1,25 +1,25 @@
 package org.soaplab.domain;
 
+import java.util.UUID;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Getter
-@Setter
-@ToString(callSuper = true)
+@ToString
+@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-public class Fragrance extends Ingredient {
+public abstract class Entity {
 
-	private FragranceType type;
+	private UUID id;
 
-	@Override
-	public Fragrance getClone() {
-		return new Fragrance(this.toBuilder());
-	}
+	public abstract Entity getClone();
+
 }

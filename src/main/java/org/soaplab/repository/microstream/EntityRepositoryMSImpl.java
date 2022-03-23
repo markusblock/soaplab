@@ -10,6 +10,7 @@ import org.soaplab.repository.EntityRepository;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
+import one.microstream.concurrency.XThreads;
 
 @Component
 @Slf4j
@@ -30,23 +31,35 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 	public T get(UUID id) {
 		T entity = idToEntity.get(id);
 		// TODO throwNotFoundExceptionIfRequired(fat);
-		return entity;
+		return (T) entity.getClone();
 	}
 
 	@Override
 	public UUID create(T entity) {
-		entity.setId(UUID.randomUUID());
 		log.info("Adding new entity " + entity);
-		this.idToEntity.put(entity.getId(), entity);
-		storeAll();
-		return entity.getId();
+
+		// TODO throwDuplicateName(fat);
+
+		UUID uuid = UUID.randomUUID();
+		T entityCopy = (T) entity.toBuilder().id(uuid).build();
+
+		XThreads.executeSynchronized(() -> {
+			this.idToEntity.put(uuid, entityCopy);
+			storeAll();
+		});
+		return uuid;
 	}
 
 	@Override
 	public void update(T entity) {
 		log.info("Updating entity " + entity);
 		get(entity.getId());
-		repository.getStorage().store(entity);
+		T entityCopy = (T) entity.toBuilder().build();
+
+		XThreads.executeSynchronized(() -> {
+			this.idToEntity.put(entityCopy.getId(), entityCopy);
+			storeAll();
+		});
 	}
 
 	@Override

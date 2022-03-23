@@ -25,9 +25,9 @@ public class OliveOilSoapBasicRecipeTestData extends RecipeTestDataBuilder {
 		return super.getSoapRecipeBuilder() //
 				.name(OLIVE_SOAP_RECIPE_NAME) //
 				.fats(createIngredientEntriesMap( //
-						createReceiptEntry(oliveOil, 100d))) //
+						createRecipeEntry(oliveOil, 100d))) //
 				.liquids(createIngredientEntriesMap( //
-						createReceiptEntry(water, 100d) //
+						createRecipeEntry(water, 100d) //
 				));
 	}
 }

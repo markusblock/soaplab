@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public class SoapRecipe extends NamedEntity {
 	private Date manufacturingDate;
 	/**
@@ -52,4 +53,17 @@ public class SoapRecipe extends NamedEntity {
 	private Map<UUID, RecipeEntry<Fragrance>> fragrances = new HashMap<>();
 	private Map<UUID, RecipeEntry<Liquid>> liquids = new HashMap<>();
 	// customAdditives
+
+	@Override
+	public SoapRecipe getClone() {
+		return new SoapRecipe(this.toBuilder().fats(getRecipeEntryMapDeepClone(fats))
+				.acids(getRecipeEntryMapDeepClone(acids)).fragrances(getRecipeEntryMapDeepClone(fragrances))
+				.liquids(getRecipeEntryMapDeepClone(liquids)));
+	}
+
+	private <T extends Ingredient> Map<UUID, RecipeEntry<T>> getRecipeEntryMapDeepClone(
+			Map<UUID, RecipeEntry<T>> recipeEntryMap) {
+		return recipeEntryMap.entrySet().stream()
+				.collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getClone()));
+	}
 }
