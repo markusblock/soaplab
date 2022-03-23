@@ -19,6 +19,8 @@
 		<vaadin.version>22.0.3</vaadin.version>
 		<microstream.version>06.01.00-MS-GA</microstream.version>
 		<equalsverifier.version>3.8.1</equalsverifier.version>
+		<selenide.version>5.25.1</selenide.version>
+		
 	</properties>
 	
     <repositories>
@@ -163,7 +165,15 @@
 		    <scope>test</scope>
 		</dependency>	
 		
+		<dependency>
+		    <groupId>com.codeborne</groupId>
+		    <artifactId>selenide</artifactId>
+		    <version>${selenide.version}</version>
+		    <scope>test</scope>
+		</dependency>		
+				
 	</dependencies>
+
 
 	<build>
         <defaultGoal>spring-boot:run</defaultGoal>
