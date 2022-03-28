@@ -4,24 +4,24 @@ import static com.codeborne.selenide.Selectors.byId;
 
 public class IngredientDetailsPageObject {
 
-	public IngredientDetailsPageObject clickOnAddNewIngredient() {
-		VaadinUtils.clickOnElement(byId("ingredientdetails.add"));
-		return this;
+	public PageObjectElement buttonAdd() {
+		return new PageObjectElement(byId("ingredientdetails.add"));
 	}
 
-	public IngredientDetailsPageObject clickOnSaveIngredient() {
-		VaadinUtils.clickOnElement(byId("ingredientdetails.save"));
-		return this;
+	public PageObjectElement buttonSave() {
+		return new PageObjectElement(byId("ingredientdetails.save"));
 	}
 
-	public IngredientDetailsPageObject clickOnRemoveIngredient() {
-		VaadinUtils.clickOnElement(byId("ingredientdetails.remove"));
-		return this;
+	public PageObjectElement buttonCancel() {
+		return new PageObjectElement(byId("ingredientdetails.cancel"));
 	}
 
-	public IngredientDetailsPageObject clickOnEditIngredient() {
-		VaadinUtils.clickOnElement(byId("ingredientdetails.edit"));
-		return this;
+	public PageObjectElement buttonRemove() {
+		return new PageObjectElement(byId("ingredientdetails.remove"));
+	}
+
+	public PageObjectElement buttonEdit() {
+		return new PageObjectElement(byId("ingredientdetails.edit"));
 	}
 
 	public PageObjectElement id() {

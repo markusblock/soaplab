@@ -1,6 +1,7 @@
 package org.soaplab.ui.fat;
 
 import static com.codeborne.selenide.Condition.empty;
+import static com.codeborne.selenide.Condition.hidden;
 import static com.codeborne.selenide.Condition.value;
 import static com.codeborne.selenide.Selectors.byTagName;
 import static com.codeborne.selenide.Selenide.$;
@@ -8,6 +9,7 @@ import static org.soaplab.ui.fat.VaadinUtils.disabled;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.util.UUID;
 
 import org.openqa.selenium.By;
 
@@ -31,11 +33,24 @@ public class PageObjectElement {
 	}
 
 	public PageObjectElement shouldBeReadOnly() {
+		return shouldBeDisabled();
+	}
+
+	public PageObjectElement shouldBeDisabled() {
 		$(locator).shouldBe(disabled());
 		return this;
 	}
 
+	public PageObjectElement shouldBeHidden() {
+		$(locator).shouldBe(hidden);
+		return this;
+	}
+
 	public PageObjectElement shouldBeEditable() {
+		return shouldBeEnabled();
+	}
+
+	public PageObjectElement shouldBeEnabled() {
 		$(locator).shouldNotBe(disabled());
 		return this;
 	}
@@ -46,6 +61,10 @@ public class PageObjectElement {
 	}
 
 	public PageObjectElement shouldHaveValue(Integer value) {
+		return shouldHaveValue(value.toString());
+	}
+
+	public PageObjectElement shouldHaveValue(UUID value) {
 		return shouldHaveValue(value.toString());
 	}
 
@@ -64,5 +83,10 @@ public class PageObjectElement {
 
 	public PageObjectElement setValue(BigDecimal value) {
 		return setValue(DecimalFormat.getInstance().format(value.doubleValue()));
+	}
+
+	public PageObjectElement click() {
+		VaadinUtils.clickOnElement(locator);
+		return this;
 	}
 }

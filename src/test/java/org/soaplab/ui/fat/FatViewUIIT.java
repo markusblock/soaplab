@@ -24,7 +24,7 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 		details.name().shouldBeReadOnly();
 		Fat fat = IngredientsRandomTestData.getFatBuilder().build();
 
-		details.clickOnAddNewIngredient();
+		details.buttonAdd().click();
 		details.id().shouldBeReadOnly().shouldBeEmpty();
 		details.name().shouldBeEditable().setValue(fat.getName());
 		details.inci().shouldBeEditable().setValue(fat.getInci());
@@ -39,7 +39,7 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 		details.palmitic().shouldBeEditable().setValue(fat.getPalmitic());
 		details.ricinoleic().shouldBeEditable().setValue(fat.getRicinoleic());
 		details.stearic().shouldBeEditable().setValue(fat.getStearic());
-		details.clickOnSaveIngredient();
+		details.buttonSave().click();
 
 		details.id().shouldBeReadOnly().shouldNotBeEmpty();
 		details.name().shouldBeReadOnly().shouldHaveValue(fat.getName());
@@ -74,7 +74,7 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 		list.selectIngredient(fat1);
 
 		IngredientDetailsPageObject details = pageObject.getIngredientDetails();
-		details.clickOnRemoveIngredient();
+		details.buttonRemove().click();
 
 		list.ingredientShouldNotAppear(fat1.getName()).ingredientShouldAppear(fat2);
 		repoHelper.assertThatFatNotExists(getTestName());
@@ -91,11 +91,11 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 		list.selectIngredient(fat1);
 
 		IngredientDetailsPageObject details = pageObject.getIngredientDetails();
-		details.clickOnEditIngredient();
+		details.buttonEdit().click();
 		details.id().shouldBeReadOnly().shouldNotBeEmpty();
 		details.name().shouldBeEditable().shouldHaveValue(fat1.getName()).setValue(fat2.getName());
 		details.inci().shouldBeEditable().shouldHaveValue(fat1.getInci()).setValue(fat2.getInci());
-		details.clickOnSaveIngredient();
+		details.buttonSave().click();
 
 		details.id().shouldBeReadOnly().shouldHaveValue(fat1.getId().toString());
 		details.name().shouldBeReadOnly().shouldHaveValue(fat2.getName());
