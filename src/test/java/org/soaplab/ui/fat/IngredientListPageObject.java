@@ -26,8 +26,8 @@ public class IngredientListPageObject {
 
 	By ingredientlistGridSelector = byId("ingredientlist.grid");
 
-	public IngredientListPageObject ingredientShouldAppear(String name) {
-		nameColumnShouldContain(name);
+	public IngredientListPageObject ingredientShouldAppear(Ingredient ingredient) {
+		nameColumnShouldContain(ingredient.getName());
 		return this;
 	}
 

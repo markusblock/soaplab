@@ -26,12 +26,6 @@ public class Fat extends Ingredient {
 	 * of oil/s.
 	 */
 	private BigDecimal sapNaoh;
-	/**
-	 * sapNaoh value is the numeric value that allow you to calculate the precise
-	 * amount of potassium hydroxide (KOH) required to fully saponify a given weight
-	 * of oil/s.
-	 */
-	private BigDecimal sapKoh;
 	private Integer lauric;
 	private Integer myristic;
 	private Integer palmitic;

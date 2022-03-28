@@ -18,15 +18,17 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class TranslationProvider implements I18NProvider {
 
+	private static final long serialVersionUID = 1L;
+
 	public static final String RESOURCE_BUNDLE_NAME = "translation";
 
 	public static final Locale LOCALE_EN = new Locale("en", "GB");
-//	public static final Locale LOCALE_DE = new Locale("de", "DE");
+	public static final Locale LOCALE_DE = new Locale("de", "DE");
 
 	private static final ResourceBundle RESOURCE_BUNDLE_EN = ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, LOCALE_EN);
 //	private static final ResourceBundle RESOURCE_BUNDLE_DE = ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, LOCALE_DE);
 
-	private List<Locale> locales = Collections.unmodifiableList(Arrays.asList(LOCALE_EN));
+	private List<Locale> locales = Collections.unmodifiableList(Arrays.asList(LOCALE_EN, LOCALE_DE));
 
 	public TranslationProvider() {
 

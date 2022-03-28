@@ -2,6 +2,7 @@ package org.soaplab.ui.fat;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +23,26 @@ public class RepositoryTestHelper {
 		assertThat(foundFatsByName).hasSize(1);
 		assertThat(foundFatsByName.get(0).getName()).isEqualTo(name);
 		assertThat(foundFatsByName.get(0).getInci()).isEqualTo(inci);
+	}
+
+	public void assertThatFatHasValues(String name, String inci, Integer ins, BigDecimal sapNaoh, Integer iodine,
+			Integer lauric, Integer linoleic, Integer linolenic, Integer myristic, Integer oleic, Integer palmitic,
+			Integer ricinoleic, Integer stearic) {
+		List<Fat> foundFatsByName = fatRepository.findByName(name);
+		assertThat(foundFatsByName).hasSize(1);
+		assertThat(foundFatsByName.get(0).getName()).isEqualTo(name);
+		assertThat(foundFatsByName.get(0).getInci()).isEqualTo(inci);
+		assertThat(foundFatsByName.get(0).getIns()).isEqualTo(ins);
+		assertThat(foundFatsByName.get(0).getSapNaoh()).isEqualTo(sapNaoh);
+		assertThat(foundFatsByName.get(0).getIodine()).isEqualTo(iodine);
+		assertThat(foundFatsByName.get(0).getLauric()).isEqualTo(lauric);
+		assertThat(foundFatsByName.get(0).getLinoleic()).isEqualTo(linoleic);
+		assertThat(foundFatsByName.get(0).getLinolenic()).isEqualTo(linolenic);
+		assertThat(foundFatsByName.get(0).getMyristic()).isEqualTo(myristic);
+		assertThat(foundFatsByName.get(0).getOleic()).isEqualTo(oleic);
+		assertThat(foundFatsByName.get(0).getPalmitic()).isEqualTo(palmitic);
+		assertThat(foundFatsByName.get(0).getRicinoleic()).isEqualTo(ricinoleic);
+		assertThat(foundFatsByName.get(0).getStearic()).isEqualTo(stearic);
 	}
 
 	public void assertThatFatNotExists(String name) {

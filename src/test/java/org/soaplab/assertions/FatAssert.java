@@ -25,8 +25,6 @@ public class FatAssert extends IngredientAssert {
 		Fat expectedFat = (Fat) expected;
 		Assertions.assertThat(getActual().getSapNaoh()).usingComparator(new BigDecimalComparator())
 				.isEqualTo(expectedFat.getSapNaoh());
-		Assertions.assertThat(getActual().getSapKoh()).usingComparator(new BigDecimalComparator())
-				.isEqualTo(expectedFat.getSapKoh());
 		Assertions.assertThat(getActual().getLauric()).isEqualTo(expectedFat.getLauric());
 		Assertions.assertThat(getActual().getMyristic()).isEqualTo(expectedFat.getMyristic());
 		Assertions.assertThat(getActual().getPalmitic()).isEqualTo(expectedFat.getPalmitic());

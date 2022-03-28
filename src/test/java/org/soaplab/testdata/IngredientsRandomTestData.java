@@ -1,5 +1,7 @@
 package org.soaplab.testdata;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -26,17 +28,20 @@ public class IngredientsRandomTestData {
 
 	public static FatBuilder<?, ?> getFatBuilder() {
 		return Fat.builder().id(getRandomUUID()).name(getRandomString()).inci(getRandomString())
-				.sapNaoh(getRandomDouble());
+				.sapNaoh(getRandomBigDecimal()).ins(getRandomInteger()).iodine(getRandomInteger())
+				.lauric(getRandomInteger()).linoleic(getRandomInteger()).linolenic(getRandomInteger())
+				.myristic(getRandomInteger()).oleic(getRandomInteger()).palmitic(getRandomInteger())
+				.ricinoleic(getRandomInteger()).stearic(getRandomInteger());
 	}
 
 	public static AcidBuilder<?, ?> getAcidBuilder() {
 		return Acid.builder().id(getRandomUUID()).name(getRandomString()).inci(getRandomString())
-				.sapNaoh(getRandomDouble());
+				.sapNaoh(getRandomBigDecimal());
 	}
 
 	public static LiquidBuilder<?, ?> getLiquidBuilder() {
 		return Liquid.builder().id(getRandomUUID()).name(getRandomString()).inci(getRandomString())
-				.sapNaoh(getRandomDouble());
+				.sapNaoh(getRandomBigDecimal());
 	}
 
 	public static FragranceBuilder<?, ?> getFragranceBuilder() {
@@ -52,8 +57,12 @@ public class IngredientsRandomTestData {
 		return RandomStringUtils.randomAlphabetic(STRING_LENGTH);
 	}
 
-	private static double getRandomDouble() {
-		return RandomUtils.nextDouble();
+	private static BigDecimal getRandomBigDecimal() {
+		return new BigDecimal(RandomUtils.nextDouble(1d, 1000d)).setScale(2, RoundingMode.CEILING);
+	}
+
+	private static int getRandomInteger() {
+		return RandomUtils.nextInt(1, 1000);
 	}
 
 }

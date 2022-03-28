@@ -6,12 +6,17 @@ import static com.codeborne.selenide.Selenide.open;
 
 import java.io.File;
 import java.time.Duration;
+import java.util.Locale;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.openqa.selenium.MutableCapabilities;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -21,6 +26,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.codeborne.selenide.Browsers;
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
 import com.codeborne.selenide.junit5.ScreenShooterExtension;
 
 import lombok.extern.slf4j.Slf4j;
@@ -42,11 +48,24 @@ public class UIIntegrationTestBase {
 
 	@BeforeAll
 	public static void baseBeforeAll() {
+		Locale.setDefault(Locale.GERMAN);
+
 		Configuration.browser = Browsers.FIREFOX;
 		Configuration.reportsFolder = "target/surefire-reports";
 		Configuration.timeout = Duration.ofSeconds(5).toMillis();
 		Configuration.clickViaJs = true;
 		Configuration.fastSetValue = true;
+
+		MutableCapabilities browserOptions = null;
+		if (WebDriverRunner.isFirefox() || WebDriverRunner.isLegacyFirefox()) {
+			FirefoxProfile profile = new FirefoxProfile();
+			profile.setPreference("intl.accept_languages", Locale.getDefault().getLanguage());
+			browserOptions = new FirefoxOptions().setHeadless(true).setProfile(profile);
+		} else if (WebDriverRunner.isChrome()) {
+			browserOptions = new ChromeOptions().setHeadless(true)
+					.addArguments("--lang=" + Locale.getDefault().getLanguage());
+		}
+		Configuration.browserCapabilities = browserOptions;
 
 		registerShutdownHook();
 	}
@@ -56,6 +75,7 @@ public class UIIntegrationTestBase {
 		this.testInfo = testInfo;
 		Configuration.baseUrl = "http://localhost:" + port;
 		open("/soaplab/ui/fats");
+
 		$(".flex-center").$(".message").shouldNotBe(visible, Duration.ofSeconds(10));
 		$(".v-loading-indicator").shouldNotBe(visible, Duration.ofSeconds(10));
 

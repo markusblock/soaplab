@@ -2,18 +2,14 @@ package org.soaplab.ui.fat;
 
 import com.codeborne.selenide.Selenide;
 
-import lombok.Getter;
-
-@Getter
-public class IngredientViewPageObject {
-
-	private IngredientListPageObject ingredientList;
-	private IngredientDetailsPageObject ingredientDetails;
+public abstract class IngredientViewPageObject<LIST extends IngredientListPageObject, DETAILS extends IngredientDetailsPageObject> {
 
 	public IngredientViewPageObject() {
-		ingredientDetails = new IngredientDetailsPageObject();
-		ingredientList = new IngredientListPageObject();
 	}
+
+	public abstract DETAILS getIngredientDetails();
+
+	public abstract LIST getIngredientList();
 
 	public void refreshPage() {
 		Selenide.refresh();
