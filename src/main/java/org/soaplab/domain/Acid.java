@@ -19,6 +19,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 public class Acid extends Ingredient {
 
+	private static final long serialVersionUID = 1L;
+
 	private BigDecimal sapNaoh;
 
 	/**

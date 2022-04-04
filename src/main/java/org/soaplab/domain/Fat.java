@@ -20,6 +20,9 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class Fat extends Ingredient {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * sapNaoh value is the numeric value that allow you to calculate the precise
 	 * amount of sodium hydroxide (NaOH) required to fully saponify a given weight

@@ -16,6 +16,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 public class Fragrance extends Ingredient {
 
+	private static final long serialVersionUID = 1L;
+
 	private FragranceType type;
 
 	@Override

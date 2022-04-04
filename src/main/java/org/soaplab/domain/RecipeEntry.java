@@ -17,6 +17,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true, builderMethodName = "recipeEntryBuilder")
 public class RecipeEntry<T extends Ingredient> extends Entity {
 
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Percentage of the {@link Ingredient}.
 	 */

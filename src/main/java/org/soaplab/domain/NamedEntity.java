@@ -17,6 +17,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 public class NamedEntity extends Entity {
 
+	private static final long serialVersionUID = 1L;
+
 	private String name;
 
 	@Override

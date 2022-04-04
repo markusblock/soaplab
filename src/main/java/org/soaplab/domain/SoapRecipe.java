@@ -22,6 +22,9 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class SoapRecipe extends NamedEntity {
+
+	private static final long serialVersionUID = 1L;
+
 	private Date manufacturingDate;
 	/**
 	 * NaOH to KOH ratio in Percentage. 80% means 80% NaOH and 20% KOH.
