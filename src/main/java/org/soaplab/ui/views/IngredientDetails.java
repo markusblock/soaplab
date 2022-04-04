@@ -42,11 +42,8 @@ public abstract class IngredientDetails<T extends Ingredient> extends Div implem
 
 	private T ingredient;
 
-	private IngredientsViewDetailsControllerCallback<T> callback;
-
-	public IngredientDetails(IngredientsViewDetailsControllerCallback<T> callback) {
+	protected IngredientDetails(IngredientsViewDetailsControllerCallback<T> callback) {
 		super();
-		this.callback = callback;
 
 		editablePropertyFields = new ArrayList<>();
 
@@ -108,7 +105,7 @@ public abstract class IngredientDetails<T extends Ingredient> extends Div implem
 
 		TextField idField = createPropertyTextField("domain.ingredient.id");
 		detailsPanel.addFormItem(idField, getTranslation("domain.ingredient.id"));
-		binder.forField(idField).bindReadOnly(ingredient -> Objects.toString(ingredient.getId(), ""));
+		binder.forField(idField).bindReadOnly(ingred -> Objects.toString(ingred.getId(), ""));
 
 		addPropertyStringField("domain.ingredient.name", T::getName, T::setName, true);
 		addPropertyStringField("domain.ingredient.inci", T::getInci, T::setInci, false);

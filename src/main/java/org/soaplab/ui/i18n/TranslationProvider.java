@@ -26,13 +26,11 @@ public class TranslationProvider implements I18NProvider {
 	public static final Locale LOCALE_DE = new Locale("de", "DE");
 
 	private static final ResourceBundle RESOURCE_BUNDLE_EN = ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, LOCALE_EN);
-//	private static final ResourceBundle RESOURCE_BUNDLE_DE = ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, LOCALE_DE);
+	// TODO implement
+	// private static final ResourceBundle RESOURCE_BUNDLE_DE =
+	// ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, LOCALE_DE);
 
 	private List<Locale> locales = Collections.unmodifiableList(Arrays.asList(LOCALE_EN, LOCALE_DE));
-
-	public TranslationProvider() {
-
-	}
 
 	@Override
 	public List<Locale> getProvidedLocales() {

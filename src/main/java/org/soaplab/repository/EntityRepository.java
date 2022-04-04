@@ -1,11 +1,12 @@
 package org.soaplab.repository;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
 import org.soaplab.domain.NamedEntity;
 
-public interface EntityRepository<T extends NamedEntity> {
+public interface EntityRepository<T extends NamedEntity> extends Serializable {
 
 	UUID create(T entity);
 

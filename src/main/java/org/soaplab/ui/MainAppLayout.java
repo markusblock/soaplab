@@ -41,12 +41,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 
+	private static final String LOCALE = "locale";
 	private static final long serialVersionUID = 1L;
-	private TranslationProvider translationProvider;
 
 	@Autowired
 	public MainAppLayout(TranslationProvider translationProvider) {
-		this.translationProvider = translationProvider;
 
 		DrawerToggle toggle = new DrawerToggle();
 		toggle.setId("soaplab.id");
@@ -93,7 +92,9 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 	 */
 	private void saveLocaleToCookie(Locale locale) {
 		log.info("Saving locale {} in cookie", locale);
-		VaadinService.getCurrentResponse().addCookie(new Cookie("locale", locale.toLanguageTag()));
+		Cookie cookie = new Cookie(LOCALE, locale.toLanguageTag());
+		cookie.setSecure(true);
+		VaadinService.getCurrentResponse().addCookie(cookie);
 		Notification.show(getTranslation("menu.locale.saved", locale.getLanguage()));
 	}
 
@@ -115,16 +116,11 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 		if (cookies == null) {
 			return "";
 		}
-		final Optional<String> cookie = Arrays.asList(cookies).stream().filter(c -> "locale".equals(c.getName()))
+		final Optional<String> cookie = Arrays.asList(cookies).stream().filter(c -> LOCALE.equals(c.getName()))
 				.map(c -> c.getValue()).findAny();
 		String foundLanguageInCookie = cookie.orElse("");
 		log.info("Found language in cookie {}", foundLanguageInCookie);
 		return foundLanguageInCookie;
-	}
-
-	private void clearLocalePreference() {
-		VaadinService.getCurrentResponse().addCookie(new Cookie("locale", null));
-		getUI().get().getPage().reload();
 	}
 
 	@Override
