@@ -20,8 +20,10 @@
 		<microstream.version>06.01.00-MS-GA</microstream.version>
 		<equalsverifier.version>3.8.1</equalsverifier.version>
 		<selenide.version>5.25.1</selenide.version>
-		
+		<sonar.organization>markusblock</sonar.organization>
+  		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
+
 	
     <repositories>
         <!-- The order of definitions matters. Explicitly defining central here to make sure it has the highest priority. -->
