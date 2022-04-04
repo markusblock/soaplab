@@ -8,4 +8,6 @@ public interface IngredientRepository<T extends Ingredient> extends EntityReposi
 
 	List<T> findByInci(String inci);
 
+	List<T> findByNameOrInci(String nameOrInci);
+
 }

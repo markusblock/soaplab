@@ -13,7 +13,13 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public class Fragrance extends Ingredient {
-	private FragranceType typ;
+
+	private FragranceType type;
+
+	@Override
+	public Fragrance getClone() {
+		return new Fragrance(this.toBuilder());
+	}
 }

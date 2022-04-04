@@ -18,7 +18,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public class Liquid extends Ingredient {
 	/**
 	 * sapNaoh value is the numeric value that allow you to calculate the precise
@@ -42,5 +42,10 @@ public class Liquid extends Ingredient {
 			sapNaoh(BigDecimal.valueOf(sapNaoh));
 			return self();
 		}
+	}
+
+	@Override
+	public Liquid getClone() {
+		return new Liquid(this.toBuilder());
 	}
 }

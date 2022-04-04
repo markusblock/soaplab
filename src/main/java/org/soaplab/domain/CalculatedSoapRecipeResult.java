@@ -17,8 +17,11 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public class CalculatedSoapRecipeResult extends NamedEntity {
+
+	private static final long serialVersionUID = 1L;
+
 	private Weight naohTotal;
 	private Weight kohTotal;
 	private Weight liquidTotal;
@@ -29,5 +32,10 @@ public class CalculatedSoapRecipeResult extends NamedEntity {
 	private Map<UUID, CalculatedRecipeEntry<Acid>> acids = new HashMap<>();
 	private Map<UUID, CalculatedRecipeEntry<Fragrance>> fragrances = new HashMap<>();
 	private Map<UUID, CalculatedRecipeEntry<Liquid>> liquids = new HashMap<>();
+
+	@Override
+	public CalculatedSoapRecipeResult getClone() {
+		return new CalculatedSoapRecipeResult(this.toBuilder());
+	}
 
 }

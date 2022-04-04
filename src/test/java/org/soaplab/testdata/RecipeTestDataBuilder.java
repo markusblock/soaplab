@@ -38,8 +38,9 @@ public class RecipeTestDataBuilder {
 		return getSoapRecipeBuilder().build();
 	}
 
-	protected static <T extends Ingredient> RecipeEntry<T> createReceiptEntry(T ingredient, Double percentage) {
-		return RecipeEntry.<T>builder().ingredient(ingredient).percentage(Percentage.of(percentage)).build();
+	public static <T extends Ingredient> RecipeEntry<T> createRecipeEntry(T ingredient, Double percentage) {
+		return RecipeEntry.<T>recipeEntryBuilder().id(ingredient.getId()).ingredient(ingredient)
+				.percentage(Percentage.of(percentage)).build();
 	}
 
 	protected static <T extends Ingredient> Map<UUID, RecipeEntry<T>> createIngredientEntriesMap(

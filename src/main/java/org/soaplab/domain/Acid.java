@@ -16,7 +16,7 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public class Acid extends Ingredient {
 
 	private BigDecimal sapNaoh;
@@ -36,5 +36,10 @@ public class Acid extends Ingredient {
 			sapNaoh(BigDecimal.valueOf(sapNaoh));
 			return self();
 		}
+	}
+
+	@Override
+	public Acid getClone() {
+		return new Acid(this.toBuilder());
 	}
 }

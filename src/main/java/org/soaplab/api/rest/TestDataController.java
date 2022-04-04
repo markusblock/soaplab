@@ -109,7 +109,7 @@ public class TestDataController {
 	}
 
 	private <T extends Ingredient> RecipeEntry<T> createReceiptEntry(T ingredient, Double percentage) {
-		return RecipeEntry.<T>builder().ingredient(ingredient).percentage(Percentage.of(percentage)).build();
+		return RecipeEntry.<T>recipeEntryBuilder().ingredient(ingredient).percentage(Percentage.of(percentage)).build();
 	}
 
 	private <T extends Ingredient> Map<UUID, RecipeEntry<T>> createIngredientEntriesMap(
@@ -132,7 +132,7 @@ public class TestDataController {
 	}
 
 	private void createFragrances() {
-		lavendelFragrance = Fragrance.builder().name(LAVENDEL_NAME).inci("").typ(FragranceType.VOLATILE_OIL).build();
+		lavendelFragrance = Fragrance.builder().name(LAVENDEL_NAME).inci("").type(FragranceType.VOLATILE_OIL).build();
 		fragranceRepository.create(lavendelFragrance);
 	}
 

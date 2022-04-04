@@ -1,59 +1,33 @@
 package org.soaplab;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.soaplab.domain.Fat;
-import org.soaplab.repository.FatRepository;
-import org.soaplab.repository.microstream.FatRepositoryMSImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
+import org.soaplab.ui.i18n.TranslationProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
 
-import java.util.function.Consumer;
+import com.vaadin.flow.component.dependency.NpmPackage;
+import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.component.page.Push;
+import com.vaadin.flow.server.PWA;
+import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.theme.lumo.Lumo;
 
+/**
+ * The entry point of the Spring Boot application.
+ *
+ * Use the @PWA annotation make the application installable on phones, tablets
+ * and some desktop browsers.
+ *
+ */
 @SpringBootApplication
-public class SoaplabApplication {
-
-	private static final Logger LOG = LoggerFactory.getLogger(SoaplabApplication.class);
+@Theme(value = "soaplab", variant = Lumo.DARK)
+@PWA(name = "SoapLab", shortName = "SoapLab", offlineResources = { "images/logo.png" })
+@Push
+@NpmPackage(value = "line-awesome", version = "1.3.0")
+public class SoaplabApplication implements AppShellConfigurator {
 
 	public static void main(String[] args) {
-		ConfigurableApplicationContext context = SpringApplication.run(SoaplabApplication.class, args);
-//		context.close();
-//		System.exit(0);
+		System.setProperty("vaadin.i18n.provider", TranslationProvider.class.getName());
+
+		SpringApplication.run(SoaplabApplication.class, args);
 	}
-
-//	@Bean
-//	public CommandLineRunner crudDemo(final FatRepository repository)
-//	{
-//		return (args) ->
-//		{
-//			repository.addFat(new Fat("fat1", "1"));
-//			repository.addFat(new Fat("fat2", "2"));
-//
-//			final Consumer<Fat> logAll = fat -> LOG.info(fat.toString());
-//
-//			LOG.info("Our fats:");
-//			repository.findAll().forEach(logAll);
-//			LOG.info(" ");
-//
-//			LOG.info("Find some specific customer:");
-//			repository.findByName("fat1").forEach(logAll);
-//			LOG.info(" ");
-//
-//			LOG.info("Update name of all fats:");
-//			repository.findAll().forEach(c -> c.setName("xyz"));
-//			repository.storeAll();
-//			repository.findAll().forEach(logAll);
-//			LOG.info(" ");
-//
-////			LOG.info("Delete customers:");
-////			repository.deleteAll();
-////			repository.findAll().forEach(logAll);
-////			LOG.info(" ");
-//		};
-//	}
-
 }

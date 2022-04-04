@@ -34,14 +34,14 @@ public class OliveOilSoapRecipeTestData extends RecipeTestDataBuilder {
 		return super.getSoapRecipeBuilder()//
 				.name(OLIVE_SOAP_RECIPE_NAME) //
 				.fats(createIngredientEntriesMap( //
-						createReceiptEntry(getOliveOil(), 80d), //
-						createReceiptEntry(coconutOil, 20d))) //
+						createRecipeEntry(oliveOil, 80d), //
+						createRecipeEntry(coconutOil, 20d))) //
 				.acids(createIngredientEntriesMap( //
-						createReceiptEntry(citricAcid, 4d))) //
+						createRecipeEntry(citricAcid, 4d))) //
 				.liquids(createIngredientEntriesMap(//
-						createReceiptEntry(getWater(), 100d))) //
+						createRecipeEntry(water, 100d))) //
 				// createReceiptEntry(appleVinegar, 50d))) //
 				.fragrances(createIngredientEntriesMap( //
-						createReceiptEntry(lavendelFragrance, 100d)));
+						createRecipeEntry(lavendelFragrance, 100d)));
 	}
 }
