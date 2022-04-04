@@ -1,6 +1,8 @@
 
 package org.soaplab.domain;
 
+import java.io.Serializable;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +19,9 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
 @Builder
-public class CalculatedRecipeEntry<T extends Ingredient> {
+public class CalculatedRecipeEntry<T extends Ingredient> implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Weight in grams. Value >0;

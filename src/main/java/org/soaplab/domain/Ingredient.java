@@ -19,5 +19,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 public abstract class Ingredient extends NamedEntity {
 
+	private static final long serialVersionUID = 1L;
+
 	private String inci;
 }

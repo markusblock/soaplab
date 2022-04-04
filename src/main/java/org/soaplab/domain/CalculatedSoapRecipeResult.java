@@ -19,6 +19,9 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class CalculatedSoapRecipeResult extends NamedEntity {
+
+	private static final long serialVersionUID = 1L;
+
 	private Weight naohTotal;
 	private Weight kohTotal;
 	private Weight liquidTotal;
