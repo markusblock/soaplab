@@ -1,6 +1,5 @@
 package org.soaplab.ui.views;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,8 +10,6 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.data.provider.CallbackDataProvider;
-import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 
@@ -60,8 +57,12 @@ public abstract class IngredientsView<T extends Ingredient> extends VerticalLayo
 			IngredientsViewDetailsControllerCallback<T> callback);
 
 	@Override
+	public IngredientRepository<T> getRepository() {
+		return repository;
+	}
+
+	@Override
 	public void beforeEnter(BeforeEnterEvent event) {
-		ingredientList.setItems(getDataProvider());
 		ingredientList.selectFirstIngredient();
 	}
 
@@ -124,21 +125,4 @@ public abstract class IngredientsView<T extends Ingredient> extends VerticalLayo
 	}
 
 	protected abstract T createNewEmptyIngredient();
-
-	CallbackDataProvider<T, Void> getDataProvider() {
-		return DataProvider.fromCallbacks(
-				// First callback fetches items based on a query
-				query -> {
-					// The index of the first item to load
-					int offset = query.getOffset();
-
-					// The number of items to load
-					int limit = query.getLimit();
-					List<T> persons = repository.findAll();
-					return persons.stream();
-				},
-				// Second callback fetches the total number of items currently in the Grid.
-				// The grid can then use it to properly adjust the scrollbars.
-				query -> repository.findAll().size());
-	}
 }

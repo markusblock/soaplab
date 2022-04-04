@@ -1,7 +1,5 @@
 package org.soaplab.ui.fat;
 
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 
 import java.io.File;
@@ -76,8 +74,7 @@ public class UIIntegrationTestBase {
 		Configuration.baseUrl = "http://localhost:" + port;
 		open("/soaplab/ui/fats");
 
-		$(".flex-center").$(".message").shouldNotBe(visible, Duration.ofSeconds(10));
-		$(".v-loading-indicator").shouldNotBe(visible, Duration.ofSeconds(10));
+		VaadinUtils.waitUntilPageLoaded();
 
 		String databaseFolderProperty = env.getProperty("microstream.store.location");
 		if (databaseFolder == null) {

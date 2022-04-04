@@ -1,7 +1,12 @@
 package org.soaplab.ui.views;
 
-public interface IngredientsViewListControllerCallback<T> {
+import org.soaplab.domain.Ingredient;
+import org.soaplab.repository.IngredientRepository;
+
+public interface IngredientsViewListControllerCallback<T extends Ingredient> {
 
 	void ingredientSelected(T ingredient);
+
+	IngredientRepository<T> getRepository();
 
 }

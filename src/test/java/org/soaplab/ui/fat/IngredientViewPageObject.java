@@ -13,6 +13,7 @@ public abstract class IngredientViewPageObject<LIST extends IngredientListPageOb
 
 	public void refreshPage() {
 		Selenide.refresh();
+		VaadinUtils.waitUntilPageLoaded();
 	}
 
 }

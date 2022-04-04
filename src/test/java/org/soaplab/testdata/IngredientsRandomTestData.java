@@ -49,19 +49,19 @@ public class IngredientsRandomTestData {
 				.type(FragranceType.VOLATILE_OIL);
 	}
 
-	private static UUID getRandomUUID() {
+	public static UUID getRandomUUID() {
 		return UUID.randomUUID();
 	}
 
-	private static String getRandomString() {
+	public static String getRandomString() {
 		return RandomStringUtils.randomAlphabetic(STRING_LENGTH);
 	}
 
-	private static BigDecimal getRandomBigDecimal() {
+	public static BigDecimal getRandomBigDecimal() {
 		return new BigDecimal(RandomUtils.nextDouble(1d, 1000d)).setScale(2, RoundingMode.CEILING);
 	}
 
-	private static int getRandomInteger() {
+	public static int getRandomInteger() {
 		return RandomUtils.nextInt(1, 1000);
 	}
 

@@ -67,16 +67,16 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 	public void deleteFat() {
 		Fat fat1 = repoHelper.createFat();
 		Fat fat2 = repoHelper.createFat();
-		pageObject.refreshPage();
 
 		IngredientListPageObject list = pageObject.getIngredientList();
+		list.triggerReload();
 		list.ingredientShouldAppear(fat1).ingredientShouldAppear(fat2);
 		list.selectIngredient(fat1);
 
 		IngredientDetailsPageObject details = pageObject.getIngredientDetails();
 		details.buttonRemove().click();
 
-		list.ingredientShouldNotAppear(fat1.getName()).ingredientShouldAppear(fat2);
+		list.ingredientShouldNotAppear(fat1).ingredientShouldAppear(fat2);
 		repoHelper.assertThatFatNotExists(getTestName());
 	}
 
@@ -84,9 +84,9 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 	public void updateFat() {
 		Fat fat1 = repoHelper.createFat();
 		Fat fat2 = IngredientsRandomTestData.getFatBuilder().build();
-		pageObject.refreshPage();
 
 		IngredientListPageObject list = pageObject.getIngredientList();
+		list.triggerReload();
 		list.ingredientShouldAppear(fat1);
 		list.selectIngredient(fat1);
 
@@ -101,7 +101,7 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 		details.name().shouldBeReadOnly().shouldHaveValue(fat2.getName());
 		details.inci().shouldBeReadOnly().shouldHaveValue(fat2.getInci());
 
-		list.ingredientShouldNotAppear(fat1.getName());
+		list.ingredientShouldNotAppear(fat1);
 		list.ingredientShouldAppear(fat2);
 		repoHelper.assertThatFatExists(fat2.getName(), fat2.getInci());
 		repoHelper.assertThatFatNotExists(fat1.getName());

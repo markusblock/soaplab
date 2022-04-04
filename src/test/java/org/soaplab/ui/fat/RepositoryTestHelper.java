@@ -55,4 +55,9 @@ public class RepositoryTestHelper {
 		return fatRepository.get(uuid);
 	}
 
+	public Fat createFat(String name, String inci) {
+		UUID uuid = fatRepository.create(IngredientsRandomTestData.getFatBuilder().name(name).inci(inci).build());
+		return fatRepository.get(uuid);
+	}
+
 }

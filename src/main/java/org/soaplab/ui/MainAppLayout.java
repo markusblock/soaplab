@@ -49,6 +49,7 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 		this.translationProvider = translationProvider;
 
 		DrawerToggle toggle = new DrawerToggle();
+		toggle.setId("soaplab.id");
 
 		H1 title = new H1("Soaplab");
 		title.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
@@ -106,7 +107,8 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 	}
 
 	/**
-	 * Searches for a locale cookie and return it if it was found. Empty string otherwise.
+	 * Searches for a locale cookie and return it if it was found. Empty string
+	 * otherwise.
 	 */
 	private String findLocaleFromCookie() {
 		final Cookie[] cookies = VaadinRequest.getCurrent().getCookies();

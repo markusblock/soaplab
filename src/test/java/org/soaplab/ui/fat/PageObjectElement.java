@@ -3,6 +3,7 @@ package org.soaplab.ui.fat;
 import static com.codeborne.selenide.Condition.empty;
 import static com.codeborne.selenide.Condition.hidden;
 import static com.codeborne.selenide.Condition.value;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byTagName;
 import static com.codeborne.selenide.Selenide.$;
 import static org.soaplab.ui.fat.VaadinUtils.disabled;
@@ -41,6 +42,11 @@ public class PageObjectElement {
 		return this;
 	}
 
+	public PageObjectElement shouldBeVisible() {
+		$(locator).shouldBe(visible);
+		return this;
+	}
+
 	public PageObjectElement shouldBeHidden() {
 		$(locator).shouldBe(hidden);
 		return this;
@@ -74,6 +80,16 @@ public class PageObjectElement {
 
 	public PageObjectElement setValue(String value) {
 		$(locator).$(byTagName("input")).setValue(value);
+		return this;
+	}
+
+	public PageObjectElement clearValue() {
+		$(locator).$(byTagName("input")).clear();
+		return this;
+	}
+
+	public PageObjectElement appendValue(String value) {
+		$(locator).$(byTagName("input")).append(value);
 		return this;
 	}
 

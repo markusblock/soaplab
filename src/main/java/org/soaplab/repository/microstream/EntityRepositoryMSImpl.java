@@ -1,5 +1,6 @@
 package org.soaplab.repository.microstream;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -72,12 +73,15 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 
 	@Override
 	public List<T> findAll() {
-		return List.copyOf(this.idToEntity.values());
+		return this.idToEntity.values().stream()
+				.sorted(Comparator.comparing(NamedEntity::getName, String.CASE_INSENSITIVE_ORDER))
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<T> findByName(String name) {
-		return this.idToEntity.values().stream().filter(entity -> entity.getName().equals(name))
+		return this.idToEntity.values().stream()
+				.filter(entity -> entity.getName().toLowerCase().contains(name.toLowerCase()))
 				.collect(Collectors.toList());
 	}
 
