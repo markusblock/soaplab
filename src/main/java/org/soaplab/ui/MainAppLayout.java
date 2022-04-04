@@ -94,6 +94,7 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 		log.info("Saving locale {} in cookie", locale);
 		Cookie cookie = new Cookie(LOCALE, locale.toLanguageTag());
 		cookie.setSecure(true);
+		cookie.setHttpOnly(true);
 		VaadinService.getCurrentResponse().addCookie(cookie);
 		Notification.show(getTranslation("menu.locale.saved", locale.getLanguage()));
 	}
