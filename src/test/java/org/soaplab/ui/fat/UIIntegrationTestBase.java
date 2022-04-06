@@ -49,7 +49,7 @@ public class UIIntegrationTestBase {
 		Locale.setDefault(Locale.GERMAN);
 
 		Configuration.browser = Browsers.FIREFOX;
-		Configuration.reportsFolder = "target/surefire-reports";
+		Configuration.reportsFolder = "target/failsafe-reports";
 		Configuration.timeout = Duration.ofSeconds(5).toMillis();
 		Configuration.clickViaJs = true;
 		Configuration.fastSetValue = true;
