@@ -35,7 +35,7 @@ jobs:
     - name: Install dependencies without testing
       run: mvn install --batch-mode -DskipTests          
   test:
-    needs: build
+#    needs: build
     name: Test
     runs-on: ubuntu-latest
     steps:
@@ -57,7 +57,7 @@ jobs:
       - name: Run tests with Maven
         run: mvn -B test --file pom.xml     
   sonar:
-    needs: build
+#    needs: build
     name: Sonar
     runs-on: ubuntu-latest
     steps:
