@@ -54,6 +54,7 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 	@Override
 	public void update(T entity) {
 		log.info("Updating entity " + entity);
+		// would throw not found exception if not present
 		get(entity.getId());
 		T entityCopy = (T) entity.toBuilder().build();
 

@@ -75,7 +75,7 @@ public class PageObjectElement {
 	}
 
 	public PageObjectElement shouldHaveValue(BigDecimal value) {
-		return shouldHaveValue(DecimalFormat.getInstance().format(value.doubleValue()));
+		return shouldHaveValue(DecimalFormat.getInstance().format(value));
 	}
 
 	public PageObjectElement setValue(String value) {

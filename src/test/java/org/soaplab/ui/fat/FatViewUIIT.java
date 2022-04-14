@@ -1,5 +1,8 @@
 package org.soaplab.ui.fat;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.soaplab.domain.Fat;
@@ -22,7 +25,8 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 	public void createNewFat() {
 		FatDetailsPageObject details = pageObject.getIngredientDetails();
 		details.name().shouldBeReadOnly();
-		Fat fat = IngredientsRandomTestData.getFatBuilder().build();
+		Fat fat = IngredientsRandomTestData.getFatBuilder().sapNaoh(new BigDecimal(BigInteger.valueOf(1234), 2))
+				.build();
 
 		details.buttonAdd().click();
 		details.id().shouldBeReadOnly().shouldBeEmpty();

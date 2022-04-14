@@ -18,7 +18,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.Setter;
-import com.vaadin.flow.data.converter.StringToBigDecimalConverter;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -174,7 +173,7 @@ public abstract class IngredientDetails<T extends Ingredient> extends Div implem
 		TextField propertyField = createPropertyTextField(id);
 		editablePropertyFields.add(propertyField);
 		detailsPanel.addFormItem(propertyField, getTranslation(id));
-		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToBigDecimalConverter(""))
+		binder.forField(propertyField).withNullRepresentation("").withConverter(new MyStringToBigDecConverter<T>(""))
 				.bind(getter, setter);
 	}
 
