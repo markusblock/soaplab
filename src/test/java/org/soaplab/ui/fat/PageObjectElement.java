@@ -47,6 +47,10 @@ public class PageObjectElement {
 		return this;
 	}
 
+	public boolean isVisible() {
+		return $(locator).is(visible);
+	}
+
 	public PageObjectElement shouldBeHidden() {
 		$(locator).shouldBe(hidden);
 		return this;

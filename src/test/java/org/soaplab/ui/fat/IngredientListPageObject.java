@@ -1,7 +1,6 @@
 package org.soaplab.ui.fat;
 
 import static com.codeborne.selenide.Selectors.byId;
-import static com.codeborne.selenide.Selenide.$;
 import static org.soaplab.ui.fat.VaadinUtils.selected;
 
 import java.util.Arrays;
@@ -60,7 +59,7 @@ public class IngredientListPageObject {
 		if (isRowSelected(ingredient.getName())) {
 			return this;
 		}
-		$(grid.getRowSelector(ingredient.getName())).click();
+		VaadinUtils.clickOnElement(grid.getRowSelector(ingredient.getName()));
 		rowShouldBeSelected(ingredient);
 		return this;
 	}
@@ -70,7 +69,7 @@ public class IngredientListPageObject {
 		if (!isRowSelected(ingredient.getName())) {
 			return this;
 		}
-		$(grid.getRowSelector(ingredient.getName())).click();
+		VaadinUtils.clickOnElement(grid.getRowSelector(ingredient.getName()));
 		rowShouldNotBeSelected(ingredient);
 		return this;
 	}
@@ -99,6 +98,13 @@ public class IngredientListPageObject {
 	public void triggerReload() {
 		search().setValue("a");
 		buttonSearchReset().click();
+	}
+
+	public void reset() {
+		// clear search
+		if (buttonSearchReset().isVisible()) {
+			buttonSearchReset().click();
+		}
 	}
 
 }

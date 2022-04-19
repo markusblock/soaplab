@@ -16,4 +16,9 @@ public abstract class IngredientViewPageObject<LIST extends IngredientListPageOb
 		VaadinUtils.waitUntilPageLoaded();
 	}
 
+	public void reset() {
+		getIngredientDetails().reset();
+		getIngredientList().reset();
+	}
+
 }

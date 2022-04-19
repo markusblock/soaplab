@@ -11,7 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -35,11 +35,14 @@ import org.testcontainers.utility.DockerImageName;
 import com.codeborne.selenide.Browsers;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.WebDriverRunner;
+import com.codeborne.selenide.junit5.BrowserStrategyExtension;
 import com.codeborne.selenide.junit5.ScreenShooterExtension;
 
 import lombok.extern.slf4j.Slf4j;
 
 @org.testcontainers.junit.jupiter.Testcontainers
+@ExtendWith({ ScreenShooterExtension.class })
+@ExtendWith({ BrowserStrategyExtension.class })
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @Slf4j
@@ -53,9 +56,6 @@ public class UIIntegrationTestBase {
 	@LocalServerPort
 	private Integer port;
 	private TestInfo testInfo;
-
-	@RegisterExtension
-	static ScreenShooterExtension screenShooterExtension = new ScreenShooterExtension();
 
 	@BeforeAll
 	public static void baseBeforeAll(@Autowired Environment environment) {
@@ -109,6 +109,7 @@ public class UIIntegrationTestBase {
 			throw new EnumConstantNotPresentException(TestSystemPropertyHelper.TestBrowser.class,
 					Objects.toString(browser));
 		}
+		log.info("Using browser {} with configuration {}", browser, browserOptions);
 
 		return new BrowserConfiguration(browserOptions, dockerImageName);
 	}
@@ -128,15 +129,19 @@ public class UIIntegrationTestBase {
 		case LOCAL:
 			Configuration.baseUrl = "http://localhost:" + port;
 			Configuration.driverManagerEnabled = true;
+			log.info("Setting up Selenide to use local browser and app at {}", Configuration.baseUrl);
 
 			break;
 		case DOCKER:
 			Configuration.baseUrl = String.format("http://host.testcontainers.internal:%d", port);
 			Configuration.driverManagerEnabled = false;
+			log.info("Setting up Selenide to use app at {}", Configuration.baseUrl);
 			webDriverContainer = new BrowserWebDriverContainer(dockerImageName).withCapabilities(browserOptions);
+			log.info("Setting up testcontainers with browser in docker  {}", dockerImageName);
 
 			Testcontainers.exposeHostPorts(port);
 			webDriverContainer.start();
+			log.info("Exposing port {}", port);
 
 			WebDriverRunner.setWebDriver(webDriverContainer.getWebDriver());
 			break;
@@ -151,12 +156,13 @@ public class UIIntegrationTestBase {
 		String databaseFolderProperty = environment.getProperty("microstream.store.location");
 		if (databaseFolder == null) {
 			databaseFolder = new File(databaseFolderProperty);
-			log.info("Setting testdatabase to " + databaseFolder);
+			log.info("Setting database folder to " + databaseFolder);
 		}
 	}
 
 	private static void configureDefaultLocale() {
 		TestLocale locale = TestSystemPropertyHelper.getTestLocale();
+		log.info("Setting locale to {}", locale);
 		switch (locale) {
 		case DE:
 			Locale.setDefault(TranslationProvider.LOCALE_DE);

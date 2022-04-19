@@ -3,6 +3,7 @@ package org.soaplab.ui.fat;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.soaplab.domain.Fat;
@@ -19,6 +20,11 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 	@BeforeEach
 	public void beforeEach() {
 		pageObject = new FatViewPageObject();
+	}
+
+	@AfterEach
+	public void afterEach() {
+		pageObject.reset();
 	}
 
 	@Test
