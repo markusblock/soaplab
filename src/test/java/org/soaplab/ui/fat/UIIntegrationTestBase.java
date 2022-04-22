@@ -133,15 +133,22 @@ public class UIIntegrationTestBase {
 
 			break;
 		case DOCKER:
-			Configuration.baseUrl = String.format("http://host.testcontainers.internal:%d", port);
+			Configuration.baseUrl = "http://host.testcontainers.internal:" + port;
 			Configuration.driverManagerEnabled = false;
 			log.info("Setting up Selenide to use app at {}", Configuration.baseUrl);
 			webDriverContainer = new BrowserWebDriverContainer(dockerImageName).withCapabilities(browserOptions);
+
 			log.info("Setting up testcontainers with browser in docker  {}", dockerImageName);
 
-			Testcontainers.exposeHostPorts(port);
+			log.info("Starting container ...");
 			webDriverContainer.start();
+			log.info(webDriverContainer.getContainerInfo().toString());
+			log.info("Container is started");
+
 			log.info("Exposing port {}", port);
+			// exposing the host port to the container so the browser inside the container
+			// can access it
+			Testcontainers.exposeHostPorts(port);
 
 			WebDriverRunner.setWebDriver(webDriverContainer.getWebDriver());
 			break;
