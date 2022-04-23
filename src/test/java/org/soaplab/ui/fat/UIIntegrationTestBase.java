@@ -51,7 +51,7 @@ public class UIIntegrationTestBase {
 	private static File databaseFolder;
 
 	// will be shared between test methods
-	public static BrowserWebDriverContainer<?> webDriverContainer;
+	public static BrowserWebDriverContainer<?> browserContainer;
 
 	@LocalServerPort
 	private Integer port;
@@ -136,13 +136,14 @@ public class UIIntegrationTestBase {
 			Configuration.baseUrl = "http://host.testcontainers.internal:" + port;
 			Configuration.driverManagerEnabled = false;
 			log.info("Setting up Selenide to use app at {}", Configuration.baseUrl);
-			webDriverContainer = new BrowserWebDriverContainer(dockerImageName).withCapabilities(browserOptions);
+			browserContainer = new BrowserWebDriverContainer(dockerImageName).withCapabilities(browserOptions);
 
 			log.info("Setting up testcontainers with browser in docker  {}", dockerImageName);
 
 			log.info("Starting container ...");
-			webDriverContainer.start();
-			log.info(webDriverContainer.getContainerInfo().toString());
+			browserContainer.setHostAccessible(true);
+			browserContainer.start();
+			log.info(browserContainer.getContainerInfo().toString());
 			log.info("Container is started");
 
 			log.info("Exposing port {}", port);
@@ -150,7 +151,7 @@ public class UIIntegrationTestBase {
 			// can access it
 			Testcontainers.exposeHostPorts(port);
 
-			WebDriverRunner.setWebDriver(webDriverContainer.getWebDriver());
+			WebDriverRunner.setWebDriver(browserContainer.getWebDriver());
 			break;
 
 		default:
