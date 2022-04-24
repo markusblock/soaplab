@@ -173,7 +173,7 @@ public abstract class IngredientDetails<T extends Ingredient> extends Div implem
 		TextField propertyField = createPropertyTextField(id);
 		editablePropertyFields.add(propertyField);
 		detailsPanel.addFormItem(propertyField, getTranslation(id));
-		binder.forField(propertyField).withNullRepresentation("").withConverter(new MyStringToBigDecConverter<T>(""))
+		binder.forField(propertyField).withNullRepresentation("").withConverter(new MyStringToBigDecConverter(""))
 				.bind(getter, setter);
 	}
 

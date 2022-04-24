@@ -7,7 +7,7 @@ import java.util.Locale;
 
 import com.vaadin.flow.data.converter.StringToBigDecimalConverter;
 
-public final class MyStringToBigDecConverter<T> extends StringToBigDecimalConverter {
+public final class MyStringToBigDecConverter extends StringToBigDecimalConverter {
 
 	private static final long serialVersionUID = 1L;
 
