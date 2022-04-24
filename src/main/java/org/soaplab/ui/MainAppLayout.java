@@ -36,7 +36,7 @@ import com.vaadin.flow.server.VaadinSession;
 import lombok.extern.slf4j.Slf4j;
 
 @RoutePrefix("soaplab/ui")
-@Route("") // registers on the prefix path
+@Route("") // registers on the route prefix path
 @RouteAlias(value = "", absolute = true) // registers on the root path
 @Slf4j
 public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
