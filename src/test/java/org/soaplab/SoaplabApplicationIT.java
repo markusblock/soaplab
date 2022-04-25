@@ -1,6 +1,9 @@
 package org.soaplab;
 
+import static com.codeborne.selenide.Selenide.open;
+
 import java.io.File;
+import java.time.Duration;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -9,7 +12,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.soaplab.TestSystemPropertyHelper.TestLocale;
+import org.soaplab.ui.fat.VaadinUtils;
 import org.soaplab.ui.i18n.TranslationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,11 +23,17 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.codeborne.selenide.Browsers;
+import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.WebDriverRunner;
+import com.codeborne.selenide.junit5.BrowserStrategyExtension;
+import com.codeborne.selenide.junit5.ScreenShooterExtension;
 
 import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@ExtendWith({ ScreenShooterExtension.class })
+@ExtendWith({ BrowserStrategyExtension.class })
 @ActiveProfiles("test")
 @Slf4j
 class SoaplabApplicationIT {
@@ -40,8 +51,39 @@ class SoaplabApplicationIT {
 
 		configureDatabaseFolder(environment);
 
-		registerShutdownHook();
+		configureSelenideBaseSetup();
 
+		registerShutdownHook();
+		Integer port = environment.getProperty("local.server.port", Integer.class);
+		Configuration.baseUrl = "http://localhost:" + port;
+		log.info("Setting up Selenide to use app at {}", Configuration.baseUrl);
+
+		
+
+	}
+
+	@BeforeEach
+	public void baseBeforeEach(TestInfo testInfo) {
+		this.testInfo = testInfo;
+
+	}
+
+	@Test
+	void contextLoads() {
+		
+		open("/soaplab/ui/fats");
+
+		VaadinUtils.waitUntilPageLoaded();
+		
+		log.info("### test run success " + getTestName());
+	}
+
+	private static void configureSelenideBaseSetup() {
+		Configuration.browser = Browsers.FIREFOX;
+		Configuration.reportsFolder = "target/failsafe-reports";
+		Configuration.timeout = Duration.ofSeconds(5).toMillis();
+		Configuration.clickViaJs = true;
+		Configuration.fastSetValue = true;
 	}
 
 	private static void configureDatabaseFolder(Environment environment) {
@@ -66,12 +108,6 @@ class SoaplabApplicationIT {
 			throw new EnumConstantNotPresentException(TestSystemPropertyHelper.TestLocale.class,
 					Objects.toString(locale));
 		}
-	}
-
-	@BeforeEach
-	public void baseBeforeEach(TestInfo testInfo) {
-		this.testInfo = testInfo;
-
 	}
 
 	protected String getTestName() {
@@ -104,11 +140,6 @@ class SoaplabApplicationIT {
 
 		Thread shutdownThread = new Thread(shutdownTask, "Database Shutdown Thread");
 		Runtime.getRuntime().addShutdownHook(shutdownThread);
-	}
-
-	@Test
-	void contextLoads() {
-		log.info("### test run success " + getTestName());
 	}
 
 }
