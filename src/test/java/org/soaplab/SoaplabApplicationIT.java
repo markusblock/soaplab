@@ -72,6 +72,7 @@ class SoaplabApplicationIT {
 	void contextLoads() {
 
 		open("/soaplab/ui/fats");
+		log.info("### opened browser with url " + WebDriverRunner.url());
 
 		VaadinUtils.waitUntilPageLoaded();
 

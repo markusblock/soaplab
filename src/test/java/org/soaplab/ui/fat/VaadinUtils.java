@@ -8,7 +8,11 @@ import org.openqa.selenium.By;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selectors;
+import com.codeborne.selenide.Selenide;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class VaadinUtils {
 
 	public static Condition disabled() {
@@ -25,10 +29,18 @@ public class VaadinUtils {
 
 	public static void waitUntilPageLoaded() {
 		// message: The frontend development build has not yet finished. Please wait...
-//		$(".flex-center").$(".message").shouldNotBe(Condition.visible, Duration.ofSeconds(30));
-//		Selenide.Wait().withTimeout(Duration.ofSeconds(10))
-//				.until(d -> Float.parseFloat($(".v-loading-indicator").getCssValue("opacity")) <= 0);
-		$(Selectors.byId("soaplab.id")).shouldBe(Condition.visible, Duration.ofSeconds(60));
+		if ($(".flex-center").$(".message").isDisplayed()) {
+			log.info(
+					"waiting for message 'The frontend development build has not yet finished. Please wait...' to disappear ...");
+			$(".flex-center").$(".message").shouldNotBe(Condition.visible, Duration.ofSeconds(30));
+		}
+		if ($(".v-loading-indicator").isDisplayed()) {
+			log.info("waiting for loading indicator to disappear ...");
+			Selenide.Wait().withTimeout(Duration.ofSeconds(30))
+					.until(d -> Float.parseFloat($(".v-loading-indicator").getCssValue("opacity")) <= 0);
+		}
+		log.info("waiting for soaplab.id to become visible");
+		$(Selectors.byId("soaplab.id")).shouldBe(Condition.visible, Duration.ofSeconds(30));
 
 	}
 }

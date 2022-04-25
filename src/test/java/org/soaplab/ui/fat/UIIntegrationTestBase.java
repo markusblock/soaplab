@@ -109,6 +109,7 @@ public class UIIntegrationTestBase {
 			throw new EnumConstantNotPresentException(TestSystemPropertyHelper.TestBrowser.class,
 					Objects.toString(browser));
 		}
+		Configuration.headless = isHeadless;
 		log.info("Using browser {} with configuration {}", browser, browserOptions);
 
 		return new BrowserConfiguration(browserOptions, dockerImageName);
