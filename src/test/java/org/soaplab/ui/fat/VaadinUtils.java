@@ -26,7 +26,7 @@ public class VaadinUtils {
 
 	public static void waitUntilPageLoaded() {
 		// message: The frontend development build has not yet finished. Please wait...
-		$(".flex-center").$(".message").shouldNotBe(Condition.visible, Duration.ofSeconds(10));
+		$(".flex-center").$(".message").shouldNotBe(Condition.visible, Duration.ofSeconds(30));
 		Selenide.Wait().withTimeout(Duration.ofSeconds(10))
 				.until(d -> Float.parseFloat($(".v-loading-indicator").getCssValue("opacity")) <= 0);
 		$(Selectors.byId("soaplab.id")).shouldBe(Condition.visible, Duration.ofSeconds(10));
