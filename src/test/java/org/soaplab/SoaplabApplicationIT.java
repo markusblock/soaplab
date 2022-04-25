@@ -13,6 +13,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.soaplab.TestSystemPropertyHelper.TestLocale;
 import org.soaplab.ui.fat.VaadinUtils;
 import org.soaplab.ui.i18n.TranslationProvider;
@@ -58,8 +60,6 @@ class SoaplabApplicationIT {
 		Configuration.baseUrl = "http://localhost:" + port;
 		log.info("Setting up Selenide to use app at {}", Configuration.baseUrl);
 
-		
-
 	}
 
 	@BeforeEach
@@ -70,16 +70,22 @@ class SoaplabApplicationIT {
 
 	@Test
 	void contextLoads() {
-		
+
 		open("/soaplab/ui/fats");
 
 		VaadinUtils.waitUntilPageLoaded();
-		
+
 		log.info("### test run success " + getTestName());
 	}
 
 	private static void configureSelenideBaseSetup() {
 		Configuration.browser = Browsers.FIREFOX;
+		FirefoxProfile profile = new FirefoxProfile();
+		profile.setPreference("intl.accept_languages", Locale.getDefault().getLanguage());
+		FirefoxOptions browserOptions = new FirefoxOptions().setProfile(profile).setHeadless(true)
+				.addArguments("--no-sandbox").addArguments("--disable-dev-shm-usage");
+		Configuration.headless = true;
+		Configuration.browserCapabilities = browserOptions;
 		Configuration.reportsFolder = "target/failsafe-reports";
 		Configuration.timeout = Duration.ofSeconds(5).toMillis();
 		Configuration.clickViaJs = true;
