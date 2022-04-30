@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class FatControllerITest {
+class FatControllerIT {
 
 	@LocalServerPort
 	private int port;
