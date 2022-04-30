@@ -8,9 +8,7 @@ import org.soaplab.domain.NamedEntity;
 
 public interface EntityRepository<T extends NamedEntity> extends Serializable {
 
-	UUID create(T entity);
-
-	void create(T... entities);
+	T create(T entity);
 
 	void update(T entity);
 

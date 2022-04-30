@@ -36,7 +36,7 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 	}
 
 	@Override
-	public UUID create(T entity) {
+	public T create(T entity) {
 		log.info("Adding new entity " + entity);
 
 		// TODO throwDuplicateName(fat);
@@ -48,7 +48,7 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 			this.idToEntity.put(uuid, entityCopy);
 			storeAll();
 		});
-		return uuid;
+		return (T) entityCopy.toBuilder().build();
 	}
 
 	@Override
@@ -84,13 +84,6 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 		return this.idToEntity.values().stream()
 				.filter(entity -> entity.getName().toLowerCase().contains(name.toLowerCase()))
 				.collect(Collectors.toList());
-	}
-
-	@Override
-	public void create(T... entities) {
-		for (T entity : entities) {
-			create(entity);
-		}
 	}
 
 	@Override

@@ -1,12 +1,12 @@
 package org.soaplab.api.rest;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.soaplab.domain.Fat;
 import org.soaplab.repository.FatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/fats")
+@RequestMapping("soaplab/rest/fats")
 public class FatController {
 
 	private FatRepository repository;
@@ -27,22 +27,27 @@ public class FatController {
 		this.repository = repository;
 	}
 
-	@GetMapping
-	public List<Fat> findAll() {
-		return repository.findAll();
+	@GetMapping()
+	public ResponseEntity<?> findAll() {
+		return ResponseEntity.ok(repository.findAll());
 	}
 
 	@GetMapping(value = "/{id}")
-	public Fat findById(@PathVariable("id") UUID id) {
-		// TODO proper exception handling not found
-		return repository.get(id);
+	public ResponseEntity<?> findById(@PathVariable("id") UUID id) {
+		Fat foundEntity = repository.get(id);
+		if (foundEntity == null) {
+			return ResponseEntity.notFound().build();
+		} else {
+			return ResponseEntity.ok(foundEntity);
+		}
 	}
 
 	@PutMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public UUID create(@RequestBody Fat resource) {
+	public Fat create(@RequestBody Fat resource) {
 		// Preconditions.checkNotNull(resource);
 		// return created / OK dependent on create/update
+		// TODO switch to ResponseEntity
 		return repository.create(resource);
 	}
 
@@ -57,6 +62,7 @@ public class FatController {
 	@DeleteMapping(value = "/{id}")
 	@ResponseStatus(HttpStatus.OK)
 	public void delete(@PathVariable("id") UUID id) {
+		// TODO switch to ResponseEntity
 		repository.delete(id);
 	}
 }

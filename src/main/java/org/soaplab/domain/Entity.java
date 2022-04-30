@@ -3,6 +3,8 @@ package org.soaplab.domain;
 import java.io.Serializable;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -23,6 +25,7 @@ public abstract class Entity implements Serializable {
 
 	private UUID id;
 
+	@JsonIgnore
 	public abstract Entity getClone();
 
 }

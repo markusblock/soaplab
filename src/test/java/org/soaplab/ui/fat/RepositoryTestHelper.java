@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 import org.soaplab.assertions.FatAssert;
 import org.soaplab.domain.Fat;
@@ -45,13 +44,11 @@ public class RepositoryTestHelper {
 	}
 
 	public Fat createFat() {
-		UUID uuid = fatRepository.create(IngredientsRandomTestData.getFatBuilder().build());
-		return fatRepository.get(uuid);
+		return fatRepository.create(IngredientsRandomTestData.getFatBuilder().build());
 	}
 
 	public Fat createFat(String name, String inci) {
-		UUID uuid = fatRepository.create(IngredientsRandomTestData.getFatBuilder().name(name).inci(inci).build());
-		return fatRepository.get(uuid);
+		return fatRepository.create(IngredientsRandomTestData.getFatBuilder().name(name).inci(inci).build());
 	}
 
 }

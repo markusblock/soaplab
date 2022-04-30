@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/testdata")
+@RequestMapping("soaplab/rest/testdata")
 @Slf4j
 public class TestDataController {
 
@@ -83,13 +83,13 @@ public class TestDataController {
 
 	@DeleteMapping
 	public void delete() {
-		soapRecipeRepository.delete(soapRecipeRepository.findByName(OLIVE_SOAP_RECIPE_NAME).get(0).getId());
 		liquidRepository.delete(liquidRepository.findByName(WATER_NAME).get(0).getId());
 		liquidRepository.delete(liquidRepository.findByName(APPLE_VINEGAR_NAME).get(0).getId());
 		acidRepository.delete(acidRepository.findByName(CIDRIC_ACID_ANHYDRAT_NAME).get(0).getId());
 		fatRepository.delete(fatRepository.findByName(OLIVE_OIL_NAME).get(0).getId());
 		fatRepository.delete(fatRepository.findByName(COCONUT_OIL_NAME).get(0).getId());
 		fragranceRepository.delete(fragranceRepository.findByName(LAVENDEL_NAME).get(0).getId());
+		soapRecipeRepository.delete(soapRecipeRepository.findByName(OLIVE_SOAP_RECIPE_NAME).get(0).getId());
 	}
 
 	private void createSoapRecipe() {
@@ -109,7 +109,8 @@ public class TestDataController {
 	}
 
 	private <T extends Ingredient> RecipeEntry<T> createReceiptEntry(T ingredient, Double percentage) {
-		return RecipeEntry.<T>recipeEntryBuilder().ingredient(ingredient).percentage(Percentage.of(percentage)).build();
+		return RecipeEntry.<T>recipeEntryBuilder().id(UUID.randomUUID()).ingredient(ingredient)
+				.percentage(Percentage.of(percentage)).build();
 	}
 
 	private <T extends Ingredient> Map<UUID, RecipeEntry<T>> createIngredientEntriesMap(
@@ -120,26 +121,25 @@ public class TestDataController {
 	}
 
 	private void createFats() {
-		oliveOil = Fat.builder().name(OLIVE_OIL_NAME).inci("Olea Europaea Fruit Oil").sapNaoh(0.1345d).build();
-		coconutOil = Fat.builder().name(COCONUT_OIL_NAME).inci("Cocos Nucifera Oil").sapNaoh(0.183d).build();
-
-		fatRepository.create(oliveOil, coconutOil);
+		oliveOil = fatRepository
+				.create(Fat.builder().name(OLIVE_OIL_NAME).inci("Olea Europaea Fruit Oil").sapNaoh(0.1345d).build());
+		coconutOil = fatRepository
+				.create(Fat.builder().name(COCONUT_OIL_NAME).inci("Cocos Nucifera Oil").sapNaoh(0.183d).build());
 	}
 
 	private void createAcids() {
-		citricAcid = Acid.builder().name(CIDRIC_ACID_ANHYDRAT_NAME).inci("Citric Acid").sapNaoh(0.571d).build();
-		acidRepository.create(citricAcid);
+		citricAcid = acidRepository
+				.create(Acid.builder().name(CIDRIC_ACID_ANHYDRAT_NAME).inci("Citric Acid").sapNaoh(0.571d).build());
 	}
 
 	private void createFragrances() {
-		lavendelFragrance = Fragrance.builder().name(LAVENDEL_NAME).inci("").type(FragranceType.VOLATILE_OIL).build();
-		fragranceRepository.create(lavendelFragrance);
+		lavendelFragrance = fragranceRepository
+				.create(Fragrance.builder().name(LAVENDEL_NAME).inci("").type(FragranceType.VOLATILE_OIL).build());
 	}
 
 	private void createLiquids() {
-		water = Liquid.builder().name(WATER_NAME).inci("Aqua").build();
-		appleVinegar = Liquid.builder().name(APPLE_VINEGAR_NAME).inci("").sapNaoh(0.666d * 0.051d).build();
-
-		liquidRepository.create(water, appleVinegar);
+		water = liquidRepository.create(Liquid.builder().name(WATER_NAME).inci("Aqua").build());
+		appleVinegar = liquidRepository
+				.create(Liquid.builder().name(APPLE_VINEGAR_NAME).inci("").sapNaoh(0.666d * 0.051d).build());
 	}
 }
