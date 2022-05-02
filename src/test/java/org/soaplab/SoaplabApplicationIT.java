@@ -57,7 +57,7 @@ class SoaplabApplicationIT {
 
 		registerShutdownHook();
 		Integer port = environment.getProperty("local.server.port", Integer.class);
-		Configuration.baseUrl = "http://localhost:" + port;
+		Configuration.baseUrl = "http://127.0.0.1:" + port;
 		log.info("Setting up Selenide to use app at {}", Configuration.baseUrl);
 
 	}
