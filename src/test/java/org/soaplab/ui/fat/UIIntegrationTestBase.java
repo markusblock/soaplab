@@ -199,12 +199,17 @@ public class UIIntegrationTestBase {
 		log.info("[....] Removing testdatabase: " + databaseFolder);
 		try {
 			if (databaseFolder != null) {
+				// also remove old testdatabase files&folders
 				String[] testDatabasesFolders = databaseFolder.getParentFile()
 						.list((dir, name) -> name.startsWith("test-"));
 				for (int i = 0; i < testDatabasesFolders.length; i++) {
-					File fileToDelete = new File(databaseFolder.getParentFile(), testDatabasesFolders[i]);
-					FileUtils.forceDelete(fileToDelete);
-					log.info("[DONE] Removing testdatabase: " + fileToDelete);
+					try {
+						File fileToDelete = new File(databaseFolder.getParentFile(), testDatabasesFolders[i]);
+						FileUtils.forceDelete(fileToDelete);
+						log.info("[DONE] Removing testdatabase: " + fileToDelete);
+					} catch (Exception e) {
+						log.error("[ERROR] Error occured while removing testdatabase: " + databaseFolder, e);
+					}
 				}
 				databaseFolder = null;
 			}

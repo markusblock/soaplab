@@ -1,6 +1,7 @@
 package org.soaplab;
 
 import static com.codeborne.selenide.Selenide.open;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.time.Duration;
@@ -19,9 +20,11 @@ import org.soaplab.TestSystemPropertyHelper.TestLocale;
 import org.soaplab.ui.fat.VaadinUtils;
 import org.soaplab.ui.i18n.TranslationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.web.server.LocalManagementPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -36,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ExtendWith({ ScreenShooterExtension.class })
 @ExtendWith({ BrowserStrategyExtension.class })
+//@SpringJUnitWebConfig()
 @ActiveProfiles("test")
 @Slf4j
 class SoaplabApplicationIT {
@@ -44,6 +48,10 @@ class SoaplabApplicationIT {
 
 	@LocalServerPort
 	private Integer port;
+
+	@LocalManagementPort
+	private Integer managementPort;
+
 	private TestInfo testInfo;
 
 	@BeforeAll
@@ -65,11 +73,13 @@ class SoaplabApplicationIT {
 	@BeforeEach
 	public void baseBeforeEach(TestInfo testInfo) {
 		this.testInfo = testInfo;
-
+		log.info("management port {}", managementPort);
 	}
 
 	@Test
-	void contextLoads() {
+	void contextLoads(ApplicationContext context) {
+
+		assertThat(context).isNotNull();
 
 		open("/soaplab/ui/fats");
 		log.info("### opened browser with url " + WebDriverRunner.url());
@@ -125,12 +135,17 @@ class SoaplabApplicationIT {
 		log.info("[....] Removing testdatabase: " + databaseFolder);
 		try {
 			if (databaseFolder != null) {
+				// also remove old testdatabase files&folders
 				String[] testDatabasesFolders = databaseFolder.getParentFile()
 						.list((dir, name) -> name.startsWith("test-"));
 				for (int i = 0; i < testDatabasesFolders.length; i++) {
-					File fileToDelete = new File(databaseFolder.getParentFile(), testDatabasesFolders[i]);
-					FileUtils.forceDelete(fileToDelete);
-					log.info("[DONE] Removing testdatabase: " + fileToDelete);
+					try {
+						File fileToDelete = new File(databaseFolder.getParentFile(), testDatabasesFolders[i]);
+						FileUtils.forceDelete(fileToDelete);
+						log.info("[DONE] Removing testdatabase: " + fileToDelete);
+					} catch (Exception e) {
+						log.error("[ERROR] Error occured while removing testdatabase: " + databaseFolder, e);
+					}
 				}
 				databaseFolder = null;
 			}
