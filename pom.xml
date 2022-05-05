@@ -15,7 +15,7 @@
 	<description>soaplab project</description>
 	
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 		<vaadin.version>23.0.7</vaadin.version>
 		<microstream.version>06.01.00-MS-GA</microstream.version>
 		<equalsverifier.version>3.10</equalsverifier.version>
@@ -135,7 +135,11 @@
 	        <groupId>org.springframework.boot</groupId>
 	        <artifactId>spring-boot-devtools</artifactId>
 	        <optional>true</optional>
-	    </dependency>		
+	    </dependency>	
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
 		
 		<!-- MICROSTREAM -->
 		<dependency>
