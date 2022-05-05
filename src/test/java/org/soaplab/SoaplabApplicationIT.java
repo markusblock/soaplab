@@ -16,16 +16,20 @@ import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.soaplab.TestSystemPropertyHelper.TestLocale;
+import org.soaplab.domain.Fat;
+import org.soaplab.ui.fat.RepositoryTestHelper;
 import org.soaplab.ui.fat.VaadinUtils;
 import org.soaplab.ui.i18n.TranslationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.web.server.LocalManagementPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.codeborne.selenide.Browsers;
@@ -33,6 +37,7 @@ import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.WebDriverRunner;
 import com.codeborne.selenide.junit5.BrowserStrategyExtension;
 import com.codeborne.selenide.junit5.ScreenShooterExtension;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,8 +54,11 @@ class SoaplabApplicationIT {
 	@LocalServerPort
 	private Integer port;
 
-	@LocalManagementPort
-	private Integer managementPort;
+	@Autowired
+	private TestRestTemplate restTemplate;
+
+	@Autowired
+	private RepositoryTestHelper repoHelper;
 
 	private TestInfo testInfo;
 
@@ -73,13 +81,28 @@ class SoaplabApplicationIT {
 	@BeforeEach
 	public void baseBeforeEach(TestInfo testInfo) {
 		this.testInfo = testInfo;
-		log.info("management port {}", managementPort);
 	}
 
 	@Test
-	void contextLoads(ApplicationContext context) {
+	void contextLoads(ApplicationContext context) throws Exception {
 
 		assertThat(context).isNotNull();
+
+		Fat fat = repoHelper.createFat();
+
+		ResponseEntity<String> response = restTemplate
+				.getForEntity(createURLWithPort("/soaplab/rest/fats/" + fat.getId()), String.class);
+		System.out.println("RESPONSE\n" + response.getBody());
+
+		ResponseEntity<String> response2 = restTemplate.getForEntity(createURLWithPort("/soaplab/ui/fats/"),
+				String.class);
+		System.out.println("RESPONSE\n" + response2.getBody());
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		String expected = mapper.writeValueAsString(fat);
+		System.out.println("EXPECTED\n" + expected);
+		JSONAssert.assertEquals(expected, response.getBody(), false);
 
 		open("/soaplab/ui/fats");
 		log.info("### opened browser with url " + WebDriverRunner.url());
@@ -87,6 +110,10 @@ class SoaplabApplicationIT {
 		VaadinUtils.waitUntilPageLoaded();
 
 		log.info("### test run success " + getTestName());
+	}
+
+	private String createURLWithPort(String uri) {
+		return "http://localhost:" + port + uri;
 	}
 
 	private static void configureSelenideBaseSetup() {

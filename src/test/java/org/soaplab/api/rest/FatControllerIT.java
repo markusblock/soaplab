@@ -30,9 +30,6 @@ class FatControllerIT {
 	@Autowired
 	private RepositoryTestHelper repoHelper;
 
-	@Autowired
-	FatController controller;
-
 	@Test
 	void test() throws Exception {
 
