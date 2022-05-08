@@ -51,4 +51,4 @@ jobs:
       env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: mvn -B install sonar:sonar -Dsonar.projectKey=markusblock_soaplab -Dsonar.qualitygate.wait=true -Dsonar.qualitygate.timeout=600 -DtestBrowser=firefox -DtestEnvironment=docker -DtestLocale=EN -Dheadless=true
+      run: mvn -B install sonar:sonar -Pproduction -Dsonar.projectKey=markusblock_soaplab -Dsonar.qualitygate.wait=true -Dsonar.qualitygate.timeout=600 -DtestBrowser=firefox -DtestEnvironment=docker -DtestLocale=EN -Dheadless=true
