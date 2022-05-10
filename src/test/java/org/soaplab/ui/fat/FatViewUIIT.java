@@ -5,13 +5,11 @@ import java.math.BigInteger;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.soaplab.domain.Fat;
 import org.soaplab.testdata.IngredientsRandomTestData;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Disabled
 public class FatViewUIIT extends UIIntegrationTestBase {
 
 	private FatViewPageObject pageObject;
