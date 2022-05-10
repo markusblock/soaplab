@@ -8,9 +8,6 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.component.page.Push;
-import com.vaadin.flow.server.PWA;
-import com.vaadin.flow.theme.Theme;
-import com.vaadin.flow.theme.lumo.Lumo;
 
 /**
  * The entry point of the Spring Boot application.
@@ -20,8 +17,8 @@ import com.vaadin.flow.theme.lumo.Lumo;
  *
  */
 @SpringBootApplication
-@Theme(value = "soaplab", variant = Lumo.DARK)
-@PWA(name = "SoapLab", shortName = "SoapLab", offlineResources = { "images/logo.png" })
+//@Theme(value = "soaplab", variant = Lumo.DARK)
+//@PWA(name = "SoapLab", shortName = "SoapLab", offlineResources = { "images/logo.png" })
 @Push
 @NpmPackage(value = "line-awesome", version = "1.3.0")
 public class SoaplabApplication extends SpringBootServletInitializer implements AppShellConfigurator {
