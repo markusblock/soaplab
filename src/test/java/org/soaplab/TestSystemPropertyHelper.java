@@ -6,7 +6,7 @@ import org.apache.commons.lang3.EnumUtils;
 public class TestSystemPropertyHelper {
 
 	public enum TestEnvironment {
-		LOCAL, DOCKER
+		LOCAL
 	}
 
 	public enum TestBrowser {

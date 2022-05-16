@@ -28,9 +28,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.Testcontainers;
-import org.testcontainers.containers.BrowserWebDriverContainer;
-import org.testcontainers.utility.DockerImageName;
 
 import com.codeborne.selenide.Browsers;
 import com.codeborne.selenide.Configuration;
@@ -40,7 +37,6 @@ import com.codeborne.selenide.junit5.ScreenShooterExtension;
 
 import lombok.extern.slf4j.Slf4j;
 
-@org.testcontainers.junit.jupiter.Testcontainers
 @ExtendWith({ ScreenShooterExtension.class })
 @ExtendWith({ BrowserStrategyExtension.class })
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -49,9 +45,6 @@ import lombok.extern.slf4j.Slf4j;
 public class UIIntegrationTestBase {
 
 	private static File databaseFolder;
-
-	// will be shared between test methods
-	public static BrowserWebDriverContainer<?> browserContainer;
 
 	@LocalServerPort
 	private Integer port;
@@ -66,10 +59,9 @@ public class UIIntegrationTestBase {
 
 		configureSelenideBaseSetup();
 
-		BrowserConfiguration browserConfiguration = configureBrowser();
+		configureBrowser();
 
-		setupTestEnvironment(environment, browserConfiguration.getMutableCapabilities(),
-				browserConfiguration.getDockerImageName());
+		setupTestEnvironment(environment);
 
 		registerShutdownHook();
 
@@ -82,18 +74,16 @@ public class UIIntegrationTestBase {
 		VaadinUtils.waitUntilPageLoaded();
 	}
 
-	private static BrowserConfiguration configureBrowser() {
+	private static void configureBrowser() {
 		boolean isHeadless = TestSystemPropertyHelper.isHeadless();
 		TestBrowser browser = TestSystemPropertyHelper.getBrowser();
 		MutableCapabilities browserOptions = null;
-		DockerImageName dockerImageName = null;
 		switch (browser) {
 		case CHROME:
 			Configuration.browser = Browsers.CHROME;
 			browserOptions = new ChromeOptions().setHeadless(isHeadless).addArguments("--no-sandbox")
 					.addArguments("--disable-dev-shm-usage")
 					.addArguments("--lang=" + Locale.getDefault().getLanguage());
-			dockerImageName = DockerImageName.parse("selenium/standalone-chrome");
 			break;
 
 		case FIREFOX:
@@ -102,7 +92,6 @@ public class UIIntegrationTestBase {
 			profile.setPreference("intl.accept_languages", Locale.getDefault().getLanguage());
 			browserOptions = new FirefoxOptions().setProfile(profile).setHeadless(isHeadless)
 					.addArguments("--no-sandbox").addArguments("--disable-dev-shm-usage");
-			dockerImageName = DockerImageName.parse("selenium/standalone-firefox");
 			break;
 
 		default:
@@ -110,9 +99,8 @@ public class UIIntegrationTestBase {
 					Objects.toString(browser));
 		}
 		Configuration.headless = isHeadless;
+		Configuration.browserCapabilities = browserOptions;
 		log.info("Using browser {} with configuration {}", browser, browserOptions);
-
-		return new BrowserConfiguration(browserOptions, dockerImageName);
 	}
 
 	private static void configureSelenideBaseSetup() {
@@ -122,8 +110,7 @@ public class UIIntegrationTestBase {
 		Configuration.fastSetValue = true;
 	}
 
-	private static void setupTestEnvironment(Environment environment, MutableCapabilities browserOptions,
-			DockerImageName dockerImageName) {
+	private static void setupTestEnvironment(Environment environment) {
 		TestEnvironment testEnvironment = TestSystemPropertyHelper.getTestEnvironment();
 		Integer port = environment.getProperty("local.server.port", Integer.class);
 		switch (testEnvironment) {
@@ -131,29 +118,7 @@ public class UIIntegrationTestBase {
 			Configuration.baseUrl = "http://localhost:" + port;
 			Configuration.driverManagerEnabled = true;
 			log.info("Setting up Selenide to use local browser and app at {}", Configuration.baseUrl);
-
 			break;
-		case DOCKER:
-			Configuration.baseUrl = "http://host.testcontainers.internal:" + port;
-			Configuration.driverManagerEnabled = false;
-			log.info("Setting up Selenide to use app at {}", Configuration.baseUrl);
-			browserContainer = new BrowserWebDriverContainer(dockerImageName).withCapabilities(browserOptions);
-			log.info("Setting up testcontainers with browser in docker  {}", dockerImageName);
-
-			log.info("Exposing port {}", port);
-			// exposing the host port to the container so the browser inside the container
-			// can access it. Exposing the host port with Testcontainers has to happen after
-			// we start our Tomcat server but before we start the Docker container.
-			Testcontainers.exposeHostPorts(port);
-
-			log.info("Starting container ...");
-			browserContainer.setHostAccessible(true);
-			browserContainer.start();
-			log.info("Container is started");
-
-			WebDriverRunner.setWebDriver(browserContainer.getWebDriver());
-			break;
-
 		default:
 			throw new EnumConstantNotPresentException(TestSystemPropertyHelper.TestEnvironment.class,
 					Objects.toString(testEnvironment));
@@ -228,24 +193,5 @@ public class UIIntegrationTestBase {
 
 		Thread shutdownThread = new Thread(shutdownTask, "Database Shutdown Thread");
 		Runtime.getRuntime().addShutdownHook(shutdownThread);
-	}
-
-	private static class BrowserConfiguration {
-
-		private MutableCapabilities browserOptions;
-		private DockerImageName dockerImageName;
-
-		BrowserConfiguration(MutableCapabilities browserOptions, DockerImageName dockerImageName) {
-			this.browserOptions = browserOptions;
-			this.dockerImageName = dockerImageName;
-		}
-
-		MutableCapabilities getMutableCapabilities() {
-			return browserOptions;
-		}
-
-		DockerImageName getDockerImageName() {
-			return dockerImageName;
-		}
 	}
 }
