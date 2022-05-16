@@ -138,19 +138,18 @@ public class UIIntegrationTestBase {
 			Configuration.driverManagerEnabled = false;
 			log.info("Setting up Selenide to use app at {}", Configuration.baseUrl);
 			browserContainer = new BrowserWebDriverContainer(dockerImageName).withCapabilities(browserOptions);
-
 			log.info("Setting up testcontainers with browser in docker  {}", dockerImageName);
+
+			log.info("Exposing port {}", port);
+			// exposing the host port to the container so the browser inside the container
+			// can access it. Exposing the host port with Testcontainers has to happen after
+			// we start our Tomcat server but before we start the Docker container.
+			Testcontainers.exposeHostPorts(port);
 
 			log.info("Starting container ...");
 			browserContainer.setHostAccessible(true);
 			browserContainer.start();
-			log.info(browserContainer.getContainerInfo().toString());
 			log.info("Container is started");
-
-			log.info("Exposing port {}", port);
-			// exposing the host port to the container so the browser inside the container
-			// can access it
-			Testcontainers.exposeHostPorts(port);
 
 			WebDriverRunner.setWebDriver(browserContainer.getWebDriver());
 			break;
@@ -205,6 +204,9 @@ public class UIIntegrationTestBase {
 				for (int i = 0; i < testDatabasesFolders.length; i++) {
 					try {
 						File fileToDelete = new File(databaseFolder.getParentFile(), testDatabasesFolders[i]);
+						if (!fileToDelete.exists()) {
+							continue;
+						}
 						FileUtils.forceDelete(fileToDelete);
 						log.info("[DONE] Removing testdatabase: " + fileToDelete);
 					} catch (Exception e) {
