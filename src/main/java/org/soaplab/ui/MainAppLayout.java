@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.servlet.http.Cookie;
 
+import org.apache.commons.lang3.StringUtils;
 import org.soaplab.ui.i18n.TranslationProvider;
 import org.soaplab.ui.views.MenuBar;
 import org.soaplab.ui.views.acid.AcidsView;
@@ -13,7 +14,6 @@ import org.soaplab.ui.views.fat.FatsView;
 import org.soaplab.ui.views.fragrance.FragranceView;
 import org.soaplab.ui.views.liquid.LiquidsView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.ObjectUtils;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
@@ -36,7 +36,7 @@ import com.vaadin.flow.server.VaadinSession;
 import lombok.extern.slf4j.Slf4j;
 
 @RoutePrefix("soaplab/ui")
-@Route("") // registers on the prefix path
+@Route("") // registers on the route prefix path
 @RouteAlias(value = "", absolute = true) // registers on the root path
 @Slf4j
 public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
@@ -53,27 +53,29 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 		H1 title = new H1("Soaplab");
 		title.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
 
-		String cookieLang = findLocaleFromCookie();
+		Optional<Locale> cookieLocale = findLocaleFromCookie();
+		cookieLocale.ifPresentOrElse(locale -> log.info("Found language in cookie: {}", locale),
+				() -> log.info("Found NO language in cookie"));
 		Select<Locale> languageSelect = new Select<>();
+		languageSelect.setId("soaplab.languageselect.id");
 		languageSelect.setMaxWidth(70, Unit.POINTS);
 		languageSelect.setItems(translationProvider.getProvidedLocales());
 		languageSelect.setItemLabelGenerator(l -> getTranslation("i18n." + l.getLanguage()));
-		Locale localeToSelect;
 		Locale defaultLocale = UI.getCurrent().getLocale();
-		if (ObjectUtils.isEmpty(languageSelect)) {
-			localeToSelect = defaultLocale;
-			saveLocaleToCookie(localeToSelect);
+		Locale localeToSelect = defaultLocale;
+		if (cookieLocale.isPresent()) {
+			localeToSelect = translationProvider.getProvidedLocales().stream().filter(l -> l.equals(cookieLocale.get()))
+					.findFirst().orElse(defaultLocale);
 		} else {
-			localeToSelect = translationProvider.getProvidedLocales().stream()
-					.filter(l -> l.equals(Locale.forLanguageTag(cookieLang))).findFirst().orElse(defaultLocale);
+			saveLocaleToCookie(defaultLocale);
 		}
+
 		setLocale(localeToSelect);
 		languageSelect.setValue(localeToSelect);
 		languageSelect.addValueChangeListener(event -> {
 			saveLocaleToCookie(event.getValue());
 			setLocale(event.getValue());
 		});
-		log.info("Using locale " + localeToSelect);
 
 		MenuBar menuBar = new MenuBar();
 		menuBar.addMenuItem(VaadinIcon.DASHBOARD, getTranslation("domain.fats"), FatsView.class);
@@ -112,16 +114,22 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 	 * Searches for a locale cookie and return it if it was found. Empty string
 	 * otherwise.
 	 */
-	private String findLocaleFromCookie() {
+	private Optional<Locale> findLocaleFromCookie() {
 		final Cookie[] cookies = VaadinRequest.getCurrent().getCookies();
 		if (cookies == null) {
-			return "";
+			return Optional.empty();
 		}
-		final Optional<String> cookie = Arrays.asList(cookies).stream().filter(c -> LOCALE.equals(c.getName()))
-				.map(c -> c.getValue()).findAny();
-		String foundLanguageInCookie = cookie.orElse("");
-		log.info("Found language in cookie {}", foundLanguageInCookie);
-		return foundLanguageInCookie;
+		for (Cookie cookie : Arrays.asList(cookies)) {
+			if (LOCALE.equals(cookie.getName())) {
+				String value = cookie.getValue();
+				if (StringUtils.isEmpty(value)) {
+					return Optional.empty();
+				}
+				return Optional.of(Locale.forLanguageTag(value));
+			}
+		}
+		return Optional.empty();
+
 	}
 
 	@Override

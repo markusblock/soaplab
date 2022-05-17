@@ -1,6 +1,7 @@
-package org.soaplab.ui.fat;
+package org.soaplab;
 
 import static com.codeborne.selenide.Selenide.open;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.time.Duration;
@@ -10,23 +11,26 @@ import java.util.Objects;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.openqa.selenium.Cookie;
-import org.openqa.selenium.MutableCapabilities;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
-import org.soaplab.TestSystemPropertyHelper;
-import org.soaplab.TestSystemPropertyHelper.TestBrowser;
-import org.soaplab.TestSystemPropertyHelper.TestEnvironment;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.soaplab.TestSystemPropertyHelper.TestLocale;
+import org.soaplab.domain.Fat;
+import org.soaplab.ui.fat.RepositoryTestHelper;
+import org.soaplab.ui.fat.VaadinUtils;
 import org.soaplab.ui.i18n.TranslationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.codeborne.selenide.Browsers;
@@ -34,20 +38,30 @@ import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.WebDriverRunner;
 import com.codeborne.selenide.junit5.BrowserStrategyExtension;
 import com.codeborne.selenide.junit5.ScreenShooterExtension;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ExtendWith({ ScreenShooterExtension.class })
 @ExtendWith({ BrowserStrategyExtension.class })
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+//@SpringJUnitWebConfig()
 @ActiveProfiles("test")
 @Slf4j
-public class UIIntegrationTestBase {
+@Disabled
+class SoaplabApplicationIT {
 
 	private static File databaseFolder;
 
 	@LocalServerPort
 	private Integer port;
+
+	@Autowired
+	private TestRestTemplate restTemplate;
+
+	@Autowired
+	private RepositoryTestHelper repoHelper;
+
 	private TestInfo testInfo;
 
 	@BeforeAll
@@ -59,70 +73,63 @@ public class UIIntegrationTestBase {
 
 		configureSelenideBaseSetup();
 
-		configureBrowser();
-
-		setupTestEnvironment(environment);
-
 		registerShutdownHook();
+		Integer port = environment.getProperty("local.server.port", Integer.class);
+		Configuration.baseUrl = "http://127.0.0.1:" + port;
+		log.info("Setting up Selenide to use app at {}", Configuration.baseUrl);
 
-		open("/soaplab/ui/fats");
-
-		WebDriverRunner.getAndCheckWebDriver().manage().deleteAllCookies();
-		Cookie cookie = new Cookie("locale", Locale.getDefault().toLanguageTag());
-		WebDriverRunner.getAndCheckWebDriver().manage().addCookie(cookie);
-
-		VaadinUtils.waitUntilPageLoaded();
 	}
 
-	private static void configureBrowser() {
-		boolean isHeadless = TestSystemPropertyHelper.isHeadless();
-		TestBrowser browser = TestSystemPropertyHelper.getBrowser();
-		MutableCapabilities browserOptions = null;
-		switch (browser) {
-		case CHROME:
-			Configuration.browser = Browsers.CHROME;
-			browserOptions = new ChromeOptions().setHeadless(isHeadless).addArguments("--no-sandbox")
-					.addArguments("--disable-dev-shm-usage")
-					.addArguments("--lang=" + Locale.getDefault().getLanguage());
-			break;
+	@BeforeEach
+	public void baseBeforeEach(TestInfo testInfo) {
+		this.testInfo = testInfo;
+	}
 
-		case FIREFOX:
-			Configuration.browser = Browsers.FIREFOX;
-			FirefoxProfile profile = new FirefoxProfile();
-			profile.setPreference("intl.accept_languages", Locale.getDefault().getLanguage());
-			browserOptions = new FirefoxOptions().setProfile(profile).setHeadless(isHeadless)
-					.addArguments("--no-sandbox").addArguments("--disable-dev-shm-usage");
-			break;
+	@Test
+	void contextLoads(ApplicationContext context) throws Exception {
 
-		default:
-			throw new EnumConstantNotPresentException(TestSystemPropertyHelper.TestBrowser.class,
-					Objects.toString(browser));
-		}
-		Configuration.headless = isHeadless;
-		Configuration.browserCapabilities = browserOptions;
-		log.info("Using browser {} with configuration {}", browser, browserOptions);
+		assertThat(context).isNotNull();
+
+		Fat fat = repoHelper.createFat();
+
+		ResponseEntity<String> response = restTemplate
+				.getForEntity(createURLWithPort("/soaplab/rest/fats/" + fat.getId()), String.class);
+		System.out.println("RESPONSE\n" + response.getBody());
+
+		ResponseEntity<String> response2 = restTemplate.getForEntity(createURLWithPort("/soaplab/ui/fats/"),
+				String.class);
+		System.out.println("RESPONSE\n" + response2.getBody());
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		String expected = mapper.writeValueAsString(fat);
+		System.out.println("EXPECTED\n" + expected);
+		JSONAssert.assertEquals(expected, response.getBody(), false);
+
+		open("/soaplab/ui/fats");
+		log.info("### opened browser with url " + WebDriverRunner.url());
+
+		VaadinUtils.waitUntilPageLoaded();
+
+		log.info("### test run success " + getTestName());
+	}
+
+	private String createURLWithPort(String uri) {
+		return "http://localhost:" + port + uri;
 	}
 
 	private static void configureSelenideBaseSetup() {
+		Configuration.browser = Browsers.FIREFOX;
+		FirefoxProfile profile = new FirefoxProfile();
+		profile.setPreference("intl.accept_languages", Locale.getDefault().getLanguage());
+		FirefoxOptions browserOptions = new FirefoxOptions().setProfile(profile).setHeadless(true)
+				.addArguments("--no-sandbox").addArguments("--disable-dev-shm-usage");
+		Configuration.headless = true;
+		Configuration.browserCapabilities = browserOptions;
 		Configuration.reportsFolder = "target/failsafe-reports";
 		Configuration.timeout = Duration.ofSeconds(5).toMillis();
 		Configuration.clickViaJs = true;
 		Configuration.fastSetValue = true;
-	}
-
-	private static void setupTestEnvironment(Environment environment) {
-		TestEnvironment testEnvironment = TestSystemPropertyHelper.getTestEnvironment();
-		Integer port = environment.getProperty("local.server.port", Integer.class);
-		switch (testEnvironment) {
-		case LOCAL:
-			Configuration.baseUrl = "http://localhost:" + port;
-			Configuration.driverManagerEnabled = true;
-			log.info("Setting up Selenide to use local browser and app at {}", Configuration.baseUrl);
-			break;
-		default:
-			throw new EnumConstantNotPresentException(TestSystemPropertyHelper.TestEnvironment.class,
-					Objects.toString(testEnvironment));
-		}
 	}
 
 	private static void configureDatabaseFolder(Environment environment) {
@@ -149,12 +156,6 @@ public class UIIntegrationTestBase {
 		}
 	}
 
-	@BeforeEach
-	public void baseBeforeEach(TestInfo testInfo) {
-		this.testInfo = testInfo;
-
-	}
-
 	protected String getTestName() {
 		return testInfo.getTestMethod().get().getName();
 	}
@@ -169,9 +170,6 @@ public class UIIntegrationTestBase {
 				for (int i = 0; i < testDatabasesFolders.length; i++) {
 					try {
 						File fileToDelete = new File(databaseFolder.getParentFile(), testDatabasesFolders[i]);
-						if (!fileToDelete.exists()) {
-							continue;
-						}
 						FileUtils.forceDelete(fileToDelete);
 						log.info("[DONE] Removing testdatabase: " + fileToDelete);
 					} catch (Exception e) {
@@ -194,4 +192,5 @@ public class UIIntegrationTestBase {
 		Thread shutdownThread = new Thread(shutdownTask, "Database Shutdown Thread");
 		Runtime.getRuntime().addShutdownHook(shutdownThread);
 	}
+
 }

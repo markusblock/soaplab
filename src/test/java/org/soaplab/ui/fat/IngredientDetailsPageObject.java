@@ -35,4 +35,12 @@ public class IngredientDetailsPageObject {
 	public PageObjectElement inci() {
 		return new PageObjectElement(byId("domain.ingredient.inci"));
 	}
+
+	public void reset() {
+		// if in edit mode -> cancel
+		if (buttonCancel().isVisible()) {
+			buttonCancel().click();
+		}
+
+	}
 }

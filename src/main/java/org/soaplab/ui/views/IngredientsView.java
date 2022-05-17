@@ -1,7 +1,6 @@
 package org.soaplab.ui.views;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import org.soaplab.domain.Ingredient;
 import org.soaplab.repository.IngredientRepository;
@@ -69,9 +68,8 @@ public abstract class IngredientsView<T extends Ingredient> extends VerticalLayo
 	@Override
 	public void saveIngredient(T ingredient) {
 		if (editNewIngredientMode) {
-			UUID uuid = repository.create(ingredient);
+			ingredient = repository.create(ingredient);
 			ingredientList.refreshAll();
-			ingredient = repository.get(uuid);
 		} else {
 			repository.update(ingredient);
 			ingredientList.refresh(ingredient);

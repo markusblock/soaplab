@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
+import org.soaplab.assertions.FatAssert;
 import org.soaplab.domain.Fat;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.testdata.IngredientsRandomTestData;
@@ -30,19 +30,12 @@ public class RepositoryTestHelper {
 			Integer ricinoleic, Integer stearic) {
 		List<Fat> foundFatsByName = fatRepository.findByName(name);
 		assertThat(foundFatsByName).hasSize(1);
-		assertThat(foundFatsByName.get(0).getName()).isEqualTo(name);
-		assertThat(foundFatsByName.get(0).getInci()).isEqualTo(inci);
-		assertThat(foundFatsByName.get(0).getIns()).isEqualTo(ins);
-		assertThat(foundFatsByName.get(0).getSapNaoh()).isEqualTo(sapNaoh);
-		assertThat(foundFatsByName.get(0).getIodine()).isEqualTo(iodine);
-		assertThat(foundFatsByName.get(0).getLauric()).isEqualTo(lauric);
-		assertThat(foundFatsByName.get(0).getLinoleic()).isEqualTo(linoleic);
-		assertThat(foundFatsByName.get(0).getLinolenic()).isEqualTo(linolenic);
-		assertThat(foundFatsByName.get(0).getMyristic()).isEqualTo(myristic);
-		assertThat(foundFatsByName.get(0).getOleic()).isEqualTo(oleic);
-		assertThat(foundFatsByName.get(0).getPalmitic()).isEqualTo(palmitic);
-		assertThat(foundFatsByName.get(0).getRicinoleic()).isEqualTo(ricinoleic);
-		assertThat(foundFatsByName.get(0).getStearic()).isEqualTo(stearic);
+		Fat existingFat = foundFatsByName.get(0);
+		// not interested in ID diff -> use the ID of loaded fat
+		Fat expectedFatValues = Fat.builder().id(existingFat.getId()).name(name).inci(inci).ins(ins).sapNaoh(sapNaoh)
+				.iodine(iodine).lauric(lauric).linoleic(linoleic).linolenic(linolenic).myristic(myristic).oleic(oleic)
+				.palmitic(palmitic).ricinoleic(ricinoleic).stearic(stearic).build();
+		FatAssert.assertThat(existingFat).isDeepEqualTo(expectedFatValues);
 	}
 
 	public void assertThatFatNotExists(String name) {
@@ -51,13 +44,11 @@ public class RepositoryTestHelper {
 	}
 
 	public Fat createFat() {
-		UUID uuid = fatRepository.create(IngredientsRandomTestData.getFatBuilder().build());
-		return fatRepository.get(uuid);
+		return fatRepository.create(IngredientsRandomTestData.getFatBuilder().build());
 	}
 
 	public Fat createFat(String name, String inci) {
-		UUID uuid = fatRepository.create(IngredientsRandomTestData.getFatBuilder().name(name).inci(inci).build());
-		return fatRepository.get(uuid);
+		return fatRepository.create(IngredientsRandomTestData.getFatBuilder().name(name).inci(inci).build());
 	}
 
 }

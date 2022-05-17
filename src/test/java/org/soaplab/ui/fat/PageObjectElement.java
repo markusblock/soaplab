@@ -47,6 +47,10 @@ public class PageObjectElement {
 		return this;
 	}
 
+	public boolean isVisible() {
+		return $(locator).is(visible);
+	}
+
 	public PageObjectElement shouldBeHidden() {
 		$(locator).shouldBe(hidden);
 		return this;
@@ -75,7 +79,7 @@ public class PageObjectElement {
 	}
 
 	public PageObjectElement shouldHaveValue(BigDecimal value) {
-		return shouldHaveValue(DecimalFormat.getInstance().format(value.doubleValue()));
+		return shouldHaveValue(DecimalFormat.getInstance().format(value));
 	}
 
 	public PageObjectElement setValue(String value) {
