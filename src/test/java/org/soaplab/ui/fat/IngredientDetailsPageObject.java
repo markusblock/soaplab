@@ -5,31 +5,31 @@ import static com.codeborne.selenide.Selectors.byId;
 public class IngredientDetailsPageObject {
 
 	public PageObjectElement buttonAdd() {
-		return new PageObjectElement(byId("ingredientdetails.add"));
+		return new PageObjectElement(byId("entitydetails.add"));
 	}
 
 	public PageObjectElement buttonSave() {
-		return new PageObjectElement(byId("ingredientdetails.save"));
+		return new PageObjectElement(byId("entitydetails.save"));
 	}
 
 	public PageObjectElement buttonCancel() {
-		return new PageObjectElement(byId("ingredientdetails.cancel"));
+		return new PageObjectElement(byId("entitydetails.cancel"));
 	}
 
 	public PageObjectElement buttonRemove() {
-		return new PageObjectElement(byId("ingredientdetails.remove"));
+		return new PageObjectElement(byId("entitydetails.remove"));
 	}
 
 	public PageObjectElement buttonEdit() {
-		return new PageObjectElement(byId("ingredientdetails.edit"));
+		return new PageObjectElement(byId("entitydetails.edit"));
 	}
 
 	public PageObjectElement id() {
-		return new PageObjectElement(byId("domain.ingredient.id"));
+		return new PageObjectElement(byId("domain.entity.id"));
 	}
 
 	public PageObjectElement name() {
-		return new PageObjectElement(byId("domain.ingredient.name"));
+		return new PageObjectElement(byId("domain.entity.name"));
 	}
 
 	public PageObjectElement inci() {

@@ -3,16 +3,16 @@ package org.soaplab.ui.views.fragrance;
 import org.soaplab.domain.Fragrance;
 import org.soaplab.repository.FragranceRepository;
 import org.soaplab.ui.MainAppLayout;
+import org.soaplab.ui.views.EntityView;
+import org.soaplab.ui.views.EntityViewDetailsControllerCallback;
+import org.soaplab.ui.views.EntityViewListControllerCallback;
 import org.soaplab.ui.views.IngredientList;
-import org.soaplab.ui.views.IngredientsView;
-import org.soaplab.ui.views.IngredientsViewDetailsControllerCallback;
-import org.soaplab.ui.views.IngredientsViewListControllerCallback;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
 
 @Route(value = "fragrances", layout = MainAppLayout.class)
-public class FragranceView extends IngredientsView<Fragrance> {
+public class FragranceView extends EntityView<Fragrance> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -27,19 +27,17 @@ public class FragranceView extends IngredientsView<Fragrance> {
 	}
 
 	@Override
-	protected IngredientList<Fragrance> createIngredientList(
-			IngredientsViewListControllerCallback<Fragrance> callback) {
+	protected IngredientList<Fragrance> createEntityList(EntityViewListControllerCallback<Fragrance> callback) {
 		return new IngredientList<Fragrance>(callback);
 	}
 
 	@Override
-	protected FragranceDetailsPanel createIngredientDetails(
-			IngredientsViewDetailsControllerCallback<Fragrance> callback) {
+	protected FragranceDetailsPanel createEntityDetails(EntityViewDetailsControllerCallback<Fragrance> callback) {
 		return new FragranceDetailsPanel(callback);
 	}
 
 	@Override
-	protected Fragrance createNewEmptyIngredient() {
+	protected Fragrance createNewEmptyEntity() {
 		return Fragrance.builder().build();
 	}
 }

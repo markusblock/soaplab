@@ -3,16 +3,16 @@ package org.soaplab.ui.views.acid;
 import org.soaplab.domain.Acid;
 import org.soaplab.repository.AcidRepository;
 import org.soaplab.ui.MainAppLayout;
+import org.soaplab.ui.views.EntityView;
+import org.soaplab.ui.views.EntityViewDetailsControllerCallback;
+import org.soaplab.ui.views.EntityViewListControllerCallback;
 import org.soaplab.ui.views.IngredientList;
-import org.soaplab.ui.views.IngredientsView;
-import org.soaplab.ui.views.IngredientsViewDetailsControllerCallback;
-import org.soaplab.ui.views.IngredientsViewListControllerCallback;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
 
 @Route(value = "acids", layout = MainAppLayout.class)
-public class AcidsView extends IngredientsView<Acid> {
+public class AcidsView extends EntityView<Acid> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -27,17 +27,17 @@ public class AcidsView extends IngredientsView<Acid> {
 	}
 
 	@Override
-	protected AcidDetailsPanel createIngredientDetails(IngredientsViewDetailsControllerCallback<Acid> callback) {
-		return new AcidDetailsPanel(callback);
-	}
-
-	@Override
-	protected IngredientList<Acid> createIngredientList(IngredientsViewListControllerCallback<Acid> callback) {
+	protected IngredientList<Acid> createEntityList(EntityViewListControllerCallback<Acid> callback) {
 		return new IngredientList<Acid>(callback);
 	}
 
 	@Override
-	protected Acid createNewEmptyIngredient() {
+	protected AcidDetailsPanel createEntityDetails(EntityViewDetailsControllerCallback<Acid> callback) {
+		return new AcidDetailsPanel(callback);
+	}
+
+	@Override
+	protected Acid createNewEmptyEntity() {
 		return Acid.builder().build();
 	}
 }

@@ -94,14 +94,14 @@ public class VaadinGrid {
 	}
 
 	private ElementsCollection getFirstColumnTds() {
-		return Selenide.$$(Selectors.shadowCss("tbody td", "vaadin-grid[id='ingredientlist.grid']"))
+		return Selenide.$$(Selectors.shadowCss("tbody td", "vaadin-grid[id='entitylist.grid']"))
 				.filterBy(Condition.attribute("first-column")).filterBy(Condition.visible);
 	}
 
 	private SelenideElement getTdElement(SelenideElement vaadinGridCellContent) {
 		String slotName = vaadinGridCellContent.getAttribute("slot");
 		SelenideElement tdElement = Selenide
-				.$$(Selectors.shadowCss("tbody td slot", "vaadin-grid[id='ingredientlist.grid']"))
+				.$$(Selectors.shadowCss("tbody td slot", "vaadin-grid[id='entitylist.grid']"))
 				.filterBy(Condition.attribute("name", slotName)).shouldHave(CollectionCondition.size(1)).get(0)
 				.parent();
 		return tdElement;

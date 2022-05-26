@@ -13,6 +13,7 @@ import org.soaplab.ui.views.acid.AcidsView;
 import org.soaplab.ui.views.fat.FatsView;
 import org.soaplab.ui.views.fragrance.FragranceView;
 import org.soaplab.ui.views.liquid.LiquidsView;
+import org.soaplab.ui.views.recipe.RecipeView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.UI;
@@ -82,6 +83,7 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 		menuBar.addMenuItem(VaadinIcon.CART, getTranslation("domain.acids"), AcidsView.class);
 		menuBar.addMenuItem(VaadinIcon.USER_HEART, getTranslation("domain.liquids"), LiquidsView.class);
 		menuBar.addMenuItem(VaadinIcon.ACADEMY_CAP, getTranslation("domain.fragrances"), FragranceView.class);
+		menuBar.addMenuItem(VaadinIcon.ABACUS, getTranslation("domain.recipes"), RecipeView.class);
 
 		addToDrawer(menuBar.getMenuItemComponents());
 		Label spacing = new Label();

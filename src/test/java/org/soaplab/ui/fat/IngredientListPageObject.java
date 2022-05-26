@@ -18,16 +18,16 @@ public class IngredientListPageObject {
 	private VaadinGrid grid;
 
 	public IngredientListPageObject() {
-		grid = new VaadinGrid(byId("ingredientlist.grid"));
+		grid = new VaadinGrid(byId("entitylist.grid"));
 	}
 
 	public PageObjectElement search() {
-		return new PageObjectElement(byId("ingredientlist.search"));
+		return new PageObjectElement(byId("entitylist.search"));
 	}
 
 	public PageObjectElement buttonSearchReset() {
 		return new PageObjectElement(
-				Selectors.shadowCss("div[id='clearButton']", "vaadin-text-field[id='ingredientlist.search']"));
+				Selectors.shadowCss("div[id='clearButton']", "vaadin-text-field[id='entitylist.search']"));
 	}
 
 	public IngredientListPageObject ingredientShouldAppear(Ingredient... ingredients) {

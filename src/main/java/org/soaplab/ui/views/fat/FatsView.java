@@ -3,16 +3,16 @@ package org.soaplab.ui.views.fat;
 import org.soaplab.domain.Fat;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.ui.MainAppLayout;
+import org.soaplab.ui.views.EntityView;
+import org.soaplab.ui.views.EntityViewDetailsControllerCallback;
+import org.soaplab.ui.views.EntityViewListControllerCallback;
 import org.soaplab.ui.views.IngredientList;
-import org.soaplab.ui.views.IngredientsView;
-import org.soaplab.ui.views.IngredientsViewDetailsControllerCallback;
-import org.soaplab.ui.views.IngredientsViewListControllerCallback;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
 
 @Route(value = "fats", layout = MainAppLayout.class)
-public class FatsView extends IngredientsView<Fat> {
+public class FatsView extends EntityView<Fat> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -28,17 +28,17 @@ public class FatsView extends IngredientsView<Fat> {
 	}
 
 	@Override
-	protected IngredientList<Fat> createIngredientList(IngredientsViewListControllerCallback<Fat> callback) {
+	protected IngredientList<Fat> createEntityList(EntityViewListControllerCallback<Fat> callback) {
 		return new IngredientList<Fat>(callback);
 	}
 
 	@Override
-	protected FatDetailsPanel createIngredientDetails(IngredientsViewDetailsControllerCallback<Fat> callback) {
+	protected FatDetailsPanel createEntityDetails(EntityViewDetailsControllerCallback<Fat> callback) {
 		return new FatDetailsPanel(callback);
 	}
 
 	@Override
-	protected Fat createNewEmptyIngredient() {
+	protected Fat createNewEmptyEntity() {
 		return Fat.builder().build();
 	}
 
