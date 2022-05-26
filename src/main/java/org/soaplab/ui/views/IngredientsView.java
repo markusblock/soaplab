@@ -31,6 +31,8 @@ public abstract class IngredientsView<T extends Ingredient> extends VerticalLayo
 		super();
 		this.repository = repository;
 
+		setSizeFull();
+
 		title = new H1(getHeader());
 		title.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
 		add(title);

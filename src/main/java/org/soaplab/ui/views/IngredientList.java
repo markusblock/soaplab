@@ -36,6 +36,7 @@ public class IngredientList<T extends Ingredient> extends Div {
 		this.callback = callback;
 
 		content = new VerticalLayout();
+		content.setSizeFull();
 		add(content);
 
 		HorizontalLayout toolPanel = new HorizontalLayout();
