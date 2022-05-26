@@ -21,12 +21,8 @@ public class Percentage implements Serializable {
 
 	private BigDecimal number;
 
-	public Percentage(int number) {
-		this(BigDecimal.valueOf(number));
-	}
-
 	public static Percentage of(int number) {
-		return new Percentage(number);
+		return new Percentage(BigDecimal.valueOf(number));
 	}
 
 	public static Percentage of(double number) {

@@ -22,12 +22,8 @@ public class Weight implements Serializable {
 	private BigDecimal weight;
 	private WeightUnit unit;
 
-	public Weight(int weight, WeightUnit unit) {
-		this(BigDecimal.valueOf(weight), unit);
-	}
-
 	public static Weight of(int weight, WeightUnit unit) {
-		return new Weight(weight, unit);
+		return new Weight(BigDecimal.valueOf(weight), unit);
 	}
 
 	public static Weight of(double weight, WeightUnit unit) {
