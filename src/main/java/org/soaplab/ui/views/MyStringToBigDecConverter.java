@@ -20,8 +20,10 @@ public final class MyStringToBigDecConverter extends StringToBigDecimalConverter
 		if (locale == null) {
 			locale = Locale.getDefault();
 		}
+		
 		DecimalFormat decimalFormat = new DecimalFormat("#,##0.##", new DecimalFormatSymbols(locale));
 		decimalFormat.setParseBigDecimal(true);
+		decimalFormat.setMaximumFractionDigits(2);
 		return decimalFormat;
 	}
 }

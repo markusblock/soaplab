@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.soaplab.domain.NamedEntity;
+import org.springframework.util.Assert;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -22,11 +23,18 @@ import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveObserver;
 
-public abstract class EntityDetails<T extends NamedEntity> extends Div implements BeforeEnterObserver {
+import lombok.AccessLevel;
+import lombok.Getter;
+
+public abstract class EntityDetails<T extends NamedEntity> extends Div
+		implements BeforeEnterObserver, BeforeLeaveObserver {
 
 	private static final long serialVersionUID = 1L;
 
+	@Getter(value = AccessLevel.PROTECTED)
 	private VerticalLayout content;
 	private FormLayout detailsPanel;
 
@@ -81,8 +89,7 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div implement
 		saveButton.setId("entitydetails.save");
 		saveButton.setIcon(VaadinIcon.CHECK.create());
 		saveButton.addClickListener(event -> {
-			binder.writeBeanIfValid(entity);
-			callback.saveEntity(entity);
+			saveInternal(callback);
 		});
 		buttonPanel.add(saveButton);
 
@@ -108,43 +115,76 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div implement
 
 		addPropertyStringField("domain.entity.name", T::getName, T::setName, true);
 
+		setActionButtonVisibility(false);
 	}
 
-	private void enterEditMode() {
+	private void setActionButtonVisibility(boolean editMode) {
+		editButton.setVisible(!editMode);
+		addButton.setVisible(!editMode);
+		removeButton.setVisible(!editMode);
+		saveButton.setVisible(editMode);
+		cancelButton.setVisible(editMode);
+	}
+
+	private void saveInternal(EntityViewDetailsControllerCallback<T> callback) {
+		binder.writeBeanIfValid(entity);
+		callback.saveEntity(entity);
+	}
+
+	private void enterEditModeInternal() {
 		editablePropertyFields.forEach(tf -> tf.setEnabled(true));
-		editButton.setVisible(false);
-		addButton.setVisible(false);
-		removeButton.setVisible(false);
-		saveButton.setVisible(true);
-		cancelButton.setVisible(true);
+		setActionButtonVisibility(true);
+
+		enterEditMode();
 	}
 
-	private void leaveEditMode() {
+	/**
+	 * Override in subclasses to implement behaviour of special fields.
+	 */
+	protected void enterEditMode() {
+	}
+
+	private void leaveEditModeInternal() {
 		editablePropertyFields.forEach(tf -> tf.setEnabled(false));
-		editButton.setVisible(true);
 		editButton.setEnabled(entity != null);
-		addButton.setVisible(true);
-		removeButton.setVisible(true);
 		removeButton.setEnabled(entity != null);
-		saveButton.setVisible(false);
-		cancelButton.setVisible(false);
+		setActionButtonVisibility(false);
+
+		leaveEditMode();
 	}
 
-	private void setEntity(T entity) {
+	/**
+	 * Override in subclasses to implement behaviour of special fields.
+	 */
+	protected void leaveEditMode() {
+	}
+
+	private void setEntityInternal(T entity) {
 		this.entity = entity;
 		binder.readBean(entity);
 		editButton.setEnabled(entity != null);
 		removeButton.setEnabled(entity != null);
+
+		setEntity(entity);
+	}
+
+	/**
+	 * Override in subclasses to implement behaviour of special fields.
+	 * 
+	 * @param entity the entity to set, or <code>null</code> to clear the fields
+	 */
+	protected void setEntity(T entity) {
 	}
 
 	public void showEntity(T entity) {
-		setEntity(entity);
-		leaveEditMode();
+		setEntityInternal(entity);
+		leaveEditModeInternal();
 	}
 
 	public void editEntity(T newEntity) {
-		setEntity(newEntity);
-		enterEditMode();
+		Assert.notNull(newEntity, "Empty entity not editable");
+		setEntityInternal(newEntity);
+		enterEditModeInternal();
 	}
 
 	protected void addPropertyStringField(String id, ValueProvider<T, String> getter, Setter<T, String> setter,
@@ -186,7 +226,12 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div implement
 
 	@Override
 	public void beforeEnter(BeforeEnterEvent event) {
-		leaveEditMode();
+		leaveEditModeInternal();
+	}
+
+	@Override
+	public void beforeLeave(BeforeLeaveEvent event) {
+		leaveEditModeInternal();
 	}
 
 }

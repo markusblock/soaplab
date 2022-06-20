@@ -19,9 +19,4 @@ public interface EntityRepository<T extends NamedEntity> extends Serializable {
 	List<T> findAll();
 
 	List<T> findByName(String name);
-
-	void storeAll();
-
-	void deleteAll();
-
 }

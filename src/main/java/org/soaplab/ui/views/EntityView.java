@@ -36,7 +36,16 @@ public abstract class EntityView<T extends NamedEntity> extends VerticalLayout
 		this.repository = repository;
 
 		setSizeFull();
+	}
 
+	protected abstract String getHeader();
+
+	protected abstract EntityList<T> createEntityList(EntityViewListControllerCallback<T> callback);
+
+	protected abstract EntityDetails<T> createEntityDetails(EntityViewDetailsControllerCallback<T> callback);
+
+	@Override
+	public void beforeEnter(BeforeEnterEvent event) {
 		title = new H1(getHeader());
 		title.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
 		add(title);
@@ -52,16 +61,7 @@ public abstract class EntityView<T extends NamedEntity> extends VerticalLayout
 
 		masterDetail.setFlexGrow(0.8, entityList);
 		add(masterDetail);
-	}
 
-	protected abstract String getHeader();
-
-	protected abstract EntityList<T> createEntityList(EntityViewListControllerCallback<T> callback);
-
-	protected abstract EntityDetails<T> createEntityDetails(EntityViewDetailsControllerCallback<T> callback);
-
-	@Override
-	public void beforeEnter(BeforeEnterEvent event) {
 		entityList.selectFirstEntity();
 	}
 

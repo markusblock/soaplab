@@ -46,7 +46,7 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 
 		XThreads.executeSynchronized(() -> {
 			this.idToEntity.put(uuid, entityCopy);
-			storeAll();
+			storeEntitiesInRepository();
 		});
 		return (T) entityCopy.toBuilder().build();
 	}
@@ -60,7 +60,8 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 
 		XThreads.executeSynchronized(() -> {
 			this.idToEntity.put(entityCopy.getId(), entityCopy);
-			storeAll();
+			storeEntitiesInRepository();
+			storeCompositeEntitiesInRepository(entityCopy);
 		});
 	}
 
@@ -69,7 +70,7 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 		T entity = get(id);
 		log.info("Deleting entity " + entity);
 		this.idToEntity.remove(id);
-		storeAll();
+		storeEntitiesInRepository();
 	}
 
 	@Override
@@ -86,15 +87,23 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 				.collect(Collectors.toList());
 	}
 
-	@Override
-	public void storeAll() {
+	private void storeEntitiesInRepository() {
 		repository.getStorage().store(this.idToEntity);
 	}
 
-	@Override
-	public void deleteAll() {
+	/**
+	 * Implemented in subclasses to store referenced composite entities.
+	 * 
+	 * @param entity the parent entity that is stored and for this entity the
+	 *               composite entities should be stored.
+	 */
+	protected void storeCompositeEntitiesInRepository(T entity) {
+		// NoOp
+	}
+
+	private void deleteEntitiesInRepository() {
 		log.info("Deleting all entities");
 		this.idToEntity.clear();
-		storeAll();
+		storeEntitiesInRepository();
 	}
 }

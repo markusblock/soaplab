@@ -64,7 +64,6 @@ public class EntityList<T extends NamedEntity> extends Div {
 		entityGrid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
 		entityGrid.setSelectionMode(SelectionMode.SINGLE);
 		entityGrid.addColumn(T::getName).setHeader(getTranslation("domain.entity.name")).setSortable(true);
-
 		content.add(entityGrid);
 
 		addSelectionListener();
@@ -89,6 +88,9 @@ public class EntityList<T extends NamedEntity> extends Div {
 	}
 
 	public void select(T selectEntity) {
+		if (selectEntity == null) {
+			return;
+		}
 		entityGrid.select(selectEntity);
 	}
 
