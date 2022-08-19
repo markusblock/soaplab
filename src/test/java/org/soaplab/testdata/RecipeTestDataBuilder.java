@@ -2,9 +2,6 @@ package org.soaplab.testdata;
 
 import java.time.Instant;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import org.soaplab.domain.Ingredient;
@@ -39,14 +36,7 @@ public class RecipeTestDataBuilder {
 	}
 
 	public static <T extends Ingredient> RecipeEntry<T> createRecipeEntry(T ingredient, Double percentage) {
-		return RecipeEntry.<T>recipeEntryBuilder().id(ingredient.getId()).ingredient(ingredient)
+		return RecipeEntry.<T>builder().id(ingredient.getId()).ingredient(ingredient)
 				.percentage(Percentage.of(percentage)).build();
-	}
-
-	protected static <T extends Ingredient> Map<UUID, RecipeEntry<T>> createIngredientEntriesMap(
-			RecipeEntry<T>... ingredientEntries) {
-		Map<UUID, RecipeEntry<T>> entriesMap = new HashMap<>();
-		Set.of(ingredientEntries).forEach(entry -> entriesMap.put(entry.getIngredient().getId(), entry));
-		return entriesMap;
 	}
 }

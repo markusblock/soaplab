@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
-@SuperBuilder(toBuilder = true, builderMethodName = "recipeEntryBuilder")
+@SuperBuilder(toBuilder = true)
 public class RecipeEntry<T extends Ingredient> extends Entity {
 
 	private static final long serialVersionUID = 1L;

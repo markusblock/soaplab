@@ -1,7 +1,6 @@
 package org.soaplab.assertions;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.List;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
@@ -42,12 +41,12 @@ public class SoapRecipeAssert extends AbstractAssert<SoapRecipeAssert, SoapRecip
 		return this;
 	}
 
-	private <T extends Ingredient> void assertIngredientMapsAreDeepEqual(Map<UUID, RecipeEntry<T>> actual,
-			Map<UUID, RecipeEntry<T>> expected) {
+	private <T extends Ingredient> void assertIngredientMapsAreDeepEqual(List<RecipeEntry<T>> actual,
+			List<RecipeEntry<T>> expected) {
 		Assertions.assertThat(actual).hasSameSizeAs(expected);
-		actual.entrySet().forEach(entry -> {
-			Assertions.assertThat(expected).containsKey(entry.getKey());
-			RecipeEntryAssert.assertThat(actual.get(entry.getKey())).isDeepEqualTo(expected.get(entry.getKey()));
+		actual.forEach(entry -> {
+			Assertions.assertThat(expected).contains(entry);
+			RecipeEntryAssert.assertThat(entry).isDeepEqualTo(expected.get(expected.indexOf(entry)));
 		});
 	}
 }

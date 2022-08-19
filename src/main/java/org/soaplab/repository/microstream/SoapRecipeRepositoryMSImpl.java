@@ -24,9 +24,9 @@ public class SoapRecipeRepositoryMSImpl extends EntityRepositoryMSImpl<SoapRecip
 
 	@Override
 	protected void storeCompositeEntitiesInRepository(SoapRecipe soapRecipe) {
-		repository.getStorage().storeAll(soapRecipe.getAcids().values());
-		repository.getStorage().storeAll(soapRecipe.getFats().values());
-		repository.getStorage().storeAll(soapRecipe.getFragrances().values());
-		repository.getStorage().storeAll(soapRecipe.getLiquids().values());
+		repository.getStorage().storeAll(soapRecipe.getAcids());
+		repository.getStorage().storeAll(soapRecipe.getFats());
+		repository.getStorage().storeAll(soapRecipe.getFragrances());
+		repository.getStorage().storeAll(soapRecipe.getLiquids());
 	}
 }

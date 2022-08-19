@@ -2,9 +2,7 @@ package org.soaplab.api.rest;
 
 import java.time.Instant;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 import org.soaplab.domain.Acid;
@@ -96,28 +94,23 @@ public class TestDataController {
 		oliveSoap = SoapRecipe.builder().name(OLIVE_SOAP_RECIPE_NAME).manufacturingDate(Date.from(Instant.now()))
 				.naOHToKOHRatio(Percentage.of(100)).kOHPurity(Percentage.of(89.5))
 				.fatsTotal(Weight.of(100, WeightUnit.GRAMS)).liquidToFatRatio(Percentage.of(33))
-				.superFat(Percentage.of(10)).fragranceTotal(Percentage.of(3)).fats(//
-						createIngredientEntriesMap( //
-								createReceiptEntry(oliveOil, 80d), //
-								createReceiptEntry(coconutOil, 20d)))
-				.acids(createIngredientEntriesMap(createReceiptEntry(citricAcid, 4d)))
-				.liquids(createIngredientEntriesMap(//
+				.superFat(Percentage.of(10)).fragranceTotal(Percentage.of(3)).fats(List.of( //
+						createReceiptEntry(oliveOil, 80d), //
+						createReceiptEntry(coconutOil, 20d)))
+				.acids(List.of(//
+						createReceiptEntry(citricAcid, 4d)))
+				.liquids(List.of(//
 						createReceiptEntry(water, 50d), //
 						createReceiptEntry(appleVinegar, 50d)))
-				.fragrances(createIngredientEntriesMap(createReceiptEntry(lavendelFragrance, 100d))).build();
+				.fragrances(List.of(//
+						createReceiptEntry(lavendelFragrance, 100d)))
+				.build();
 		soapRecipeRepository.create(oliveSoap);
 	}
 
 	private <T extends Ingredient> RecipeEntry<T> createReceiptEntry(T ingredient, Double percentage) {
-		return RecipeEntry.<T>recipeEntryBuilder().id(UUID.randomUUID()).ingredient(ingredient)
+		return RecipeEntry.<T>builder().id(UUID.randomUUID()).ingredient(ingredient)
 				.percentage(Percentage.of(percentage)).build();
-	}
-
-	private <T extends Ingredient> Map<UUID, RecipeEntry<T>> createIngredientEntriesMap(
-			RecipeEntry<T>... ingredientEntries) {
-		Map<UUID, RecipeEntry<T>> entriesMap = new HashMap<>();
-		Set.of(ingredientEntries).forEach(entry -> entriesMap.put(entry.getIngredient().getId(), entry));
-		return entriesMap;
 	}
 
 	private void createFats() {

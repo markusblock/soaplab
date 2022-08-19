@@ -46,6 +46,8 @@ public abstract class EntityView<T extends NamedEntity> extends VerticalLayout
 
 	@Override
 	public void beforeEnter(BeforeEnterEvent event) {
+		removeAll();
+
 		title = new H1(getHeader());
 		title.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
 		add(title);

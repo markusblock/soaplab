@@ -6,8 +6,12 @@ import java.util.List;
 import java.util.Objects;
 
 import org.soaplab.domain.NamedEntity;
+import org.soaplab.domain.Percentage;
+import org.soaplab.domain.Weight;
 import org.springframework.util.Assert;
 
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
@@ -15,6 +19,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
@@ -39,7 +44,7 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 	private FormLayout detailsPanel;
 
 	private Binder<T> binder;
-	private List<TextField> editablePropertyFields;
+	private List<HasEnabled> editablePropertyFields;
 
 	private Button editButton;
 	private Button addButton;
@@ -127,8 +132,17 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 	}
 
 	private void saveInternal(EntityViewDetailsControllerCallback<T> callback) {
+
+		preSave();
+
 		binder.writeBeanIfValid(entity);
 		callback.saveEntity(entity);
+	}
+
+	/**
+	 * Override in subclasses to implement behaviour of special fields.
+	 */
+	protected void preSave() {
 	}
 
 	private void enterEditModeInternal() {
@@ -199,6 +213,13 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 		bindingBuilder.bind(getter, setter);
 	}
 
+	protected void addPropertyTextArea(String id, ValueProvider<T, String> getter, Setter<T, String> setter) {
+		TextArea propertyField = createPropertyTextArea(id);
+		editablePropertyFields.add(propertyField);
+		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		binder.forField(propertyField).bind(getter, setter);
+	}
+
 	protected void addPropertyIntegerField(String id, ValueProvider<T, Integer> getter, Setter<T, Integer> setter) {
 		TextField propertyField = createPropertyTextField(id);
 		editablePropertyFields.add(propertyField);
@@ -216,12 +237,39 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 				.bind(getter, setter);
 	}
 
+	protected void addPropertyWeightField(String id, ValueProvider<T, Weight> getter, Setter<T, Weight> setter) {
+		TextField propertyField = createPropertyTextField(id);
+		propertyField.setSuffixComponent(new Div(new Text("g")));
+		editablePropertyFields.add(propertyField);
+		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToWeightValueConverter())
+				.bind(getter, setter);
+	}
+
+	protected void addPropertyPercentageField(String id, ValueProvider<T, Percentage> getter,
+			Setter<T, Percentage> setter) {
+		TextField propertyField = createPropertyTextField(id);
+		propertyField.setSuffixComponent(new Div(new Text("%")));
+		editablePropertyFields.add(propertyField);
+		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToPercentageConverter())
+				.bind(getter, setter);
+	}
+
 	private TextField createPropertyTextField(String id) {
 		TextField propertyField = new TextField();
 		propertyField.setId(id);
 		propertyField.setWidthFull();
 		propertyField.setEnabled(false);
 		return propertyField;
+	}
+
+	private TextArea createPropertyTextArea(String id) {
+		TextArea textArea = new TextArea();
+		textArea.setId(id);
+		textArea.setWidthFull();
+		textArea.setEnabled(false);
+		return textArea;
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package org.soaplab.testdata;
 
+import java.util.List;
+
 import org.soaplab.domain.Acid;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
@@ -33,15 +35,15 @@ public class OliveOilSoapRecipeTestData extends RecipeTestDataBuilder {
 
 		return super.getSoapRecipeBuilder()//
 				.name(OLIVE_SOAP_RECIPE_NAME) //
-				.fats(createIngredientEntriesMap( //
+				.fats(List.of( //
 						createRecipeEntry(oliveOil, 80d), //
 						createRecipeEntry(coconutOil, 20d))) //
-				.acids(createIngredientEntriesMap( //
+				.acids(List.of( //
 						createRecipeEntry(citricAcid, 4d))) //
-				.liquids(createIngredientEntriesMap(//
+				.liquids(List.of(//
 						createRecipeEntry(water, 100d))) //
 				// createReceiptEntry(appleVinegar, 50d))) //
-				.fragrances(createIngredientEntriesMap( //
+				.fragrances(List.of( //
 						createRecipeEntry(lavendelFragrance, 100d)));
 	}
 }

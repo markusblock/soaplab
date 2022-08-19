@@ -1,10 +1,9 @@
 
 package org.soaplab.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.AccessLevel;
@@ -51,22 +50,21 @@ public class SoapRecipe extends NamedEntity {
 	 */
 	private Percentage fragranceTotal;
 	private String notes;
-	private Map<UUID, RecipeEntry<Fat>> fats = new HashMap<>();
-	private Map<UUID, RecipeEntry<Acid>> acids = new HashMap<>();
-	private Map<UUID, RecipeEntry<Fragrance>> fragrances = new HashMap<>();
-	private Map<UUID, RecipeEntry<Liquid>> liquids = new HashMap<>();
+	private List<RecipeEntry<Fat>> fats = new ArrayList<>();
+	private List<RecipeEntry<Acid>> acids = new ArrayList<>();
+	private List<RecipeEntry<Fragrance>> fragrances = new ArrayList<>();
+	private List<RecipeEntry<Liquid>> liquids = new ArrayList<>();
 	// customAdditives
 
 	@Override
 	public SoapRecipe getClone() {
-		return new SoapRecipe(this.toBuilder().fats(getRecipeEntryMapDeepClone(fats))
-				.acids(getRecipeEntryMapDeepClone(acids)).fragrances(getRecipeEntryMapDeepClone(fragrances))
-				.liquids(getRecipeEntryMapDeepClone(liquids)));
+		return new SoapRecipe(this.toBuilder().fats(getRecipeEntryListDeepClone(fats))
+				.acids(getRecipeEntryListDeepClone(acids)).fragrances(getRecipeEntryListDeepClone(fragrances))
+				.liquids(getRecipeEntryListDeepClone(liquids)));
 	}
 
-	private <T extends Ingredient> Map<UUID, RecipeEntry<T>> getRecipeEntryMapDeepClone(
-			Map<UUID, RecipeEntry<T>> recipeEntryMap) {
-		return recipeEntryMap.entrySet().stream()
-				.collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getClone()));
+	private <T extends Ingredient> List<RecipeEntry<T>> getRecipeEntryListDeepClone(
+			List<RecipeEntry<T>> recipeEntries) {
+		return recipeEntries.stream().map(entry -> entry.getClone()).collect(Collectors.toList());
 	}
 }

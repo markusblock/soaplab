@@ -1,5 +1,7 @@
 package org.soaplab.testdata;
 
+import java.util.List;
+
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Liquid;
 import org.soaplab.domain.SoapRecipe.SoapRecipeBuilder;
@@ -24,9 +26,9 @@ public class OliveOilSoapBasicRecipeTestData extends RecipeTestDataBuilder {
 
 		return super.getSoapRecipeBuilder() //
 				.name(OLIVE_SOAP_RECIPE_NAME) //
-				.fats(createIngredientEntriesMap( //
+				.fats(List.of( //
 						createRecipeEntry(oliveOil, 100d))) //
-				.liquids(createIngredientEntriesMap( //
+				.liquids(List.of( //
 						createRecipeEntry(water, 100d) //
 				));
 	}

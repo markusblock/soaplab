@@ -1,7 +1,6 @@
 package org.soaplab.ui.views.recipe;
 
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.ArrayList;
 
 import org.soaplab.domain.Acid;
 import org.soaplab.domain.Fat;
@@ -9,7 +8,10 @@ import org.soaplab.domain.Fragrance;
 import org.soaplab.domain.Liquid;
 import org.soaplab.domain.RecipeEntry;
 import org.soaplab.domain.SoapRecipe;
+import org.soaplab.repository.AcidRepository;
 import org.soaplab.repository.FatRepository;
+import org.soaplab.repository.FragranceRepository;
+import org.soaplab.repository.LiquidRepository;
 import org.soaplab.repository.SoapRecipeRepository;
 import org.soaplab.ui.MainAppLayout;
 import org.soaplab.ui.views.EntityList;
@@ -25,11 +27,18 @@ public class RecipeView extends EntityView<SoapRecipe> {
 
 	private static final long serialVersionUID = 1L;
 	private FatRepository fatRepository;
+	private AcidRepository acidRepository;
+	private LiquidRepository liquidRepository;
+	private FragranceRepository fragranceRepository;
 
 	@Autowired
-	public RecipeView(SoapRecipeRepository repository, FatRepository fatRepository) {
+	public RecipeView(SoapRecipeRepository repository, FatRepository fatRepository, AcidRepository acidRepository,
+			LiquidRepository liquidRepository, FragranceRepository fragranceRepository) {
 		super(repository);
 		this.fatRepository = fatRepository;
+		this.acidRepository = acidRepository;
+		this.liquidRepository = liquidRepository;
+		this.fragranceRepository = fragranceRepository;
 	}
 
 	@Override
@@ -44,17 +53,17 @@ public class RecipeView extends EntityView<SoapRecipe> {
 
 	@Override
 	protected RecipeDetailsPanel createEntityDetails(EntityViewDetailsControllerCallback<SoapRecipe> callback) {
-		return new RecipeDetailsPanel(callback, fatRepository);
+		return new RecipeDetailsPanel(callback, fatRepository, acidRepository, liquidRepository, fragranceRepository);
 	}
 
 	@Override
 	protected SoapRecipe createNewEmptyEntity() {
-		//TODO move to builder
+		// TODO move to builder
 		SoapRecipe soapRecipe = SoapRecipe.builder().build();
-		soapRecipe.setFats(new HashMap<UUID, RecipeEntry<Fat>>());
-		soapRecipe.setAcids(new HashMap<UUID, RecipeEntry<Acid>>());
-		soapRecipe.setFragrances(new HashMap<UUID, RecipeEntry<Fragrance>>());
-		soapRecipe.setLiquids(new HashMap<UUID, RecipeEntry<Liquid>>());
+		soapRecipe.setFats(new ArrayList<RecipeEntry<Fat>>());
+		soapRecipe.setAcids(new ArrayList<RecipeEntry<Acid>>());
+		soapRecipe.setFragrances(new ArrayList<RecipeEntry<Fragrance>>());
+		soapRecipe.setLiquids(new ArrayList<RecipeEntry<Liquid>>());
 		return soapRecipe;
 	}
 }
