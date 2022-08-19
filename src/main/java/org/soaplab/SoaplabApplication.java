@@ -20,7 +20,8 @@ import com.vaadin.flow.theme.lumo.Lumo;
  *
  */
 @SpringBootApplication
-@Theme(themeClass = Lumo.class, variant = Lumo.DARK)
+//@Theme(themeClass = Lumo.class, variant = Lumo.DARK)
+@Theme(value = "soaplab", variant = Lumo.DARK)
 @PWA(name = "SoapLab", shortName = "SoapLab")
 @Push
 @NpmPackage(value = "line-awesome", version = "1.3.0")

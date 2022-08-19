@@ -1,0 +1,23 @@
+html, :host {
+  background-color: yellow;
+}
+
+[part="vaadin-button"] {
+  height: 10;
+  width: 10;
+  min-width: 10;
+  max-width: 10;
+  --lumo-button-size: var(--lumo-size-xs);
+}
+
+[part="body-cell"] {
+    padding: 0;
+    height: 10;
+    max-height: 100;
+    min-height: 10;
+    background-color: yellow;
+}
+
+[theme~='dark'] :host {
+	background-color:  yellow;
+}

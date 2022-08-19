@@ -157,7 +157,9 @@ Desktop.ini
 ######################
 # Vaadin
 ######################
-/frontend
+/frontend/generated
+/frontend/styles
+/frontend/index.*
 package.json
 /pnpm-lock.yaml
 /pnpmfile.js
