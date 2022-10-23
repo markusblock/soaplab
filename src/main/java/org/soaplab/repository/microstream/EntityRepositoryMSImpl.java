@@ -60,6 +60,9 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 	public void delete(UUID id) {
 		final T entity = get(id);
 		log.info("Deleting entity " + entity);
+
+		assertEntityIsNotReferencedByOtherEntities(entity);
+
 		getEntitiesInternal().remove(entity);
 		storeEntitiesInRepository();
 	}
@@ -94,6 +97,10 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 
 	private T getInternal(UUID id) {
 		return getEntitiesInternal().stream().filter(e -> e.getId().equals(id)).findFirst().orElseThrow();
+	}
+
+	protected void assertEntityIsNotReferencedByOtherEntities(T entity) {
+		// noOp
 	}
 
 	protected void getAndReplaceCompositeEntitiesFromRepository(T entity) {

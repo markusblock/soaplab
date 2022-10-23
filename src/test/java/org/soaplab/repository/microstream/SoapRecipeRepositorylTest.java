@@ -1,6 +1,7 @@
 package org.soaplab.repository.microstream;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 
@@ -11,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.soaplab.assertions.FatAssert;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.SoapRecipe;
+import org.soaplab.domain.exception.EntityDeletionFailedException;
 import org.soaplab.domain.utils.SoapRecipeUtils;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.SoapRecipeRepository;
@@ -102,7 +104,18 @@ class SoapRecipeRepositorylTest {
 
 	@Test
 	void deletingReferencedEntityIsNotAllowed() throws Exception {
-		fail("not yet implemented");
+		final SoapRecipe soapRecipe = repoHelper.createSoapRecipeWithRandomData();
+		final Fat fat = soapRecipe.getFats().get(0).getIngredient();
+		final EntityDeletionFailedException exception = assertThrows(EntityDeletionFailedException.class, () -> {
+			fatRepository.delete(fat.getId());
+		});
+
+		assertTrue(exception.getReason().equals(EntityDeletionFailedException.REASON.ENTITY_STILL_REFERENCED));
+
+		final SoapRecipe soapRecipeUpdated = SoapRecipeUtils.removeFat(soapRecipe, fat);
+		soapRecipeRepository.update(soapRecipeUpdated);
+		fatRepository.delete(fat.getId());
+
 	}
 
 }
