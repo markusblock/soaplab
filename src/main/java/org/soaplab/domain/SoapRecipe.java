@@ -88,6 +88,7 @@ public class SoapRecipe extends NamedEntity {
 				.liquids(getRecipeEntryListDeepClone(liquids)));
 	}
 
+	@Override
 	public SoapRecipeBuilder<?, ?> getCopyBuilder() {
 		return this.toBuilder().fats(getRecipeEntryListDeepClone(fats)).acids(getRecipeEntryListDeepClone(acids))
 				.fragrances(getRecipeEntryListDeepClone(fragrances)).liquids(getRecipeEntryListDeepClone(liquids));

@@ -44,4 +44,9 @@ public class RecipeEntry<T extends Ingredient> extends Entity {
 		return new RecipeEntry<T>(this.toBuilder().ingredient((T) this.ingredient.getClone()));
 	}
 
+	@Override
+	public EntityBuilder<?, ?> getCopyBuilder() {
+		return this.toBuilder().ingredient((T) this.ingredient.getCopyBuilder().build());
+	}
+
 }

@@ -61,6 +61,7 @@ public class Fat extends Ingredient {
 		return new Fat(this.toBuilder());
 	}
 
+	@Override
 	public FatBuilder<?, ?> getCopyBuilder() {
 		return this.toBuilder();
 	}

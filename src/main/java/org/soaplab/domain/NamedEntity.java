@@ -26,4 +26,8 @@ public class NamedEntity extends Entity {
 		return new NamedEntity(this.toBuilder());
 	}
 
+	@Override
+	public NamedEntityBuilder<?, ?> getCopyBuilder() {
+		return this.toBuilder();
+	}
 }
