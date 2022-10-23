@@ -82,13 +82,6 @@ public class SoapRecipe extends NamedEntity {
 	// customAdditives
 
 	@Override
-	public SoapRecipe getClone() {
-		return new SoapRecipe(this.toBuilder().fats(getRecipeEntryListDeepClone(fats))
-				.acids(getRecipeEntryListDeepClone(acids)).fragrances(getRecipeEntryListDeepClone(fragrances))
-				.liquids(getRecipeEntryListDeepClone(liquids)));
-	}
-
-	@Override
 	public SoapRecipeBuilder<?, ?> getCopyBuilder() {
 		return this.toBuilder().fats(getRecipeEntryListDeepClone(fats)).acids(getRecipeEntryListDeepClone(acids))
 				.fragrances(getRecipeEntryListDeepClone(fragrances)).liquids(getRecipeEntryListDeepClone(liquids));
@@ -96,6 +89,6 @@ public class SoapRecipe extends NamedEntity {
 
 	private <T extends Ingredient> List<RecipeEntry<T>> getRecipeEntryListDeepClone(
 			List<RecipeEntry<T>> recipeEntries) {
-		return recipeEntries.stream().map(entry -> entry.getClone()).collect(Collectors.toList());
+		return recipeEntries.stream().map(entry -> entry.getCopyBuilder().build()).collect(Collectors.toList());
 	}
 }

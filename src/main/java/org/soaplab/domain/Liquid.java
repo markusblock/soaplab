@@ -48,7 +48,7 @@ public class Liquid extends Ingredient {
 	}
 
 	@Override
-	public Liquid getClone() {
-		return new Liquid(this.toBuilder());
+	public LiquidBuilder<?, ?> getCopyBuilder() {
+		return this.toBuilder();
 	}
 }

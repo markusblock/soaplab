@@ -57,11 +57,6 @@ public class Fat extends Ingredient {
 	private Integer ins;
 
 	@Override
-	public Fat getClone() {
-		return new Fat(this.toBuilder());
-	}
-
-	@Override
 	public FatBuilder<?, ?> getCopyBuilder() {
 		return this.toBuilder();
 	}

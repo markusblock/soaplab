@@ -9,9 +9,9 @@ class RecipeEntryTest {
 
 	@Test
 	void testDeepCloning() {
-		Fat fat = RandomIngredientsTestData.getFatBuilder().build();
-		RecipeEntry<Fat> recipeEntry = SoapRecipeUtils.createRecipeEntry(fat, 100d);
-		RecipeEntry<Fat> clone = recipeEntry.getClone();
+		final Fat fat = RandomIngredientsTestData.getFatBuilder().build();
+		final RecipeEntry<Fat> recipeEntry = SoapRecipeUtils.createRecipeEntry(fat, 100d);
+		final RecipeEntry<Fat> clone = recipeEntry.getCopyBuilder().build();
 
 		RecipeEntryAssert.assertThat(recipeEntry).isDeepEqualTo(clone);
 

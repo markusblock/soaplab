@@ -22,11 +22,6 @@ public class NamedEntity extends Entity {
 	private String name;
 
 	@Override
-	public Entity getClone() {
-		return new NamedEntity(this.toBuilder());
-	}
-
-	@Override
 	public NamedEntityBuilder<?, ?> getCopyBuilder() {
 		return this.toBuilder();
 	}

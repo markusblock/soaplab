@@ -25,10 +25,6 @@ public abstract class Entity implements Serializable {
 
 	private UUID id;
 
-	// TODO decide for getClone OR getCopyBuilder and keep only one
-	@JsonIgnore
-	public abstract Entity getClone();
-
 	@JsonIgnore
 	public abstract EntityBuilder<?, ?> getCopyBuilder();
 

@@ -21,7 +21,7 @@ public class Fragrance extends Ingredient {
 	private FragranceType type;
 
 	@Override
-	public Fragrance getClone() {
-		return new Fragrance(this.toBuilder());
+	public FragranceBuilder<?, ?> getCopyBuilder() {
+		return this.toBuilder();
 	}
 }

@@ -92,7 +92,7 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 		final T entity = getInternal(id);
 		// TODO throwNotFoundExceptionIfRequired(fat);
 		getAndReplaceCompositeEntitiesFromRepository(entity);
-		return (T) entity.getClone();
+		return (T) entity.getCopyBuilder().build();
 	}
 
 	private T getInternal(UUID id) {

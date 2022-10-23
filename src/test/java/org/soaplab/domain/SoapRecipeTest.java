@@ -8,9 +8,9 @@ class SoapRecipeTest {
 
 	@Test
 	void testDeepCloning() {
-		OliveOilSoapRecipeTestData testData = new OliveOilSoapRecipeTestData();
-		SoapRecipe soapRecipe = testData.createSoapRecipe();
-		SoapRecipe clone = soapRecipe.getClone();
+		final OliveOilSoapRecipeTestData testData = new OliveOilSoapRecipeTestData();
+		final SoapRecipe soapRecipe = testData.createSoapRecipe();
+		final SoapRecipe clone = soapRecipe.getCopyBuilder().build();
 
 		SoapRecipeAssert.assertThat(soapRecipe).isDeepEqualTo(clone);
 

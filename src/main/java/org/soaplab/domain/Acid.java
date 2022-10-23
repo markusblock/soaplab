@@ -41,7 +41,7 @@ public class Acid extends Ingredient {
 	}
 
 	@Override
-	public Acid getClone() {
-		return new Acid(this.toBuilder());
+	public AcidBuilder<?, ?> getCopyBuilder() {
+		return this.toBuilder();
 	}
 }

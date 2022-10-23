@@ -40,12 +40,7 @@ public class RecipeEntry<T extends Ingredient> extends Entity {
 	private T ingredient;
 
 	@Override
-	public RecipeEntry<T> getClone() {
-		return new RecipeEntry<T>(this.toBuilder().ingredient((T) this.ingredient.getClone()));
-	}
-
-	@Override
-	public EntityBuilder<?, ?> getCopyBuilder() {
+	public RecipeEntryBuilder<T, ?, ?> getCopyBuilder() {
 		return this.toBuilder().ingredient((T) this.ingredient.getCopyBuilder().build());
 	}
 
