@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import org.soaplab.domain.NamedEntity;
 import org.soaplab.domain.Percentage;
+import org.soaplab.domain.Price;
 import org.soaplab.domain.Weight;
 import org.springframework.util.Assert;
 
@@ -40,17 +41,17 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 	private static final long serialVersionUID = 1L;
 
 	@Getter(value = AccessLevel.PROTECTED)
-	private VerticalLayout content;
-	private FormLayout detailsPanel;
+	private final VerticalLayout content;
+	private final FormLayout detailsPanel;
 
-	private Binder<T> binder;
-	private List<HasEnabled> editablePropertyFields;
+	private final Binder<T> binder;
+	private final List<HasEnabled> editablePropertyFields;
 
-	private Button editButton;
-	private Button addButton;
-	private Button removeButton;
-	private Button saveButton;
-	private Button cancelButton;
+	private final Button editButton;
+	private final Button addButton;
+	private final Button removeButton;
+	private final Button saveButton;
+	private final Button cancelButton;
 
 	private T entity;
 
@@ -64,7 +65,7 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 		content = new VerticalLayout();
 		add(content);
 
-		HorizontalLayout buttonPanel = new HorizontalLayout();
+		final HorizontalLayout buttonPanel = new HorizontalLayout();
 
 		addButton = new Button();
 		addButton.setId("entitydetails.add");
@@ -114,7 +115,7 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 				new ResponsiveStep("0", 1));
 		content.add(detailsPanel);
 
-		TextField idField = createPropertyTextField("domain.entity.id");
+		final TextField idField = createPropertyTextField("domain.entity.id");
 		detailsPanel.addFormItem(idField, getTranslation("domain.entity.id"));
 		binder.forField(idField).bindReadOnly(ingred -> Objects.toString(ingred.getId(), ""));
 
@@ -123,26 +124,113 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 		setActionButtonVisibility(false);
 	}
 
-	private void setActionButtonVisibility(boolean editMode) {
-		editButton.setVisible(!editMode);
-		addButton.setVisible(!editMode);
-		removeButton.setVisible(!editMode);
-		saveButton.setVisible(editMode);
-		cancelButton.setVisible(editMode);
+	protected void addPropertyBigDecimalField(String id, ValueProvider<T, BigDecimal> getter,
+			Setter<T, BigDecimal> setter) {
+		final TextField propertyField = createPropertyTextField(id);
+		editablePropertyFields.add(propertyField);
+		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		binder.forField(propertyField).withNullRepresentation("").withConverter(new MyStringToBigDecConverter(""))
+				.bind(getter, setter);
 	}
 
-	private void saveInternal(EntityViewDetailsControllerCallback<T> callback) {
+	protected void addPropertyIntegerField(String id, ValueProvider<T, Integer> getter, Setter<T, Integer> setter) {
+		final TextField propertyField = createPropertyTextField(id);
+		editablePropertyFields.add(propertyField);
+		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToIntegerConverter(""))
+				.bind(getter, setter);
+	}
 
-		preSave();
+	protected void addPropertyPercentageField(String id, ValueProvider<T, Percentage> getter,
+			Setter<T, Percentage> setter) {
+		final TextField propertyField = createPropertyTextField(id);
+		propertyField.setSuffixComponent(new Div(new Text("%")));
+		editablePropertyFields.add(propertyField);
+		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToPercentageConverter())
+				.bind(getter, setter);
+	}
 
-		binder.writeBeanIfValid(entity);
-		callback.saveEntity(entity);
+	protected void addPropertyPriceFieldReadOnly(String id, ValueProvider<T, Price> getter) {
+		final TextField propertyField = createPropertyTextField(id);
+		propertyField.setSuffixComponent(new Div(new Text("€")));
+		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToPriceValueConverter())
+				.bindReadOnly(getter);
+	}
+
+	protected void addPropertyStringField(String id, ValueProvider<T, String> getter, Setter<T, String> setter,
+			boolean required) {
+		final TextField propertyField = createPropertyTextField(id);
+		editablePropertyFields.add(propertyField);
+		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		final BindingBuilder<T, String> bindingBuilder = binder.forField(propertyField);
+		if (required) {
+			bindingBuilder.asRequired();
+		}
+		bindingBuilder.bind(getter, setter);
+	}
+
+	protected void addPropertyTextArea(String id, ValueProvider<T, String> getter, Setter<T, String> setter) {
+		final TextArea propertyField = createPropertyTextArea(id);
+		editablePropertyFields.add(propertyField);
+		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		binder.forField(propertyField).bind(getter, setter);
+	}
+
+	protected void addPropertyWeightField(String id, ValueProvider<T, Weight> getter, Setter<T, Weight> setter) {
+		final TextField propertyField = createPropertyTextField(id);
+		propertyField.setSuffixComponent(new Div(new Text("g")));
+		editablePropertyFields.add(propertyField);
+		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToWeightValueConverter())
+				.bind(getter, setter);
+	}
+
+	protected void addPropertyWeightFieldReadOnly(String id, ValueProvider<T, Weight> getter) {
+		final TextField propertyField = createPropertyTextField(id);
+		propertyField.setSuffixComponent(new Div(new Text("g")));
+		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToWeightValueConverter())
+				.bindReadOnly(getter);
+	}
+
+	@Override
+	public void beforeEnter(BeforeEnterEvent event) {
+		leaveEditModeInternal();
+	}
+
+	@Override
+	public void beforeLeave(BeforeLeaveEvent event) {
+		leaveEditModeInternal();
+	}
+
+	private TextArea createPropertyTextArea(String id) {
+		final TextArea textArea = new TextArea();
+		textArea.setId(id);
+		textArea.setWidthFull();
+		textArea.setEnabled(false);
+		return textArea;
+	}
+
+	private TextField createPropertyTextField(String id) {
+		final TextField propertyField = new TextField();
+		propertyField.setId(id);
+		propertyField.setWidthFull();
+		propertyField.setEnabled(false);
+		return propertyField;
+	}
+
+	public void editEntity(T newEntity) {
+		Assert.notNull(newEntity, "Empty entity not editable");
+		setEntityInternal(newEntity);
+		enterEditModeInternal();
 	}
 
 	/**
 	 * Override in subclasses to implement behaviour of special fields.
 	 */
-	protected void preSave() {
+	protected void enterEditMode() {
 	}
 
 	private void enterEditModeInternal() {
@@ -155,7 +243,7 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 	/**
 	 * Override in subclasses to implement behaviour of special fields.
 	 */
-	protected void enterEditMode() {
+	protected void leaveEditMode() {
 	}
 
 	private void leaveEditModeInternal() {
@@ -170,7 +258,31 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 	/**
 	 * Override in subclasses to implement behaviour of special fields.
 	 */
-	protected void leaveEditMode() {
+	protected void preSave() {
+	}
+
+	private void saveInternal(EntityViewDetailsControllerCallback<T> callback) {
+
+		preSave();
+
+		binder.writeBeanIfValid(entity);
+		callback.saveEntity(entity);
+	}
+
+	private void setActionButtonVisibility(boolean editMode) {
+		editButton.setVisible(!editMode);
+		addButton.setVisible(!editMode);
+		removeButton.setVisible(!editMode);
+		saveButton.setVisible(editMode);
+		cancelButton.setVisible(editMode);
+	}
+
+	/**
+	 * Override in subclasses to implement behaviour of special fields.
+	 *
+	 * @param entity the entity to set, or <code>null</code> to clear the fields
+	 */
+	protected void setEntity(T entity) {
 	}
 
 	private void setEntityInternal(T entity) {
@@ -182,103 +294,8 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 		setEntity(entity);
 	}
 
-	/**
-	 * Override in subclasses to implement behaviour of special fields.
-	 * 
-	 * @param entity the entity to set, or <code>null</code> to clear the fields
-	 */
-	protected void setEntity(T entity) {
-	}
-
 	public void showEntity(T entity) {
 		setEntityInternal(entity);
-		leaveEditModeInternal();
-	}
-
-	public void editEntity(T newEntity) {
-		Assert.notNull(newEntity, "Empty entity not editable");
-		setEntityInternal(newEntity);
-		enterEditModeInternal();
-	}
-
-	protected void addPropertyStringField(String id, ValueProvider<T, String> getter, Setter<T, String> setter,
-			boolean required) {
-		TextField propertyField = createPropertyTextField(id);
-		editablePropertyFields.add(propertyField);
-		detailsPanel.addFormItem(propertyField, getTranslation(id));
-		BindingBuilder<T, String> bindingBuilder = binder.forField(propertyField);
-		if (required) {
-			bindingBuilder.asRequired();
-		}
-		bindingBuilder.bind(getter, setter);
-	}
-
-	protected void addPropertyTextArea(String id, ValueProvider<T, String> getter, Setter<T, String> setter) {
-		TextArea propertyField = createPropertyTextArea(id);
-		editablePropertyFields.add(propertyField);
-		detailsPanel.addFormItem(propertyField, getTranslation(id));
-		binder.forField(propertyField).bind(getter, setter);
-	}
-
-	protected void addPropertyIntegerField(String id, ValueProvider<T, Integer> getter, Setter<T, Integer> setter) {
-		TextField propertyField = createPropertyTextField(id);
-		editablePropertyFields.add(propertyField);
-		detailsPanel.addFormItem(propertyField, getTranslation(id));
-		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToIntegerConverter(""))
-				.bind(getter, setter);
-	}
-
-	protected void addPropertyBigDecimalField(String id, ValueProvider<T, BigDecimal> getter,
-			Setter<T, BigDecimal> setter) {
-		TextField propertyField = createPropertyTextField(id);
-		editablePropertyFields.add(propertyField);
-		detailsPanel.addFormItem(propertyField, getTranslation(id));
-		binder.forField(propertyField).withNullRepresentation("").withConverter(new MyStringToBigDecConverter(""))
-				.bind(getter, setter);
-	}
-
-	protected void addPropertyWeightField(String id, ValueProvider<T, Weight> getter, Setter<T, Weight> setter) {
-		TextField propertyField = createPropertyTextField(id);
-		propertyField.setSuffixComponent(new Div(new Text("g")));
-		editablePropertyFields.add(propertyField);
-		detailsPanel.addFormItem(propertyField, getTranslation(id));
-		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToWeightValueConverter())
-				.bind(getter, setter);
-	}
-
-	protected void addPropertyPercentageField(String id, ValueProvider<T, Percentage> getter,
-			Setter<T, Percentage> setter) {
-		TextField propertyField = createPropertyTextField(id);
-		propertyField.setSuffixComponent(new Div(new Text("%")));
-		editablePropertyFields.add(propertyField);
-		detailsPanel.addFormItem(propertyField, getTranslation(id));
-		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToPercentageConverter())
-				.bind(getter, setter);
-	}
-
-	private TextField createPropertyTextField(String id) {
-		TextField propertyField = new TextField();
-		propertyField.setId(id);
-		propertyField.setWidthFull();
-		propertyField.setEnabled(false);
-		return propertyField;
-	}
-
-	private TextArea createPropertyTextArea(String id) {
-		TextArea textArea = new TextArea();
-		textArea.setId(id);
-		textArea.setWidthFull();
-		textArea.setEnabled(false);
-		return textArea;
-	}
-
-	@Override
-	public void beforeEnter(BeforeEnterEvent event) {
-		leaveEditModeInternal();
-	}
-
-	@Override
-	public void beforeLeave(BeforeLeaveEvent event) {
 		leaveEditModeInternal();
 	}
 

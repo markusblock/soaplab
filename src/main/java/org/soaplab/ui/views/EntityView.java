@@ -25,7 +25,7 @@ public abstract class EntityView<T extends NamedEntity> extends VerticalLayout
 	private EntityList<T> entityList;
 
 	@Getter
-	private EntityRepository<T> repository;
+	private final EntityRepository<T> repository;
 
 	private Optional<T> selectedEntity = Optional.empty();
 
@@ -52,7 +52,7 @@ public abstract class EntityView<T extends NamedEntity> extends VerticalLayout
 		title.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
 		add(title);
 
-		HorizontalLayout masterDetail = new HorizontalLayout();
+		final HorizontalLayout masterDetail = new HorizontalLayout();
 		masterDetail.setSizeFull();
 
 		entityList = createEntityList(this);
@@ -111,8 +111,8 @@ public abstract class EntityView<T extends NamedEntity> extends VerticalLayout
 	public void createNewEntity() {
 		editNewEntityMode = true;
 		entityList.ignoreSelectionChanges();
-		Optional<T> selectedEntity = entityList.getSelectedEntity();
-		T newEntity = createNewEmptyEntity();
+		final Optional<T> selectedEntity = entityList.getSelectedEntity();
+		final T newEntity = createNewEmptyEntity();
 		entityList.deselectAll();
 		entityDetails.editEntity(newEntity);
 		this.selectedEntity = selectedEntity;
@@ -120,8 +120,13 @@ public abstract class EntityView<T extends NamedEntity> extends VerticalLayout
 
 	@Override
 	public void entitySelected(T entity) {
-		selectedEntity = Optional.ofNullable(entity);
-		entityDetails.showEntity(entity);
+		T refreshedEntity = null;
+		if (entity != null) {
+			//reload entity on selection
+			refreshedEntity = repository.get(entity.getId());
+		}
+		selectedEntity = Optional.ofNullable(refreshedEntity);
+		entityDetails.showEntity(refreshedEntity);
 	}
 
 	protected abstract T createNewEmptyEntity();

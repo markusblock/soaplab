@@ -13,6 +13,7 @@ import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.FragranceRepository;
 import org.soaplab.repository.LiquidRepository;
 import org.soaplab.repository.SoapRecipeRepository;
+import org.soaplab.service.SoapCalculatorService;
 import org.soaplab.ui.MainAppLayout;
 import org.soaplab.ui.views.EntityList;
 import org.soaplab.ui.views.EntityView;
@@ -30,15 +31,18 @@ public class RecipeView extends EntityView<SoapRecipe> {
 	private AcidRepository acidRepository;
 	private LiquidRepository liquidRepository;
 	private FragranceRepository fragranceRepository;
+	private SoapCalculatorService soapCalculatorService;
 
 	@Autowired
 	public RecipeView(SoapRecipeRepository repository, FatRepository fatRepository, AcidRepository acidRepository,
-			LiquidRepository liquidRepository, FragranceRepository fragranceRepository) {
+			LiquidRepository liquidRepository, FragranceRepository fragranceRepository,
+			SoapCalculatorService soapCalculatorService) {
 		super(repository);
 		this.fatRepository = fatRepository;
 		this.acidRepository = acidRepository;
 		this.liquidRepository = liquidRepository;
 		this.fragranceRepository = fragranceRepository;
+		this.soapCalculatorService = soapCalculatorService;
 	}
 
 	@Override
@@ -53,7 +57,8 @@ public class RecipeView extends EntityView<SoapRecipe> {
 
 	@Override
 	protected RecipeDetailsPanel createEntityDetails(EntityViewDetailsControllerCallback<SoapRecipe> callback) {
-		return new RecipeDetailsPanel(callback, fatRepository, acidRepository, liquidRepository, fragranceRepository);
+		return new RecipeDetailsPanel(callback, fatRepository, acidRepository, liquidRepository, fragranceRepository,
+				soapCalculatorService);
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Ingredient;
-import org.soaplab.testdata.IngredientsRandomTestData;
+import org.soaplab.testdata.RandomIngredientsTestData;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class IngredientViewUIIT extends UIIntegrationTestBase {
@@ -109,7 +109,7 @@ public class IngredientViewUIIT extends UIIntegrationTestBase {
 	@Test
 	public void updateNameAndInciAreReflectedInList() {
 		Fat ingredient = repoHelper.createFat();
-		Fat updatedValues = IngredientsRandomTestData.getFatBuilder().build();
+		Fat updatedValues = RandomIngredientsTestData.getFatBuilder().build();
 		IngredientListPageObject list = pageObject.getIngredientList();
 		list.triggerReload();
 		IngredientDetailsPageObject details = pageObject.getIngredientDetails();

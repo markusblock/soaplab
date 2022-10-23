@@ -7,7 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.soaplab.domain.Fat;
-import org.soaplab.testdata.IngredientsRandomTestData;
+import org.soaplab.testdata.RandomIngredientsTestData;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class FatViewUIIT extends UIIntegrationTestBase {
@@ -31,7 +31,7 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 	public void createNewFat() {
 		FatDetailsPageObject details = pageObject.getIngredientDetails();
 		details.name().shouldBeReadOnly();
-		Fat fat = IngredientsRandomTestData.getFatBuilder().sapNaoh(new BigDecimal(BigInteger.valueOf(1234), 2))
+		Fat fat = RandomIngredientsTestData.getFatBuilder().sapNaoh(new BigDecimal(BigInteger.valueOf(1234), 2))
 				.build();
 
 		details.buttonAdd().click();
@@ -93,7 +93,7 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 	@Test
 	public void updateFat() {
 		Fat fat1 = repoHelper.createFat();
-		Fat fat2 = IngredientsRandomTestData.getFatBuilder().build();
+		Fat fat2 = RandomIngredientsTestData.getFatBuilder().build();
 
 		IngredientListPageObject list = pageObject.getIngredientList();
 		list.triggerReload();
