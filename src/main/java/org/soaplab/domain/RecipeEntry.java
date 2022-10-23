@@ -25,14 +25,23 @@ public class RecipeEntry<T extends Ingredient> extends Entity {
 	private Percentage percentage;
 
 	/**
+	 * Weight in grams. Value >0. Value will be calculated.
+	 */
+	private Weight weight;
+
+	/**
+	 * The cost for this amount of {@link Ingredient}. Value will be calculated.
+	 */
+	private Price price;
+
+	/**
 	 * The {@link Ingredient}.
 	 */
 	private T ingredient;
 
 	@Override
 	public RecipeEntry<T> getClone() {
-		return new RecipeEntry<T>(
-				this.toBuilder().percentage(this.percentage).ingredient((T) this.ingredient.getClone()));
+		return new RecipeEntry<T>(this.toBuilder().ingredient((T) this.ingredient.getClone()));
 	}
 
 }

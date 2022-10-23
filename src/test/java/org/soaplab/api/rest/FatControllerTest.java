@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.soaplab.domain.Fat;
 import org.soaplab.repository.FatRepository;
-import org.soaplab.testdata.IngredientsRandomTestData;
+import org.soaplab.testdata.RandomIngredientsTestData;
 
 @ExtendWith(MockitoExtension.class)
 class FatControllerTest {
@@ -23,7 +23,7 @@ class FatControllerTest {
 
 	@Test
 	void test() {
-		Fat fatToBeCreated = IngredientsRandomTestData.getFatBuilder().build();
+		Fat fatToBeCreated = RandomIngredientsTestData.getFatBuilder().build();
 		controller.create(fatToBeCreated);
 		verify(repository, times(1)).create(fatToBeCreated);
 

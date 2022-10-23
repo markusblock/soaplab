@@ -1,8 +1,7 @@
 package org.soaplab.repository.microstream;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.soaplab.domain.Acid;
 import org.soaplab.domain.Fat;
@@ -17,9 +16,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DataRoot {
 
-	private final Map<UUID, Fat> allFats = new HashMap<>();
-	private final Map<UUID, SoapRecipe> allSoapReceipts = new HashMap<>();
-	private final Map<UUID, Acid> allAcids = new HashMap<>();
-	private final Map<UUID, Fragrance> allFragrances = new HashMap<>();
-	private final Map<UUID, Liquid> allLiquids = new HashMap<>();
+	private final Set<Fat> allFats = new HashSet<>();
+	private final Set<SoapRecipe> allSoapReceipts = new HashSet<>();
+	private final Set<Acid> allAcids = new HashSet<>();
+	private final Set<Fragrance> allFragrances = new HashSet<>();
+	private final Set<Liquid> allLiquids = new HashSet<>();
 }

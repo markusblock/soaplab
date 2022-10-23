@@ -168,3 +168,6 @@ package.json
 /webpack.config.js
 /webpack.generated.js
 /.npmrc
+/.pnpmfile.cjs
+/vite.config.ts
+/vite.generated.ts

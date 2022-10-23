@@ -1,7 +1,6 @@
 package org.soaplab.repository.microstream;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.Set;
 
 import org.soaplab.domain.Fat;
 import org.soaplab.repository.FatRepository;
@@ -18,7 +17,7 @@ public class FatRepositoryMSImpl extends IngredientRepositoryMSImpl<Fat> impleme
 	}
 
 	@Override
-	protected Map<UUID, Fat> getIdToEntityMapping() {
+	protected Set<Fat> getEntitiesInternal() {
 		return repository.getRoot().getAllFats();
 	}
 }

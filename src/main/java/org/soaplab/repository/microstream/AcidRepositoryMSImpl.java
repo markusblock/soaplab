@@ -1,7 +1,6 @@
 package org.soaplab.repository.microstream;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.Set;
 
 import org.soaplab.domain.Acid;
 import org.soaplab.repository.AcidRepository;
@@ -18,7 +17,7 @@ public class AcidRepositoryMSImpl extends IngredientRepositoryMSImpl<Acid> imple
 	}
 
 	@Override
-	protected Map<UUID, Acid> getIdToEntityMapping() {
+	protected Set<Acid> getEntitiesInternal() {
 		return repository.getRoot().getAllAcids();
 	}
 }

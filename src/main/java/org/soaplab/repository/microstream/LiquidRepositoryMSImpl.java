@@ -1,7 +1,6 @@
 package org.soaplab.repository.microstream;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.Set;
 
 import org.soaplab.domain.Liquid;
 import org.soaplab.repository.LiquidRepository;
@@ -18,7 +17,7 @@ public class LiquidRepositoryMSImpl extends IngredientRepositoryMSImpl<Liquid> i
 	}
 
 	@Override
-	protected Map<UUID, Liquid> getIdToEntityMapping() {
+	protected Set<Liquid> getEntitiesInternal() {
 		return repository.getRoot().getAllLiquids();
 	}
 }

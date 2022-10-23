@@ -4,9 +4,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 
-import org.soaplab.domain.Ingredient;
 import org.soaplab.domain.Percentage;
-import org.soaplab.domain.RecipeEntry;
 import org.soaplab.domain.SoapRecipe;
 import org.soaplab.domain.SoapRecipe.SoapRecipeBuilder;
 import org.soaplab.domain.Weight;
@@ -31,12 +29,7 @@ public class RecipeTestDataBuilder {
 		return soapRecipeBuilder;
 	}
 
-	public SoapRecipe getSoapRecipe() {
+	public SoapRecipe createSoapRecipe() {
 		return getSoapRecipeBuilder().build();
-	}
-
-	public static <T extends Ingredient> RecipeEntry<T> createRecipeEntry(T ingredient, Double percentage) {
-		return RecipeEntry.<T>builder().id(ingredient.getId()).ingredient(ingredient)
-				.percentage(Percentage.of(percentage)).build();
 	}
 }

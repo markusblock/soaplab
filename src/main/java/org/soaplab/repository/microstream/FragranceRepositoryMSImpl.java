@@ -1,7 +1,6 @@
 package org.soaplab.repository.microstream;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.Set;
 
 import org.soaplab.domain.Fragrance;
 import org.soaplab.repository.FragranceRepository;
@@ -18,7 +17,7 @@ public class FragranceRepositoryMSImpl extends IngredientRepositoryMSImpl<Fragra
 	}
 
 	@Override
-	protected Map<UUID, Fragrance> getIdToEntityMapping() {
+	protected Set<Fragrance> getEntitiesInternal() {
 		return repository.getRoot().getAllFragrances();
 	}
 }

@@ -19,11 +19,11 @@ import org.soaplab.domain.Liquid.LiquidBuilder;
 import lombok.Getter;
 
 @Getter
-public class IngredientsRandomTestData {
+public class RandomIngredientsTestData {
 
 	private final static int STRING_LENGTH = 5;
 
-	public IngredientsRandomTestData() {
+	public RandomIngredientsTestData() {
 	}
 
 	public static FatBuilder<?, ?> getFatBuilder() {

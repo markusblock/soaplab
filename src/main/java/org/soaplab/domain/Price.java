@@ -2,7 +2,6 @@ package org.soaplab.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Currency;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,6 +19,8 @@ public class Price implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Currency is € Euro.
+	 */
 	private BigDecimal value;
-	private Currency currency;
 }

@@ -21,25 +21,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 public class Fat extends Ingredient {
 
-	private static final long serialVersionUID = 1L;
-
-	/**
-	 * sapNaoh value is the numeric value that allow you to calculate the precise
-	 * amount of sodium hydroxide (NaOH) required to fully saponify a given weight
-	 * of oil/s.
-	 */
-	private BigDecimal sapNaoh;
-	private Integer lauric;
-	private Integer myristic;
-	private Integer palmitic;
-	private Integer stearic;
-	private Integer ricinoleic;
-	private Integer oleic;
-	private Integer linoleic;
-	private Integer linolenic;
-	private Integer iodine;
-	private Integer ins;
-
 	/**
 	 * {@link FatBuilder} adds custom methods to lombok generated builder class.
 	 */
@@ -56,8 +37,31 @@ public class Fat extends Ingredient {
 		}
 	}
 
+	private static final long serialVersionUID = 1L;
+	/**
+	 * sapNaoh value is the numeric value that allow you to calculate the precise
+	 * amount of sodium hydroxide (NaOH) required to fully saponify a given weight
+	 * of oil/s.
+	 */
+	private BigDecimal sapNaoh;
+	private Integer lauric;
+	private Integer myristic;
+	private Integer palmitic;
+	private Integer stearic;
+	private Integer ricinoleic;
+	private Integer oleic;
+	private Integer linoleic;
+	private Integer linolenic;
+	private Integer iodine;
+
+	private Integer ins;
+
 	@Override
 	public Fat getClone() {
 		return new Fat(this.toBuilder());
+	}
+
+	public FatBuilder<?, ?> getCopyBuilder() {
+		return this.toBuilder();
 	}
 }

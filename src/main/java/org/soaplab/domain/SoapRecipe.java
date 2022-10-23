@@ -49,7 +49,32 @@ public class SoapRecipe extends NamedEntity {
 	 * Amount of fragrance in percentage regarding total oil
 	 */
 	private Percentage fragranceTotal;
+
+	/**
+	 * Optional notes on the recipt.
+	 */
 	private String notes;
+	/**
+	 * Calculated value. Total amount of NaOH.
+	 */
+	private Weight naohTotal;
+	/**
+	 * Calculated value. Total amount of KOH.
+	 */
+	private Weight kohTotal;
+	/**
+	 * Calculated value. Total amount of liquids.
+	 */
+	private Weight liquidTotal;
+	/**
+	 * Calculated value. Total weight of all ingredients in the recipe.
+	 */
+	private Weight weightTotal;
+	/**
+	 * Calculated value. Total costs of all ingredients in the recipe.
+	 */
+	private Price costsTotal;
+
 	private List<RecipeEntry<Fat>> fats = new ArrayList<>();
 	private List<RecipeEntry<Acid>> acids = new ArrayList<>();
 	private List<RecipeEntry<Fragrance>> fragrances = new ArrayList<>();
@@ -61,6 +86,11 @@ public class SoapRecipe extends NamedEntity {
 		return new SoapRecipe(this.toBuilder().fats(getRecipeEntryListDeepClone(fats))
 				.acids(getRecipeEntryListDeepClone(acids)).fragrances(getRecipeEntryListDeepClone(fragrances))
 				.liquids(getRecipeEntryListDeepClone(liquids)));
+	}
+
+	public SoapRecipeBuilder<?, ?> getCopyBuilder() {
+		return this.toBuilder().fats(getRecipeEntryListDeepClone(fats)).acids(getRecipeEntryListDeepClone(acids))
+				.fragrances(getRecipeEntryListDeepClone(fragrances)).liquids(getRecipeEntryListDeepClone(liquids));
 	}
 
 	private <T extends Ingredient> List<RecipeEntry<T>> getRecipeEntryListDeepClone(

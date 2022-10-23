@@ -20,14 +20,14 @@ public abstract class IngredientRepositoryMSImpl<T extends Ingredient> extends E
 
 	@Override
 	public List<T> findByInci(String inci) {
-		return idToEntity.values().stream()
+		return getEntitiesInternal().stream()
 				.filter(ingredient -> ingredient.getInci().toLowerCase().contains(inci.toLowerCase()))
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<T> findByNameOrInci(String nameOrInci) {
-		return idToEntity.values().stream()
+		return getEntitiesInternal().stream()
 				.filter(ingredient -> ingredient.getName().toLowerCase().contains(nameOrInci.toLowerCase())
 						|| ingredient.getInci().toLowerCase().contains(nameOrInci.toLowerCase()))
 				.collect(Collectors.toList());

@@ -34,10 +34,25 @@ public class IngredientAssert extends AbstractAssert<IngredientAssert, Ingredien
 
 		isNotNull();
 
-		Assertions.assertThat(actual.getId()).isEqualTo(expected.getId());
-		Assertions.assertThat(actual.getName()).isEqualTo(expected.getName());
-		Assertions.assertThat(actual.getInci()).isEqualTo(expected.getInci());
+		idIsEqual(expected);
+		nameIsEqual(expected);
+		inciIsEqual(expected);
 
+		return this;
+	}
+
+	public IngredientAssert idIsEqual(Ingredient expected) {
+		Assertions.assertThat(actual.getId()).isEqualTo(expected.getId());
+		return this;
+	}
+
+	public IngredientAssert nameIsEqual(Ingredient expected) {
+		Assertions.assertThat(actual.getName()).isEqualTo(expected.getName());
+		return this;
+	}
+
+	public IngredientAssert inciIsEqual(Ingredient expected) {
+		Assertions.assertThat(actual.getInci()).isEqualTo(expected.getInci());
 		return this;
 	}
 }

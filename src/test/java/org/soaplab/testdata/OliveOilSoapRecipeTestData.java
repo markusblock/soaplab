@@ -1,6 +1,7 @@
 package org.soaplab.testdata;
 
-import java.util.List;
+import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntries;
+import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntry;
 
 import org.soaplab.domain.Acid;
 import org.soaplab.domain.Fat;
@@ -25,25 +26,50 @@ public class OliveOilSoapRecipeTestData extends RecipeTestDataBuilder {
 		super();
 	}
 
+	protected Liquid createAcidAppleVinegar() {
+		return IngredientsTestData.getAppleVinegarBuilder().build();
+	}
+
+	protected Acid createAcidCitric() {
+		return IngredientsTestData.getCitricAcidBuilder().build();
+	}
+
+	protected Fat createFatCoconutOil() {
+		return IngredientsTestData.getCoconutOilBuilder().build();
+	}
+
+	protected Fat createFatOliveOil() {
+		return IngredientsTestData.getOliveOilBuilder().build();
+	}
+
+	protected Fragrance createFragranceLavendel() {
+		return IngredientsTestData.getLavendelFragranceBuilder().build();
+	}
+
+	protected Liquid createLiquidWater() {
+		return IngredientsTestData.getWaterBuilder().build();
+	}
+
+	@Override
 	public SoapRecipeBuilder<?, ?> getSoapRecipeBuilder() {
-		oliveOil = IngredientsTestData.getOliveOilBuilder().build();
-		water = IngredientsTestData.getWaterBuilder().build();
-		coconutOil = IngredientsTestData.getCoconutOilBuilder().build();
-		lavendelFragrance = IngredientsTestData.getLavendelFragranceBuilder().build();
-		citricAcid = IngredientsTestData.getCitricAcidBuilder().build();
-		appleVinegar = IngredientsTestData.getAppleVinegarBuilder().build();
+		oliveOil = createFatOliveOil();
+		water = createLiquidWater();
+		coconutOil = createFatCoconutOil();
+		lavendelFragrance = createFragranceLavendel();
+		citricAcid = createAcidCitric();
+		appleVinegar = createAcidAppleVinegar();
 
 		return super.getSoapRecipeBuilder()//
 				.name(OLIVE_SOAP_RECIPE_NAME) //
-				.fats(List.of( //
+				.fats(createRecipeEntries( //
 						createRecipeEntry(oliveOil, 80d), //
 						createRecipeEntry(coconutOil, 20d))) //
-				.acids(List.of( //
+				.acids(createRecipeEntries( //
 						createRecipeEntry(citricAcid, 4d))) //
-				.liquids(List.of(//
+				.liquids(createRecipeEntries(//
 						createRecipeEntry(water, 100d))) //
 				// createReceiptEntry(appleVinegar, 50d))) //
-				.fragrances(List.of( //
+				.fragrances(createRecipeEntries( //
 						createRecipeEntry(lavendelFragrance, 100d)));
 	}
 }
