@@ -142,8 +142,7 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 				storeEntitiesInRepository();
 				storeCompositeEntitiesInRepository(entity);
 			} catch (IllegalAccessException | InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error(e.getMessage(), e);
 			}
 		});
 	}
