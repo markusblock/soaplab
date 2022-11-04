@@ -38,6 +38,29 @@ public class FatAssert extends IngredientAssert {
 		return this;
 	}
 
+	@Override
+	public FatAssert isDeepEqualToExceptId(Ingredient expected) {
+
+		isNotNull();
+
+		super.isDeepEqualToExceptId(expected);
+
+		final Fat expectedFat = (Fat) expected;
+		sapNaohIsEqual(expectedFat);
+		lauricIsEqual(expectedFat);
+		myristicIsEqual(expectedFat);
+		palmiticIsEqual(expectedFat);
+		stearicIsEqual(expectedFat);
+		ricinoleicIsEqual(expectedFat);
+		oleicIsEqual(expectedFat);
+		linoleicIsEqual(expectedFat);
+		linolenicIsEqual(expectedFat);
+		iodineIsEqual(expectedFat);
+		insIsEqual(expectedFat);
+
+		return this;
+	}
+
 	public FatAssert sapNaohIsEqual(Fat expectedFat) {
 		Assertions.assertThat(getActual().getSapNaoh()).usingComparator(new BigDecimalComparator())
 				.isEqualTo(expectedFat.getSapNaoh());

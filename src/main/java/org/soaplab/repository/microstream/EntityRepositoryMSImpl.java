@@ -3,6 +3,7 @@ package org.soaplab.repository.microstream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -11,8 +12,10 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.soaplab.domain.NamedEntity;
 import org.soaplab.domain.exception.DuplicateNameException;
+import org.soaplab.domain.exception.EntityNotFoundException;
 import org.soaplab.repository.EntityRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import lombok.extern.slf4j.Slf4j;
 import one.microstream.concurrency.XThreads;
@@ -20,6 +23,8 @@ import one.microstream.concurrency.XThreads;
 @Component
 @Slf4j
 public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements EntityRepository<T> {
+
+	private static final long serialVersionUID = 1L;
 
 	protected final MicrostreamRepository repository;
 
@@ -30,9 +35,10 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 
 	@Override
 	public T create(T entity) {
-		log.info("Adding new entity " + entity);
-
+		Assert.notNull(entity, "Entity must not be null");
 		assertNoEntityWithNameExists(entity);
+
+		log.info("Adding new entity " + entity);
 
 		final UUID uuid = UUID.randomUUID();
 		final T entityCopy = (T) entity.toBuilder().id(uuid).build();
@@ -58,13 +64,16 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 
 	@Override
 	public void delete(UUID id) {
-		final T entity = get(id);
-		log.info("Deleting entity " + entity);
+		Assert.notNull(id, "Id must not be null");
 
-		assertEntityIsNotReferencedByOtherEntities(entity);
+		getInternalWithoutException(id).ifPresentOrElse(entity -> {
+			log.info("Deleting entity " + entity);
 
-		getEntitiesInternal().remove(entity);
-		storeEntitiesInRepository();
+			assertEntityIsNotReferencedByOtherEntities(entity);
+
+			getEntitiesInternal().remove(entity);
+			storeEntitiesInRepository();
+		}, () -> log.info("Entity couldn't be deleted because entity with id '" + id + "' doesn't exist"));
 	}
 
 	private void deleteEntitiesInRepository() {
@@ -88,15 +97,23 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 	}
 
 	@Override
-	public T get(UUID id) {
+	public T get(UUID id) throws EntityNotFoundException {
+		Assert.notNull(id, "Id must not be null");
+
+		log.debug("Get entity for id " + id);
+
 		final T entity = getInternal(id);
-		// TODO throwNotFoundExceptionIfRequired(fat);
 		getAndReplaceCompositeEntitiesFromRepository(entity);
 		return (T) entity.getCopyBuilder().build();
 	}
 
 	private T getInternal(UUID id) {
-		return getEntitiesInternal().stream().filter(e -> e.getId().equals(id)).findFirst().orElseThrow();
+		return getEntitiesInternal().stream().filter(e -> e.getId().equals(id)).findFirst()
+				.orElseThrow(() -> new EntityNotFoundException(id));
+	}
+
+	private Optional<T> getInternalWithoutException(UUID id) {
+		return getEntitiesInternal().stream().filter(e -> e.getId().equals(id)).findFirst();
 	}
 
 	protected void assertEntityIsNotReferencedByOtherEntities(T entity) {
@@ -124,12 +141,15 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 	}
 
 	@Override
-	public void update(T entity) {
+	public T update(T entity) {
+		Assert.notNull(entity, "Entity must not be null");
+
 		log.info("Updating entity " + entity);
 
+		// would throw not found exception if not present
+		final T oldEntity = getInternal(entity.getId());
+
 		XThreads.executeSynchronized(() -> {
-			// would throw not found exception if not present
-			final T oldEntity = getInternal(entity.getId());
 
 			if (!oldEntity.getName().equals(entity.getName())) {
 				// if name has changed check that no entity with new name already exists
@@ -145,5 +165,6 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 				log.error(e.getMessage(), e);
 			}
 		});
+		return (T) oldEntity.toBuilder().build();
 	}
 }

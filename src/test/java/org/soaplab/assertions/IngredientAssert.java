@@ -41,6 +41,18 @@ public class IngredientAssert extends AbstractAssert<IngredientAssert, Ingredien
 		return this;
 	}
 
+	public IngredientAssert isDeepEqualToExceptId(Ingredient expected) {
+
+		isNotNull();
+
+		// id is not checked to compare entities before and after it is stored. When
+		// stored the id is set.
+		nameIsEqual(expected);
+		inciIsEqual(expected);
+
+		return this;
+	}
+
 	public IngredientAssert idIsEqual(Ingredient expected) {
 		Assertions.assertThat(actual.getId()).isEqualTo(expected.getId());
 		return this;

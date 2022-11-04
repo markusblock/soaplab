@@ -52,7 +52,6 @@ class FatRepositorylTest {
 
 		final String expectedMessage = "Entity with name '" + fatBuilder.build().getName() + "' already exists";
 		final String actualMessage = exception.getMessage();
-
 		assertTrue(actualMessage.contains(expectedMessage));
 	}
 

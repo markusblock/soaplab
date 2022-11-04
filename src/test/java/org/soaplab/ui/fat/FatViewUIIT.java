@@ -29,9 +29,9 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 
 	@Test
 	public void createNewFat() {
-		FatDetailsPageObject details = pageObject.getIngredientDetails();
+		final FatDetailsPageObject details = pageObject.getIngredientDetails();
 		details.name().shouldBeReadOnly();
-		Fat fat = RandomIngredientsTestData.getFatBuilder().sapNaoh(new BigDecimal(BigInteger.valueOf(1234), 2))
+		final Fat fat = RandomIngredientsTestData.getFatBuilder().sapNaoh(new BigDecimal(BigInteger.valueOf(1234), 2))
 				.build();
 
 		details.buttonAdd().click();
@@ -66,24 +66,22 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 		details.ricinoleic().shouldBeReadOnly().shouldHaveValue(fat.getRicinoleic());
 		details.stearic().shouldBeReadOnly().shouldHaveValue(fat.getStearic());
 
-		IngredientListPageObject list = pageObject.getIngredientList();
+		final IngredientListPageObject list = pageObject.getIngredientList();
 		list.ingredientShouldAppear(fat);
-		repoHelper.assertThatFatHasValues(fat.getName(), fat.getInci(), fat.getIns(), fat.getSapNaoh(), fat.getIodine(),
-				fat.getLauric(), fat.getLinoleic(), fat.getLinolenic(), fat.getMyristic(), fat.getOleic(),
-				fat.getPalmitic(), fat.getRicinoleic(), fat.getStearic());
+		repoHelper.assertThatFatHasSameValuesExceptId(fat);
 	}
 
 	@Test
 	public void deleteFat() {
-		Fat fat1 = repoHelper.createFat();
-		Fat fat2 = repoHelper.createFat();
+		final Fat fat1 = repoHelper.createFat();
+		final Fat fat2 = repoHelper.createFat();
 
-		IngredientListPageObject list = pageObject.getIngredientList();
+		final IngredientListPageObject list = pageObject.getIngredientList();
 		list.triggerReload();
 		list.ingredientShouldAppear(fat1).ingredientShouldAppear(fat2);
 		list.selectIngredient(fat1);
 
-		IngredientDetailsPageObject details = pageObject.getIngredientDetails();
+		final IngredientDetailsPageObject details = pageObject.getIngredientDetails();
 		details.buttonRemove().click();
 
 		list.ingredientShouldNotAppear(fat1).ingredientShouldAppear(fat2);
@@ -92,15 +90,15 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 
 	@Test
 	public void updateFat() {
-		Fat fat1 = repoHelper.createFat();
-		Fat fat2 = RandomIngredientsTestData.getFatBuilder().build();
+		final Fat fat1 = repoHelper.createFat();
+		final Fat fat2 = RandomIngredientsTestData.getFatBuilder().build();
 
-		IngredientListPageObject list = pageObject.getIngredientList();
+		final IngredientListPageObject list = pageObject.getIngredientList();
 		list.triggerReload();
 		list.ingredientShouldAppear(fat1);
 		list.selectIngredient(fat1);
 
-		IngredientDetailsPageObject details = pageObject.getIngredientDetails();
+		final IngredientDetailsPageObject details = pageObject.getIngredientDetails();
 		details.buttonEdit().click();
 		details.id().shouldBeReadOnly().shouldNotBeEmpty();
 		details.name().shouldBeEditable().shouldHaveValue(fat1.getName()).setValue(fat2.getName());
