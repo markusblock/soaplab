@@ -25,14 +25,7 @@ public class SoapRecipe extends NamedEntity {
 	private static final long serialVersionUID = 1L;
 
 	private Date manufacturingDate;
-	/**
-	 * NaOH to KOH ratio in Percentage. 80% means 80% NaOH and 20% KOH.
-	 */
-	private Percentage naOHToKOHRatio;
-	/**
-	 * The purity of the KOH
-	 */
-	private Percentage kOHPurity;
+
 	/**
 	 * Liquid in regards to the total amount of fats
 	 */
@@ -79,6 +72,16 @@ public class SoapRecipe extends NamedEntity {
 	private List<RecipeEntry<Acid>> acids = new ArrayList<>();
 	private List<RecipeEntry<Fragrance>> fragrances = new ArrayList<>();
 	private List<RecipeEntry<Liquid>> liquids = new ArrayList<>();
+	/**
+	 * NaOH and KOH in sum 100%
+	 */
+	private RecipeEntry<Lye> naOH;
+
+	/**
+	 * NaOH and KOH in sum 100%
+	 */
+	private RecipeEntry<KOH> kOH;
+
 	// customAdditives
 
 	@Override

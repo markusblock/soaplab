@@ -11,6 +11,7 @@ import org.soaplab.repository.AcidRepository;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.FragranceRepository;
 import org.soaplab.repository.LiquidRepository;
+import org.soaplab.repository.LyeRepository;
 import org.soaplab.service.SoapCalculatorService;
 import org.soaplab.ui.views.EntityDetails;
 import org.soaplab.ui.views.EntityViewDetailsControllerCallback;
@@ -27,7 +28,7 @@ public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
 
 	public RecipeDetailsPanel(EntityViewDetailsControllerCallback<SoapRecipe> callback, FatRepository fatRepository,
 			AcidRepository acidRepository, LiquidRepository liquidRepository, FragranceRepository fragranceRepository,
-			SoapCalculatorService soapCalculatorService) {
+			LyeRepository lyeRepository, SoapCalculatorService soapCalculatorService) {
 		super(callback);
 		this.soapCalculatorService = soapCalculatorService;
 		addPropertyPercentageField("domain.recipe.superfat", SoapRecipe::getSuperFat, SoapRecipe::setSuperFat);

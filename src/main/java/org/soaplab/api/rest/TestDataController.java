@@ -10,7 +10,9 @@ import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
 import org.soaplab.domain.FragranceType;
 import org.soaplab.domain.Ingredient;
+import org.soaplab.domain.KOH;
 import org.soaplab.domain.Liquid;
+import org.soaplab.domain.Lye;
 import org.soaplab.domain.Percentage;
 import org.soaplab.domain.RecipeEntry;
 import org.soaplab.domain.SoapRecipe;
@@ -20,6 +22,7 @@ import org.soaplab.repository.AcidRepository;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.FragranceRepository;
 import org.soaplab.repository.LiquidRepository;
+import org.soaplab.repository.LyeRepository;
 import org.soaplab.repository.SoapRecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,11 +46,14 @@ public class TestDataController {
 	private static final String COCONUT_OIL_NAME = "Coconut Oil";
 	private static final String OLIVE_OIL_NAME = "Olive Oil";
 	private static final String OLIVE_SOAP_RECIPE_NAME = "Olive Soap";
-	private FatRepository fatRepository;
-	private AcidRepository acidRepository;
-	private LiquidRepository liquidRepository;
-	private FragranceRepository fragranceRepository;
-	private SoapRecipeRepository soapRecipeRepository;
+	private static final String NAOH_NAME = "NaOH";
+	private static final String KOH_NAME = "KOH";
+	private final FatRepository fatRepository;
+	private final AcidRepository acidRepository;
+	private final LiquidRepository liquidRepository;
+	private final FragranceRepository fragranceRepository;
+	private final SoapRecipeRepository soapRecipeRepository;
+	private final LyeRepository lyeRepository;
 	private Fat oliveOil;
 	private Fat coconutOil;
 	private SoapRecipe oliveSoap;
@@ -55,16 +61,19 @@ public class TestDataController {
 	private Acid citricAcid;
 	private Liquid water;
 	private Liquid appleVinegar;
+	private Lye naOH;
+	private Lye kOH;
 
 	@Autowired
 	public TestDataController(FatRepository fatRepository, AcidRepository acidRepository,
 			LiquidRepository liquidRepository, FragranceRepository fragranceRepository,
-			SoapRecipeRepository soapRecipeRepository) {
+			SoapRecipeRepository soapRecipeRepository, LyeRepository lyeRepository) {
 		this.acidRepository = acidRepository;
 		this.liquidRepository = liquidRepository;
 		this.fragranceRepository = fragranceRepository;
 		this.soapRecipeRepository = soapRecipeRepository;
 		this.fatRepository = fatRepository;
+		this.lyeRepository = lyeRepository;
 	}
 
 	@PostMapping
@@ -76,6 +85,7 @@ public class TestDataController {
 		createFragrances();
 		createAcids();
 		createLiquids();
+		createLyes();
 		createSoapRecipe();
 	}
 
@@ -87,12 +97,14 @@ public class TestDataController {
 		fatRepository.delete(fatRepository.findByName(OLIVE_OIL_NAME).get(0).getId());
 		fatRepository.delete(fatRepository.findByName(COCONUT_OIL_NAME).get(0).getId());
 		fragranceRepository.delete(fragranceRepository.findByName(LAVENDEL_NAME).get(0).getId());
+		lyeRepository.delete(naOH.getId());
+		lyeRepository.delete(kOH.getId());
 		soapRecipeRepository.delete(soapRecipeRepository.findByName(OLIVE_SOAP_RECIPE_NAME).get(0).getId());
 	}
 
 	private void createSoapRecipe() {
 		oliveSoap = SoapRecipe.builder().name(OLIVE_SOAP_RECIPE_NAME).manufacturingDate(Date.from(Instant.now()))
-				.naOHToKOHRatio(Percentage.of(100)).kOHPurity(Percentage.of(89.5))
+				.naOH(naOH).kOH(kOH).naOHToKOHRatio(Percentage.of(100)).kOHPurity(Percentage.of(89.5))
 				.fatsTotal(Weight.of(100, WeightUnit.GRAMS)).liquidToFatRatio(Percentage.of(33))
 				.superFat(Percentage.of(10)).fragranceTotal(Percentage.of(3)).fats(List.of( //
 						createReceiptEntry(oliveOil, 80d), //
@@ -134,5 +146,10 @@ public class TestDataController {
 		water = liquidRepository.create(Liquid.builder().name(WATER_NAME).inci("Aqua").build());
 		appleVinegar = liquidRepository
 				.create(Liquid.builder().name(APPLE_VINEGAR_NAME).inci("").sapNaoh(0.666d * 0.051d).build());
+	}
+
+	private void createLyes() {
+		naOH = lyeRepository.create(Lye.builder().name(NAOH_NAME).inci("naoh").build());
+		kOH = lyeRepository.create(KOH.builder().name(KOH_NAME).inci("koh").build());
 	}
 }
