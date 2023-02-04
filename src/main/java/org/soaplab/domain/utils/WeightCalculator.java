@@ -10,11 +10,11 @@ import org.soaplab.domain.WeightUnit;
 
 public class WeightCalculator {
 
-	private final MathContext mathContext;
+	private final MathContext resultMathContext;
 
-	public WeightCalculator(MathContext mathContext) {
+	public WeightCalculator(MathContext resultMathContext) {
 		super();
-		this.mathContext = mathContext;
+		this.resultMathContext = resultMathContext;
 	}
 
 	public WeightCalculator(int decimalPlaces, RoundingMode roundingMode) {
@@ -22,7 +22,11 @@ public class WeightCalculator {
 	}
 
 	private Weight createNewWeight(BigDecimal bd, WeightUnit unit) {
-		return new Weight(bd.setScale(mathContext.getPrecision(), mathContext.getRoundingMode()), unit);
+		return new Weight(adjustResultScale(bd), unit);
+	}
+	
+	private BigDecimal adjustResultScale(BigDecimal bd) {
+		return bd.setScale(resultMathContext.getPrecision(), resultMathContext.getRoundingMode());
 	}
 
 	public Weight calculatePercentage(Weight weight, Percentage... percentages) {
@@ -36,19 +40,19 @@ public class WeightCalculator {
 	public Weight multiply(Weight weight, BigDecimal... multiplicators) {
 		BigDecimal bd1 = weight.getWeight();
 		for (final BigDecimal multiplicator : multiplicators) {
-			bd1 = bd1.multiply(multiplicator, mathContext);
+			bd1 = bd1.multiply(multiplicator);
 		}
 		return createNewWeight(bd1, weight.getUnit());
 	}
 
 	public Weight divide(Weight weight, BigDecimal divisor) {
-		return new Weight(weight.getWeight().divide(divisor, mathContext), weight.getUnit());
+		return createNewWeight(weight.getWeight().divide(divisor, MathContext.DECIMAL32), weight.getUnit());
 	}
 
 	public Weight subtract(Weight weight, Weight... subtractors) {
 		BigDecimal bd1 = weight.getWeight();
 		for (final Weight subtractor : subtractors) {
-			bd1 = bd1.subtract(subtractor.getWeight(), mathContext);
+			bd1 = bd1.subtract(subtractor.getWeight());
 		}
 		return createNewWeight(bd1, weight.getUnit());
 	}
@@ -56,7 +60,7 @@ public class WeightCalculator {
 	public Weight plus(Weight weight, Weight... summands) {
 		BigDecimal bd1 = weight.getWeight();
 		for (final Weight weightToAdd : summands) {
-			bd1 = bd1.add(weightToAdd.getWeight(), mathContext);
+			bd1 = bd1.add(weightToAdd.getWeight());
 		}
 		return createNewWeight(bd1, weight.getUnit());
 	}

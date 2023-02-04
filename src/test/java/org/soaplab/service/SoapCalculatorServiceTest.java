@@ -43,11 +43,11 @@ public class SoapCalculatorServiceTest {
 				.calculate(oliveOilSoapRecipe.createSoapRecipe());
 
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getNaohTotal()).isEqualToWeightInGrams(13.7682d);
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getKohTotal()).isEqualToWeightInGrams(2.384d);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getKohTotal()).isEqualToWeightInGrams(2.3841d);
 		Assertions.assertThat(calculatedSoapRecipeResult.getLiquids().size()).isEqualTo(1);
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquids().get(0).getWeight()).isEqualToWeightInGrams(33);
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquidTotal()).isEqualToWeightInGrams(33);
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getFatsTotal()).isEqualToWeightInGrams(33);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getFatsTotal()).isEqualToWeightInGrams(100);
 	}
 
 	// TODO: test with 0 KOH

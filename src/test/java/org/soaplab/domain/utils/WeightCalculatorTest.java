@@ -13,7 +13,7 @@ import org.soaplab.domain.WeightUnit;
 
 class WeightCalculatorTest {
 
-	private final MathContext mathContext = new MathContext(5, RoundingMode.HALF_UP);
+	private final MathContext mathContext = new MathContext(4, RoundingMode.HALF_UP);
 	private WeightCalculator calc;
 
 	@BeforeEach
@@ -44,7 +44,9 @@ class WeightCalculatorTest {
 		WeightAssert.assertThat(calc.multiply(createWeight(1.999), BigDecimal.valueOf(0.5d)))
 				.isEqualToWeightInGrams(0.9995);
 		WeightAssert.assertThat(calc.multiply(createWeight(1.9999), BigDecimal.valueOf(0.5d)))
-				.isEqualToWeightInGrams(0.99995);
+				.isEqualToWeightInGrams(1);
+		WeightAssert.assertThat(calc.multiply(createWeight(1.9999), BigDecimal.valueOf(2d)))
+		.isEqualToWeightInGrams(3.9998);
 		WeightAssert.assertThat(calc.multiply(createWeight(1.99999), BigDecimal.valueOf(0.5d)))
 				.isEqualToWeightInGrams(1);
 	}
@@ -57,6 +59,12 @@ class WeightCalculatorTest {
 		WeightAssert.assertThat(calc.calculatePercentage(createWeight(100), Percentage.of(0.3)))
 				.isEqualToWeightInGrams(0.3);
 
+	}
+	
+	@Test
+	void divide() {
+		WeightAssert.assertThat(calc.divide(createWeight(0), BigDecimal.valueOf(0.5d))).isEqualToWeightInGrams(0);
+		WeightAssert.assertThat(calc.divide(createWeight(0.1d), BigDecimal.valueOf(0.9d))).isEqualToWeightInGrams(0.1111);
 	}
 
 	private Weight createWeight(int weight) {

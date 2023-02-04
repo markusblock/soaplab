@@ -83,17 +83,17 @@ public class PageObjectElement {
 	}
 
 	public PageObjectElement setValue(String value) {
-		$(locator).$(byTagName("input")).setValue(value);
+		$(locator).$(byTagName("input")).scrollIntoView(true).setValue(value);
 		return this;
 	}
 
 	public PageObjectElement clearValue() {
-		$(locator).$(byTagName("input")).clear();
+		$(locator).$(byTagName("input")).scrollIntoView(true).clear();
 		return this;
 	}
 
 	public PageObjectElement appendValue(String value) {
-		$(locator).$(byTagName("input")).append(value);
+		$(locator).$(byTagName("input")).scrollIntoView(true).append(value);
 		return this;
 	}
 

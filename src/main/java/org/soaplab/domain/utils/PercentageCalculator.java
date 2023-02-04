@@ -5,21 +5,31 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 
 import org.soaplab.domain.Percentage;
+import org.soaplab.domain.Weight;
+import org.soaplab.domain.WeightUnit;
 
 public class PercentageCalculator {
 
-	private final MathContext mathContext;
+	private final MathContext resultMathContext;
 
-	public PercentageCalculator(MathContext mathContext) {
+	public PercentageCalculator(MathContext resultMathContext) {
 		super();
-		this.mathContext = mathContext;
+		this.resultMathContext = resultMathContext;
 	}
 
 	public PercentageCalculator(int decimalPlaces, RoundingMode roundingMode) {
 		this(new MathContext(decimalPlaces, roundingMode));
 	}
+	
+	private Percentage createNewPercentage(BigDecimal bd) {
+		return new Percentage(bd.setScale(resultMathContext.getPrecision(), resultMathContext.getRoundingMode()));
+	}
+	
+	private BigDecimal adjustResultScale(BigDecimal bd) {
+		return bd.setScale(resultMathContext.getPrecision(), resultMathContext.getRoundingMode());
+	}
 
 	public BigDecimal divide(Percentage divident, Percentage divisor) {
-		return divident.getNumber().divide(divisor.getNumber(), mathContext);
+		return adjustResultScale(divident.getNumber().divide(divisor.getNumber(), MathContext.DECIMAL32));
 	}
 }
