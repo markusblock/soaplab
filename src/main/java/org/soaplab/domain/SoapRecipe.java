@@ -75,7 +75,7 @@ public class SoapRecipe extends NamedEntity {
 	/**
 	 * NaOH and KOH in sum 100%
 	 */
-	private RecipeEntry<Lye> naOH;
+	private RecipeEntry<NaOH> naOH;
 
 	/**
 	 * NaOH and KOH in sum 100%
@@ -87,7 +87,8 @@ public class SoapRecipe extends NamedEntity {
 	@Override
 	public SoapRecipeBuilder<?, ?> getCopyBuilder() {
 		return this.toBuilder().fats(getRecipeEntryListDeepClone(fats)).acids(getRecipeEntryListDeepClone(acids))
-				.fragrances(getRecipeEntryListDeepClone(fragrances)).liquids(getRecipeEntryListDeepClone(liquids));
+				.fragrances(getRecipeEntryListDeepClone(fragrances)).liquids(getRecipeEntryListDeepClone(liquids))
+				.naOH(naOH.getCopyBuilder().build()).kOH(kOH.getCopyBuilder().build());
 	}
 
 	private <T extends Ingredient> List<RecipeEntry<T>> getRecipeEntryListDeepClone(

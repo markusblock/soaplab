@@ -22,6 +22,8 @@ public abstract class Ingredient extends NamedEntity {
 	private static final long serialVersionUID = 1L;
 
 	private String inci;
-
+	/**
+	 * Price of this ingredient per 100g
+	 */
 	private Price cost;
 }

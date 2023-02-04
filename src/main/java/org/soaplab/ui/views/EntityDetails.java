@@ -151,6 +151,14 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 				.bind(getter, setter);
 	}
 
+	protected void addPropertyPriceField(String id, ValueProvider<T, Price> getter, Setter<T, Price> setter) {
+		final TextField propertyField = createPropertyTextField(id);
+		propertyField.setSuffixComponent(new Div(new Text("€")));
+		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToPriceValueConverter())
+				.bindReadOnly(getter);
+	}
+
 	protected void addPropertyPriceFieldReadOnly(String id, ValueProvider<T, Price> getter) {
 		final TextField propertyField = createPropertyTextField(id);
 		propertyField.setSuffixComponent(new Div(new Text("€")));
@@ -287,11 +295,25 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 
 	private void setEntityInternal(T entity) {
 		this.entity = entity;
+
+		if (entity != null) {
+			processEntity(entity);
+		}
+
 		binder.readBean(entity);
 		editButton.setEnabled(entity != null);
 		removeButton.setEnabled(entity != null);
 
 		setEntity(entity);
+	}
+
+	/**
+	 * Override in subclasses to process entity, e.g. to calculate non persistent
+	 * fields.
+	 *
+	 * @param entity the entity to be processed, not <code>null</code>
+	 */
+	protected void processEntity(T entity) {
 	}
 
 	public void showEntity(T entity) {

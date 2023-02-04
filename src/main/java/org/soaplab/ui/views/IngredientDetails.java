@@ -10,6 +10,7 @@ public abstract class IngredientDetails<T extends Ingredient> extends EntityDeta
 		super(callback);
 
 		addPropertyStringField("domain.ingredient.inci", Ingredient::getInci, Ingredient::setInci, false);
+		addPropertyPriceField("domain.ingredient.price", Ingredient::getCost, Ingredient::setCost);
 
 	}
 }

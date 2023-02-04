@@ -29,14 +29,6 @@ public class Percentage implements Serializable {
 		return new Percentage(BigDecimal.valueOf(number));
 	}
 
-	public Percentage minus(Percentage percentage) {
-		return new Percentage(number.subtract(percentage.getNumber()));
-	}
-
-	public Percentage plus(Percentage percentage) {
-		return new Percentage(number.add(percentage.getNumber()));
-	}
-
 	public void validate(Double number) {
 		if (number < 0d) {
 			throw new NumberFormatException("Percentage not allowed to be < 0%");

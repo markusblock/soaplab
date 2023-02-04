@@ -14,7 +14,9 @@ import org.soaplab.domain.exception.EntityNotFoundException;
 import org.soaplab.repository.AcidRepository;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.FragranceRepository;
+import org.soaplab.repository.KOHRepository;
 import org.soaplab.repository.LiquidRepository;
+import org.soaplab.repository.NaOHRepository;
 import org.soaplab.repository.SoapRecipeRepository;
 import org.soaplab.testdata.RandomIngredientsTestData;
 import org.soaplab.testdata.RandomSoapRecipeRepositoryTestData;
@@ -23,6 +25,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RepositoryTestHelper {
+
+	@Autowired
+	private NaOHRepository naohRepository;
+
+	@Autowired
+	private KOHRepository kohRepository;
 
 	@Autowired
 	private FatRepository fatRepository;
@@ -86,7 +94,7 @@ public class RepositoryTestHelper {
 
 	public SoapRecipe createSoapRecipeWithRandomData() {
 		final RandomSoapRecipeRepositoryTestData testData = new RandomSoapRecipeRepositoryTestData(soapRecipeRepository,
-				fatRepository, acidRepository, liquidRepository, fragranceRepository);
+				fatRepository, acidRepository, liquidRepository, fragranceRepository, naohRepository, kohRepository);
 		return testData.createSoapRecipe();
 	}
 

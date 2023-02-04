@@ -6,7 +6,9 @@ import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntry;
 import org.soaplab.domain.Acid;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
+import org.soaplab.domain.KOH;
 import org.soaplab.domain.Liquid;
+import org.soaplab.domain.NaOH;
 import org.soaplab.domain.SoapRecipe.SoapRecipeBuilder;
 
 import lombok.Getter;
@@ -14,6 +16,8 @@ import lombok.Getter;
 @Getter
 public class RandomSoapRecipeTestData extends RecipeTestDataBuilder {
 
+	private NaOH naoh;
+	private KOH koh;
 	private Fat fat1;
 	private Fat fat2;
 	private Liquid liquid1;
@@ -29,6 +33,8 @@ public class RandomSoapRecipeTestData extends RecipeTestDataBuilder {
 
 	@Override
 	public SoapRecipeBuilder<?, ?> getSoapRecipeBuilder() {
+		naoh = createNaOH();
+		koh = createKOH();
 		fat1 = createFat();
 		fat2 = createFat();
 		liquid1 = createLiquid();
@@ -40,6 +46,8 @@ public class RandomSoapRecipeTestData extends RecipeTestDataBuilder {
 
 		return super.getSoapRecipeBuilder() //
 				.name(RandomIngredientsTestData.getRandomString()) //
+				.naOH(createRecipeEntry(naoh, 50d)) //
+				.kOH(createRecipeEntry(koh, 50d)) //
 				.fats(createRecipeEntries(createRecipeEntry(fat1, 60d), createRecipeEntry(fat2, 40d))) //
 				.liquids(createRecipeEntries(createRecipeEntry(liquid1, 30d), createRecipeEntry(liquid2, 70d)))
 				.acids(createRecipeEntries(createRecipeEntry(acid1, 50d), createRecipeEntry(acid2, 50d))) //
@@ -61,5 +69,13 @@ public class RandomSoapRecipeTestData extends RecipeTestDataBuilder {
 
 	protected Fat createFat() {
 		return RandomIngredientsTestData.getFatBuilder().build();
+	}
+
+	protected NaOH createNaOH() {
+		return RandomIngredientsTestData.getNaOHBuilder().build();
+	}
+
+	protected KOH createKOH() {
+		return RandomIngredientsTestData.getKOHBuilder().build();
 	}
 }

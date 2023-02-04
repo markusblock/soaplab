@@ -10,7 +10,9 @@ import org.soaplab.domain.SoapRecipe;
 import org.soaplab.repository.AcidRepository;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.FragranceRepository;
+import org.soaplab.repository.KOHRepository;
 import org.soaplab.repository.LiquidRepository;
+import org.soaplab.repository.NaOHRepository;
 import org.soaplab.repository.SoapRecipeRepository;
 import org.springframework.stereotype.Component;
 
@@ -20,23 +22,36 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SoapRecipeRepositoryMSImpl extends EntityRepositoryMSImpl<SoapRecipe> implements SoapRecipeRepository {
 
+	private static final long serialVersionUID = 1L;
+
 	private final FatRepository fatRepository;
 	private final AcidRepository acidRepository;
 	private final LiquidRepository liquidRepository;
 	private final FragranceRepository fragranceRepository;
+	private final NaOHRepository naohRepository;
+	private final KOHRepository kohRepository;
 
 	public SoapRecipeRepositoryMSImpl(MicrostreamRepository repository, FatRepository fatRepository,
-			AcidRepository acidRepository, LiquidRepository liquidRepository, FragranceRepository fragranceRepository) {
+			AcidRepository acidRepository, LiquidRepository liquidRepository, FragranceRepository fragranceRepository,
+			NaOHRepository naohRepository, KOHRepository kohRepository) {
 		super(repository);
 		this.fatRepository = fatRepository;
 		this.acidRepository = acidRepository;
 		this.liquidRepository = liquidRepository;
 		this.fragranceRepository = fragranceRepository;
+		this.naohRepository = naohRepository;
+		this.kohRepository = kohRepository;
 	}
 
 	@Override
 	protected void getAndReplaceCompositeEntitiesFromRepository(SoapRecipe entity) {
 		// reload composite entities to reflect potential changes on them
+		if (entity.getNaOH() != null) {
+			entity.getNaOH().setIngredient(naohRepository.get(entity.getNaOH().getIngredient().getId()));
+		}
+		if (entity.getKOH() != null) {
+			entity.getKOH().setIngredient(kohRepository.get(entity.getKOH().getIngredient().getId()));
+		}
 		entity.getFats().forEach(entry -> {
 			final Fat fat = fatRepository.get(entry.getIngredient().getId());
 			entry.setIngredient(fat);
@@ -62,6 +77,8 @@ public class SoapRecipeRepositoryMSImpl extends EntityRepositoryMSImpl<SoapRecip
 
 	@Override
 	protected void storeCompositeEntitiesInRepository(SoapRecipe soapRecipe) {
+		repository.getStorage().store(soapRecipe.getNaOH());
+		repository.getStorage().store(soapRecipe.getKOH());
 		repository.getStorage().storeAll(soapRecipe.getAcids());
 		repository.getStorage().storeAll(soapRecipe.getFats());
 		repository.getStorage().storeAll(soapRecipe.getFragrances());

@@ -5,13 +5,16 @@ import java.util.List;
 import org.soaplab.domain.Acid;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
+import org.soaplab.domain.KOH;
 import org.soaplab.domain.Liquid;
+import org.soaplab.domain.NaOH;
 import org.soaplab.domain.SoapRecipe;
 import org.soaplab.repository.AcidRepository;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.FragranceRepository;
+import org.soaplab.repository.KOHRepository;
 import org.soaplab.repository.LiquidRepository;
-import org.soaplab.repository.LyeRepository;
+import org.soaplab.repository.NaOHRepository;
 import org.soaplab.service.SoapCalculatorService;
 import org.soaplab.ui.views.EntityDetails;
 import org.soaplab.ui.views.EntityViewDetailsControllerCallback;
@@ -23,12 +26,14 @@ public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
 	private final RecipeEntryList<Acid> acids;
 	private final RecipeEntryList<Liquid> liquids;
 	private final RecipeEntryList<Fragrance> fragrances;
+	private final RecipeEntryList<NaOH> naOH;
+	private final RecipeEntryList<KOH> kOH;
 	private SoapRecipe soapRecipe;
 	private final SoapCalculatorService soapCalculatorService;
 
 	public RecipeDetailsPanel(EntityViewDetailsControllerCallback<SoapRecipe> callback, FatRepository fatRepository,
 			AcidRepository acidRepository, LiquidRepository liquidRepository, FragranceRepository fragranceRepository,
-			LyeRepository lyeRepository, SoapCalculatorService soapCalculatorService) {
+			NaOHRepository naOHRepository, KOHRepository kOHRepository, SoapCalculatorService soapCalculatorService) {
 		super(callback);
 		this.soapCalculatorService = soapCalculatorService;
 		addPropertyPercentageField("domain.recipe.superfat", SoapRecipe::getSuperFat, SoapRecipe::setSuperFat);
@@ -37,15 +42,20 @@ public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
 		addPropertyPercentageField("domain.recipe.fragrancetotal", SoapRecipe::getFragranceTotal,
 				SoapRecipe::setFragranceTotal);
 		addPropertyTextArea("domain.recipe.notes", SoapRecipe::getNotes, SoapRecipe::setNotes);
-		addPropertyPercentageField("domain.recipe.naohtokohratio", SoapRecipe::getNaOHToKOHRatio,
-				SoapRecipe::setNaOHToKOHRatio);
-		addPropertyPercentageField("domain.recipe.kohpurity", SoapRecipe::getKOHPurity, SoapRecipe::setKOHPurity);
 
 		addPropertyWeightFieldReadOnly("domain.recipe.naohTotal", SoapRecipe::getNaohTotal);
 		addPropertyWeightFieldReadOnly("domain.recipe.kohTotal", SoapRecipe::getKohTotal);
 		addPropertyWeightFieldReadOnly("domain.recipe.liquidTotal", SoapRecipe::getLiquidTotal);
 		addPropertyWeightFieldReadOnly("domain.recipe.weightTotal", SoapRecipe::getWeightTotal);
 		addPropertyPriceFieldReadOnly("domain.recipe.costsTotal", SoapRecipe::getCostsTotal);
+
+		naOH = new RecipeEntryList<NaOH>(naOHRepository, "domain.naoh");
+		naOH.setSizeFull();
+		getContent().add(naOH);
+
+		kOH = new RecipeEntryList<KOH>(kOHRepository, "domain.koh");
+		kOH.setSizeFull();
+		getContent().add(kOH);
 
 		fats = new RecipeEntryList<Fat>(fatRepository, "domain.fats");
 		// TODO add panel the same way as the propertypanels
@@ -69,6 +79,8 @@ public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
 	@Override
 	protected void enterEditMode() {
 		super.enterEditMode();
+		naOH.enterEditMode();
+		kOH.enterEditMode();
 		fats.enterEditMode();
 		acids.enterEditMode();
 		liquids.enterEditMode();
@@ -78,6 +90,8 @@ public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
 	@Override
 	protected void leaveEditMode() {
 		super.leaveEditMode();
+		naOH.leaveEditMode();
+		kOH.leaveEditMode();
 		fats.leaveEditMode();
 		acids.leaveEditMode();
 		liquids.leaveEditMode();
@@ -87,7 +101,8 @@ public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
 	@Override
 	protected void preSave() {
 		super.preSave();
-
+		soapRecipe.setNaOH(naOH.getData().get(0));
+		soapRecipe.setKOH(kOH.getData().get(0));
 		soapRecipe.setFats(List.copyOf(fats.getData()));
 		soapRecipe.setAcids(List.copyOf(acids.getData()));
 		soapRecipe.setLiquids(List.copyOf(liquids.getData()));
@@ -95,21 +110,30 @@ public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
 	}
 
 	@Override
+	protected void processEntity(SoapRecipe entity) {
+		super.processEntity(entity);
+
+		soapCalculatorService.calculate(entity);
+	}
+
+	@Override
 	protected void setEntity(SoapRecipe soapRecipe) {
 		this.soapRecipe = soapRecipe;
 
 		if (soapRecipe == null) {
+			naOH.setData();
+			kOH.setData();
 			fats.setData();
 			acids.setData();
 			liquids.setData();
 			fragrances.setData();
 		} else {
+			naOH.setData(List.of(soapRecipe.getNaOH()));
+			kOH.setData(List.of(soapRecipe.getKOH()));
 			fats.setData(soapRecipe.getFats());
 			acids.setData(soapRecipe.getAcids());
 			liquids.setData(soapRecipe.getLiquids());
 			fragrances.setData(soapRecipe.getFragrances());
 		}
-
-		soapCalculatorService.calculate(soapRecipe);
 	}
 }

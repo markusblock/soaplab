@@ -4,14 +4,18 @@ import org.soaplab.domain.Acid;
 import org.soaplab.domain.Entity;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
+import org.soaplab.domain.KOH;
 import org.soaplab.domain.Liquid;
+import org.soaplab.domain.NaOH;
 import org.soaplab.domain.NamedEntity;
 import org.soaplab.domain.SoapRecipe;
 import org.soaplab.repository.AcidRepository;
 import org.soaplab.repository.EntityRepository;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.FragranceRepository;
+import org.soaplab.repository.KOHRepository;
 import org.soaplab.repository.LiquidRepository;
+import org.soaplab.repository.NaOHRepository;
 import org.soaplab.repository.SoapRecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,6 +25,11 @@ import lombok.Getter;
 @Getter
 @Component
 public class RandomSoapRecipeRepositoryTestData extends RandomSoapRecipeTestData {
+	@Autowired
+	private final NaOHRepository naohRepository;
+
+	@Autowired
+	private final KOHRepository kohRepository;
 
 	@Autowired
 	private final FatRepository fatRepository;
@@ -38,13 +47,16 @@ public class RandomSoapRecipeRepositoryTestData extends RandomSoapRecipeTestData
 	private final SoapRecipeRepository soapRecipeRepository;
 
 	public RandomSoapRecipeRepositoryTestData(SoapRecipeRepository soapRecipeRepository, FatRepository fatRepository,
-			AcidRepository acidRepository, LiquidRepository liquidRepository, FragranceRepository fragranceRepository) {
+			AcidRepository acidRepository, LiquidRepository liquidRepository, FragranceRepository fragranceRepository,
+			NaOHRepository naohRepository, KOHRepository kohRepository) {
 		super();
 		this.soapRecipeRepository = soapRecipeRepository;
 		this.fatRepository = fatRepository;
 		this.acidRepository = acidRepository;
 		this.liquidRepository = liquidRepository;
 		this.fragranceRepository = fragranceRepository;
+		this.naohRepository = naohRepository;
+		this.kohRepository = kohRepository;
 	}
 
 	private <T extends NamedEntity> T createEntityInRepo(T entity, EntityRepository<T> repository) {
@@ -76,5 +88,15 @@ public class RandomSoapRecipeRepositoryTestData extends RandomSoapRecipeTestData
 	@Override
 	public SoapRecipe createSoapRecipe() {
 		return createEntityInRepo(super.createSoapRecipe(), soapRecipeRepository);
+	}
+
+	@Override
+	public NaOH createNaOH() {
+		return createEntityInRepo(super.createNaOH(), naohRepository);
+	}
+
+	@Override
+	public KOH createKOH() {
+		return createEntityInRepo(super.createKOH(), kohRepository);
 	}
 }

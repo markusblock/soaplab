@@ -8,7 +8,9 @@ import org.soaplab.domain.Acid;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
 import org.soaplab.domain.Ingredient;
+import org.soaplab.domain.KOH;
 import org.soaplab.domain.Liquid;
+import org.soaplab.domain.NaOH;
 
 public class IngredientAssert extends AbstractAssert<IngredientAssert, Ingredient> {
 
@@ -25,7 +27,12 @@ public class IngredientAssert extends AbstractAssert<IngredientAssert, Ingredien
 			return new FragranceAssert((Fragrance) actual);
 		} else if (actual instanceof Liquid) {
 			return new LiquidAssert((Liquid) actual);
+		} else if (actual instanceof KOH) {
+			return new KOHAssert((KOH) actual);
+		} else if (actual instanceof NaOH) {
+			return new NaOHAssert((NaOH) actual);
 		}
+
 		fail("unsupported type of Ingredient " + actual.getClass().getName());
 		return null;
 	}

@@ -1,6 +1,7 @@
 package org.soaplab.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.soaplab.domain.Acid;
 import org.soaplab.domain.Fat;
@@ -12,11 +13,27 @@ import org.soaplab.domain.RecipeEntry;
 import org.soaplab.domain.SoapRecipe;
 import org.soaplab.domain.Weight;
 import org.soaplab.domain.WeightUnit;
+import org.soaplab.domain.utils.PercentageCalculator;
+import org.soaplab.domain.utils.WeightCalculator;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import lombok.extern.java.Log;
+
+@Log
 @Component
+/**
+ * Service class for calculating attributes for a soap recipe. Calculated values
+ * are Lye, weight, price. The calculated values are stored in the provided
+ * {@link SoapRecipe} entity. Values are rounded to 4 decimal places.
+ */
+// TODO: add business exceptions
 public class SoapCalculatorService {
+
+	private static RoundingMode roundingMode = RoundingMode.HALF_UP;
+	private static int decimalPlaces = 4;
+	private final WeightCalculator weightCalc = new WeightCalculator(decimalPlaces, roundingMode);
+	private final PercentageCalculator percentageCalc = new PercentageCalculator(decimalPlaces, roundingMode);
 
 	public SoapCalculatorService() {
 	}
@@ -34,20 +51,25 @@ public class SoapCalculatorService {
 			final Fat fat = fatentry.getIngredient();
 			final BigDecimal sapNaoh = fat.getSapNaoh();
 			final Weight fatsTotal = soapRecipe.getFatsTotal();
-			final Weight fatWeight = fatsTotal.calculatePercentage(fatPercentage);
+			final Weight fatWeight = weightCalc.calculatePercentage(fatsTotal, fatPercentage);
 			fatentry.setWeight(fatWeight);
 			final Price fatPrice = fat.getCost();
 			fatentry.setPrice(fatPrice);
-			final Weight naoh100 = fatWeight.multiply(sapNaoh);
+			final Weight naoh100 = weightCalc.multiply(fatWeight, sapNaoh);
 			final Percentage superFat = soapRecipe.getSuperFat();
-			final Weight naohReduction = naoh100.calculatePercentage(superFat);
-			final Weight naohPerFat = naoh100.subtract(naohReduction);
+			final Weight naohReduction = weightCalc.calculatePercentage(naoh100, superFat);
+			final Weight naohPerFat = weightCalc.subtract(naoh100, naohReduction);
 
-			naohForFats = naohForFats.plus(naohPerFat);
-			totalFatWeight = totalFatWeight.plus(fatWeight);
-			totalFatCosts = totalFatCosts.plus(fatPrice);
+			naohForFats = weightCalc.plus(naohForFats, naohPerFat);
+			totalFatWeight = weightCalc.plus(totalFatWeight, fatWeight);
+
+			if (fatPrice == null) {
+				log.warning("Ignoring price of ingredient " + fat);
+			} else {
+				totalFatCosts = totalFatCosts.plus(fatPrice);
+			}
 		}
-		totalWeight = totalWeight.plus(totalFatWeight);
+		totalWeight = weightCalc.plus(totalWeight, totalFatWeight);
 		totalCost = totalCost.plus(totalFatCosts);
 
 		Weight naohForAcids = Weight.of(0, WeightUnit.GRAMS);
@@ -59,18 +81,23 @@ public class SoapCalculatorService {
 				final Acid acid = acidEntry.getIngredient();
 				final BigDecimal sapNaoh = acid.getSapNaoh();
 				final Weight fatsTotal = soapRecipe.getFatsTotal();
-				final Weight acidWeight = fatsTotal.calculatePercentage(acidPercentage);
+				final Weight acidWeight = weightCalc.calculatePercentage(fatsTotal, acidPercentage);
 				acidEntry.setWeight(acidWeight);
 				final Price acidPrice = acid.getCost();
 				acidEntry.setPrice(acidPrice);
-				final Weight naoh100 = acidWeight.multiply(sapNaoh);
+				final Weight naoh100 = weightCalc.multiply(acidWeight, sapNaoh);
 
-				naohForAcids = naohForAcids.plus(naoh100);
-				totalAcidWeight = totalFatWeight.plus(acidWeight);
-				totalAcidCosts = totalAcidCosts.plus(acidPrice);
+				naohForAcids = weightCalc.plus(naohForAcids, naoh100);
+				totalAcidWeight = weightCalc.plus(totalFatWeight, acidWeight);
+
+				if (acidPrice == null) {
+					log.warning("Ignoring price of ingredient " + acid);
+				} else {
+					totalAcidCosts = totalAcidCosts.plus(acidPrice);
+				}
 			}
 		}
-		totalWeight = totalWeight.plus(totalAcidWeight);
+		totalWeight = weightCalc.plus(totalWeight, totalAcidWeight);
 		totalCost = totalCost.plus(totalAcidCosts);
 
 		Weight naohForLiquids = Weight.of(0, WeightUnit.GRAMS);
@@ -81,21 +108,25 @@ public class SoapCalculatorService {
 			final Liquid liquid = liquidEntry.getIngredient();
 			final Weight fatsTotal = soapRecipe.getFatsTotal();
 			final Percentage liquidToFatRatio = soapRecipe.getLiquidToFatRatio();
-			final Weight liquidWeight = fatsTotal.calculatePercentage(liquidToFatRatio)
-					.calculatePercentage(liquidPercentage);
+			final Weight liquidWeight = weightCalc.calculatePercentage(fatsTotal, liquidToFatRatio, liquidPercentage);
 			liquidEntry.setWeight(liquidWeight);
 			final Price liquidPrice = liquid.getCost();
 			liquidEntry.setPrice(liquidPrice);
-			totalLiquidWeight = totalLiquidWeight.plus(liquidWeight);
-			totalLiquidCosts = totalLiquidCosts.plus(liquidPrice);
+			totalLiquidWeight = weightCalc.plus(totalLiquidWeight, liquidWeight);
+
+			if (liquidPrice == null) {
+				log.warning("Ignoring price of ingredient " + liquid);
+			} else {
+				totalLiquidCosts = totalLiquidCosts.plus(liquidPrice);
+			}
 
 			final BigDecimal sapNaoh = liquid.getSapNaoh();
 			if (sapNaoh != null) {
-				final Weight naoh100 = liquidWeight.multiply(sapNaoh);
-				naohForLiquids = naohForLiquids.plus(naoh100);
+				final Weight naoh100 = weightCalc.multiply(liquidWeight, sapNaoh);
+				naohForLiquids = weightCalc.plus(naohForLiquids, naoh100);
 			}
 		}
-		totalWeight = totalWeight.plus(totalLiquidWeight);
+		totalWeight = weightCalc.plus(totalWeight, totalLiquidWeight);
 		totalCost = totalCost.plus(totalLiquidCosts);
 
 		final Percentage fragranceTotalPercentage = soapRecipe.getFragranceTotal();
@@ -105,42 +136,64 @@ public class SoapCalculatorService {
 				&& Percentage.isGreaterThanZero(fragranceTotalPercentage)) {
 			for (final RecipeEntry<Fragrance> fragranceEntry : soapRecipe.getFragrances()) {
 				final Percentage fragrancePercentage = fragranceEntry.getPercentage();
+				final Fragrance fragrance = fragranceEntry.getIngredient();
 				final Weight fatsTotal = soapRecipe.getFatsTotal();
-				final Weight fragranceWeight = fatsTotal.calculatePercentage(fragranceTotalPercentage)
-						.calculatePercentage(fragrancePercentage);
+				final Weight fragranceWeight = weightCalc.calculatePercentage(fatsTotal, fragranceTotalPercentage,
+						fragrancePercentage);
 				fragranceEntry.setWeight(fragranceWeight);
-				final Price fragrancePrice = fragranceEntry.getIngredient().getCost();
+				// TODO: adapt cost calculation quantity * costs
+				final Price fragrancePrice = fragrance.getCost();
 				fragranceEntry.setPrice(fragrancePrice);
-				totalFragranceWeight = totalFragranceWeight.plus(fragranceWeight);
-				totalFragranceCosts = totalFragranceCosts.plus(fragrancePrice);
+				totalFragranceWeight = weightCalc.plus(totalFragranceWeight, fragranceWeight);
+				if (fragrancePrice == null) {
+					log.warning("Ignoring price of ingredient " + fragrance);
+				} else {
+					totalFragranceCosts = totalFragranceCosts.plus(fragrancePrice);
+				}
 			}
 		}
-		totalWeight = totalWeight.plus(totalFragranceWeight);
+		totalWeight = weightCalc.plus(totalWeight, totalFragranceWeight);
 		totalCost = totalCost.plus(totalFragranceCosts);
 
 		final Percentage naohPercentage = soapRecipe.getNaOH().getPercentage();
-		final Percentage kohPercentage = soapRecipe.getKOH().getPercentage();
+		final Percentage kohPercentage;
+		if (soapRecipe.getKOH() == null) {
+			kohPercentage = Percentage.of(0d);
+		} else {
+			kohPercentage = soapRecipe.getKOH().getPercentage();
+		}
 		// validate koh+naoh=100%
-		final Weight naohForFatsAndAcidsAndLiquids = naohForFats.plus(naohForAcids).plus(naohForLiquids);
-		final Weight naohTotal = naohForFatsAndAcidsAndLiquids.calculatePercentage(naohPercentage);
-		totalWeight = totalWeight.plus(naohTotal);
-		totalCost = totalCost.plus(soapRecipe.getNaOH().getIngredient().getCost());
+		final Weight naohForFatsAndAcidsAndLiquids = weightCalc.plus(naohForFats, naohForAcids, naohForLiquids);
+		final Weight naohTotal = weightCalc.calculatePercentage(naohForFatsAndAcidsAndLiquids, naohPercentage);
+		totalWeight = weightCalc.plus(totalWeight, naohTotal);
+
+		if (soapRecipe.getNaOH().getIngredient().getCost() == null) {
+			log.warning("Ignoring price of ingredient " + soapRecipe.getNaOH().getIngredient());
+		} else {
+			totalFragranceCosts = totalFragranceCosts.plus(soapRecipe.getNaOH().getIngredient().getCost());
+		}
 
 		Weight kohTotal = Weight.of(0, WeightUnit.GRAMS);
 		if (Percentage.isGreaterThanZero(kohPercentage)) {
 			final Percentage kohPurity = soapRecipe.getKOH().getIngredient().getKOHPurity();
 			final BigDecimal naohToKohConversion = BigDecimal.valueOf(1.40272);
-			kohTotal = naohForFatsAndAcidsAndLiquids.multiply(naohToKohConversion)
-					.multiply(kohPercentage.getNumber().divide(kohPurity.getNumber()));
-			totalWeight = totalWeight.plus(kohTotal);
+			kohTotal = weightCalc.multiply(naohForFatsAndAcidsAndLiquids, naohToKohConversion,
+					percentageCalc.divide(kohPercentage, kohPurity));
+			totalWeight = weightCalc.plus(totalWeight, kohTotal);
 			// TODO cost per 100g => 1/100* weight
-			totalCost = totalCost.plus(soapRecipe.getKOH().getIngredient().getCost());
+
+			if (soapRecipe.getKOH().getIngredient().getCost() == null) {
+				log.warning("Ignoring price of ingredient " + soapRecipe.getKOH().getIngredient());
+			} else {
+				totalCost = totalCost.plus(soapRecipe.getKOH().getIngredient().getCost());
+			}
 		}
 
 		soapRecipe.setNaohTotal(naohTotal);
 		soapRecipe.setKohTotal(kohTotal);
 		soapRecipe.setLiquidTotal(totalLiquidWeight);
 		soapRecipe.setWeightTotal(totalWeight);
+		soapRecipe.setCostsTotal(totalCost);
 
 		return soapRecipe;
 	}

@@ -15,14 +15,14 @@ import lombok.Getter;
 @Getter
 public class RecipeTestDataBuilder {
 
-	private SoapRecipeBuilder<?, ?> soapRecipeBuilder = SoapRecipe.builder();
-	private IngredientsTestData ingredients;
+	private final SoapRecipeBuilder<?, ?> soapRecipeBuilder = SoapRecipe.builder();
 
 	public RecipeTestDataBuilder() {
-		ingredients = new IngredientsTestData();
 		soapRecipeBuilder.id(UUID.randomUUID()).manufacturingDate(Date.from(Instant.now()))
-				.naOHToKOHRatio(Percentage.of(100)).fatsTotal(Weight.of(100, WeightUnit.GRAMS))
-				.liquidToFatRatio(Percentage.of(33)).superFat(Percentage.of(10)).fragranceTotal(Percentage.of(3));
+				.fatsTotal(Weight.of(100, WeightUnit.GRAMS)) //
+				.liquidToFatRatio(Percentage.of(33)) //
+				.superFat(Percentage.of(10)) //
+				.fragranceTotal(Percentage.of(3));
 	}
 
 	public SoapRecipeBuilder<?, ?> getSoapRecipeBuilder() {

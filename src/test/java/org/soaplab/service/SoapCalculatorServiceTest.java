@@ -26,8 +26,9 @@ public class SoapCalculatorServiceTest {
 
 	@Test
 	void calculateBasicOliveOilSoapRecipe() {
-		OliveOilSoapBasicRecipeTestData oliveOilSoapRecipe = new OliveOilSoapBasicRecipeTestData();
-		SoapRecipe calculatedSoapRecipeResult = calculatorService.calculate(oliveOilSoapRecipe.createSoapRecipe());
+		final OliveOilSoapBasicRecipeTestData oliveOilSoapRecipe = new OliveOilSoapBasicRecipeTestData();
+		final SoapRecipe calculatedSoapRecipeResult = calculatorService
+				.calculate(oliveOilSoapRecipe.createSoapRecipe());
 
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getNaohTotal()).isEqualToWeightInGrams(12.15);
 		Assertions.assertThat(calculatedSoapRecipeResult.getLiquids().size()).isEqualTo(1);
@@ -37,13 +38,27 @@ public class SoapCalculatorServiceTest {
 
 	@Test
 	void calculateOliveOilSoapRecipe() {
-		OliveOilSoapRecipeTestData oliveOilSoapRecipe = new OliveOilSoapRecipeTestData();
-		SoapRecipe calculatedSoapRecipeResult = calculatorService.calculate(oliveOilSoapRecipe.createSoapRecipe());
+		final OliveOilSoapRecipeTestData oliveOilSoapRecipe = new OliveOilSoapRecipeTestData();
+		final SoapRecipe calculatedSoapRecipeResult = calculatorService
+				.calculate(oliveOilSoapRecipe.createSoapRecipe());
 
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getNaohTotal()).isEqualToWeightInGrams(15.298d);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getNaohTotal()).isEqualToWeightInGrams(13.7682d);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getKohTotal()).isEqualToWeightInGrams(2.384d);
 		Assertions.assertThat(calculatedSoapRecipeResult.getLiquids().size()).isEqualTo(1);
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquids().get(0).getWeight()).isEqualToWeightInGrams(33);
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquidTotal()).isEqualToWeightInGrams(33);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getFatsTotal()).isEqualToWeightInGrams(33);
 	}
+
+	// TODO: test with 0 KOH
+	// TODO: test with no fats
+	// TODO: test with no liquid
+	// TODO: test with no NaOH
+
+	// TODO: test weight
+	// TODO: test price /missing price
+	// TODO: test lye calculation (only NaOH / mixed / only KOH)
+	// TODO: test inci summary (also with ingredients without inci)
+	// TODO: test calculated soap properties
 
 }

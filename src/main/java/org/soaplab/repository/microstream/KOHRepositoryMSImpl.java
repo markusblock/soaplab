@@ -2,31 +2,30 @@ package org.soaplab.repository.microstream;
 
 import java.util.Set;
 
-import org.soaplab.domain.Lye;
+import org.soaplab.domain.KOH;
 import org.soaplab.domain.exception.EntityDeletionFailedException;
 import org.soaplab.domain.exception.EntityDeletionFailedException.REASON;
-import org.soaplab.repository.LyeRepository;
+import org.soaplab.repository.KOHRepository;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LyeRepositoryMSImpl extends IngredientRepositoryMSImpl<Lye> implements LyeRepository {
+public class KOHRepositoryMSImpl extends IngredientRepositoryMSImpl<KOH> implements KOHRepository {
 
 	private static final long serialVersionUID = 1L;
 
-	public LyeRepositoryMSImpl(MicrostreamRepository repository) {
+	public KOHRepositoryMSImpl(MicrostreamRepository repository) {
 		super(repository);
 	}
 
 	@Override
-	protected Set<Lye> getEntitiesInternal() {
-		return repository.getRoot().getAllLyes();
+	protected Set<KOH> getEntitiesInternal() {
+		return repository.getRoot().getAllKOH();
 	}
 
 	@Override
-	protected void assertEntityIsNotReferencedByOtherEntities(Lye entity) {
+	protected void assertEntityIsNotReferencedByOtherEntities(KOH entity) {
 		if (repository.getRoot().getAllSoapReceipts().stream().anyMatch(soapRecipe -> {
-			return soapRecipe.getNaOH().getId().equals(entity.getId())
-					|| soapRecipe.getKOH().getId().equals(entity.getId());
+			return soapRecipe.getKOH().getId().equals(entity.getId());
 		})) {
 			throw new EntityDeletionFailedException(entity, REASON.ENTITY_STILL_REFERENCED);
 		}

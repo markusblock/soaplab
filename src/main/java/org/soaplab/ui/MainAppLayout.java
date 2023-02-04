@@ -12,7 +12,9 @@ import org.soaplab.ui.views.MenuBar;
 import org.soaplab.ui.views.acid.AcidsView;
 import org.soaplab.ui.views.fat.FatsView;
 import org.soaplab.ui.views.fragrance.FragranceView;
+import org.soaplab.ui.views.koh.KOHView;
 import org.soaplab.ui.views.liquid.LiquidsView;
+import org.soaplab.ui.views.naoh.NaOHView;
 import org.soaplab.ui.views.recipe.RecipeView;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -48,21 +50,21 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 	@Autowired
 	public MainAppLayout(TranslationProvider translationProvider) {
 
-		DrawerToggle toggle = new DrawerToggle();
+		final DrawerToggle toggle = new DrawerToggle();
 		toggle.setId("soaplab.id");
 
-		H1 title = new H1("Soaplab");
+		final H1 title = new H1("Soaplab");
 		title.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
 
-		Optional<Locale> cookieLocale = findLocaleFromCookie();
+		final Optional<Locale> cookieLocale = findLocaleFromCookie();
 		cookieLocale.ifPresentOrElse(locale -> log.info("Found language in cookie: {}", locale),
 				() -> log.info("Found NO language in cookie"));
-		Select<Locale> languageSelect = new Select<>();
+		final Select<Locale> languageSelect = new Select<>();
 		languageSelect.setId("soaplab.languageselect.id");
 		languageSelect.setMaxWidth(70, Unit.POINTS);
 		languageSelect.setItems(translationProvider.getProvidedLocales());
 		languageSelect.setItemLabelGenerator(l -> getTranslation("i18n." + l.getLanguage()));
-		Locale defaultLocale = UI.getCurrent().getLocale();
+		final Locale defaultLocale = UI.getCurrent().getLocale();
 		Locale localeToSelect = defaultLocale;
 		if (cookieLocale.isPresent()) {
 			localeToSelect = translationProvider.getProvidedLocales().stream().filter(l -> l.equals(cookieLocale.get()))
@@ -78,15 +80,17 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 			setLocale(event.getValue());
 		});
 
-		MenuBar menuBar = new MenuBar();
+		final MenuBar menuBar = new MenuBar();
 		menuBar.addMenuItem(VaadinIcon.DASHBOARD, getTranslation("domain.fats"), FatsView.class);
 		menuBar.addMenuItem(VaadinIcon.CART, getTranslation("domain.acids"), AcidsView.class);
 		menuBar.addMenuItem(VaadinIcon.USER_HEART, getTranslation("domain.liquids"), LiquidsView.class);
 		menuBar.addMenuItem(VaadinIcon.ACADEMY_CAP, getTranslation("domain.fragrances"), FragranceView.class);
+		menuBar.addMenuItem(VaadinIcon.ALARM, getTranslation("domain.naoh"), NaOHView.class);
+		menuBar.addMenuItem(VaadinIcon.AMBULANCE, getTranslation("domain.koh"), KOHView.class);
 		menuBar.addMenuItem(VaadinIcon.ABACUS, getTranslation("domain.recipes"), RecipeView.class);
 
 		addToDrawer(menuBar.getMenuItemComponents());
-		Label spacing = new Label();
+		final Label spacing = new Label();
 		spacing.setSizeFull();
 		addToNavbar(toggle, title, spacing, languageSelect);
 	}
@@ -96,7 +100,7 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 	 */
 	private void saveLocaleToCookie(Locale locale) {
 		log.info("Saving locale {} in cookie", locale);
-		Cookie cookie = new Cookie(LOCALE, locale.toLanguageTag());
+		final Cookie cookie = new Cookie(LOCALE, locale.toLanguageTag());
 		cookie.setSecure(true);
 		cookie.setHttpOnly(true);
 		VaadinService.getCurrentResponse().addCookie(cookie);
@@ -121,9 +125,9 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 		if (cookies == null) {
 			return Optional.empty();
 		}
-		for (Cookie cookie : Arrays.asList(cookies)) {
+		for (final Cookie cookie : Arrays.asList(cookies)) {
 			if (LOCALE.equals(cookie.getName())) {
-				String value = cookie.getValue();
+				final String value = cookie.getValue();
 				if (StringUtils.isEmpty(value)) {
 					return Optional.empty();
 				}

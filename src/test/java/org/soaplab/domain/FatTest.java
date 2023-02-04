@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.soaplab.assertions.FatAssert;
-import org.soaplab.testdata.IngredientsTestData;
+import org.soaplab.domain.utils.IngredientsExampleData;
 
 class FatTest {
 
@@ -43,7 +43,7 @@ class FatTest {
 
 	@Test
 	void testDeepCloning() {
-		final Fat originalFat = IngredientsTestData.getCoconutOilBuilder().build();
+		final Fat originalFat = IngredientsExampleData.getCoconutOilBuilder().build();
 		final Fat clone = originalFat.getCopyBuilder().build();
 		FatAssert.assertThat(originalFat).isDeepEqualTo(clone);
 	}

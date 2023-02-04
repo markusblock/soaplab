@@ -29,25 +29,4 @@ public class Weight implements Serializable {
 	public static Weight of(double weight, WeightUnit unit) {
 		return new Weight(BigDecimal.valueOf(weight), unit);
 	}
-
-	public Weight calculatePercentage(Percentage percentage) {
-		return new Weight(weight.multiply(percentage.getNumber().divide(BigDecimal.valueOf(100))), unit);
-	}
-
-	public Weight multiply(BigDecimal multiplicator) {
-		return new Weight(weight.multiply(multiplicator), unit);
-	}
-
-	public Weight divide(BigDecimal divisor) {
-		return new Weight(weight.divide(divisor), unit);
-	}
-
-	public Weight subtract(Weight subtractor) {
-		return new Weight(weight.subtract(subtractor.getWeight()), unit);
-	}
-
-	public Weight plus(Weight summand) {
-		return new Weight(weight.add(summand.getWeight()), unit);
-	}
-
 }

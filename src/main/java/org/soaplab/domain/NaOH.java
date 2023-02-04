@@ -1,8 +1,6 @@
 package org.soaplab.domain;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
@@ -10,9 +8,8 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @ToString(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 @SuperBuilder(toBuilder = true)
-public abstract class Lye extends Ingredient {
+public class NaOH extends Lye {
 
 	private static final long serialVersionUID = 1L;
 
