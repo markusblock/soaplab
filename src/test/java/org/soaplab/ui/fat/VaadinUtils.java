@@ -24,7 +24,7 @@ public class VaadinUtils {
 	}
 
 	public static void clickOnElement(By selector) {
-		$(selector).scrollTo().shouldNotBe(disabled()).click();
+		$(selector).scrollIntoView(true).shouldNotBe(disabled()).click();
 	}
 
 	public static void waitUntilPageLoaded() {
