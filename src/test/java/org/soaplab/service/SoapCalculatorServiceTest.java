@@ -54,9 +54,10 @@ public class SoapCalculatorServiceTest {
 	// TODO: test with no fats
 	// TODO: test with no liquid
 	// TODO: test with no NaOH
+	// TODO: test with no price
 
 	// TODO: test weight
-	// TODO: test price /missing price
+	// TODO: test price
 	// TODO: test lye calculation (only NaOH / mixed / only KOH)
 	// TODO: test inci summary (also with ingredients without inci)
 	// TODO: test calculated soap properties
