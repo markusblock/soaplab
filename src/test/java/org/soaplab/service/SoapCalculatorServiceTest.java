@@ -1,20 +1,37 @@
 package org.soaplab.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.lenient;
+import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntry;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.soaplab.assertions.WeightAssert;
 import org.soaplab.domain.SoapRecipe;
+import org.soaplab.domain.SoapRecipe.SoapRecipeBuilder;
+import org.soaplab.service.SoapCalculatorService.CalculationIssue;
 import org.soaplab.testdata.OliveOilSoapBasicRecipeTestData;
 import org.soaplab.testdata.OliveOilSoapRecipeTestData;
+import org.springframework.core.env.Environment;
 
+@ExtendWith(MockitoExtension.class)
 public class SoapCalculatorServiceTest {
 
 	private SoapCalculatorService calculatorService;
+	
+	@Mock
+	Environment envMock;
 
 	@BeforeEach
 	private void beforeTest() {
-		calculatorService = new SoapCalculatorService();
+		lenient().when(envMock.getProperty(anyString())).thenReturn("");
+		calculatorService = new SoapCalculatorService(envMock);
 	}
 
 	@Test
@@ -49,12 +66,46 @@ public class SoapCalculatorServiceTest {
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquidTotal()).isEqualToWeightInGrams(33);
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getFatsTotal()).isEqualToWeightInGrams(100);
 	}
+	
+	@Test
+	void ensureCalculationNoKOH() {
+		final OliveOilSoapBasicRecipeTestData soapRecipeData = new OliveOilSoapBasicRecipeTestData();
+		SoapRecipeBuilder<?,?> recipeBuilder = soapRecipeData.getSoapRecipeBuilder().kOH(null).naOH(createRecipeEntry(soapRecipeData.getNaOH(), 100d));
+		final SoapRecipe calculatedSoapRecipeResult = calculatorService
+				.calculate(recipeBuilder.build());
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getNaohTotal()).isEqualToWeightInGrams(12.15d);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getKohTotal()).isEqualToWeightInGrams(0d);
+	}
+	
+	@Test()
+	void expectExceptionForRecipeWithNoFat() {
+		final OliveOilSoapBasicRecipeTestData soapRecipeData = new OliveOilSoapBasicRecipeTestData();
+		SoapRecipeBuilder<?,?> recipeBuilder = soapRecipeData.getSoapRecipeBuilder().fats(null);
 
-	// TODO: test with 0 KOH
-	// TODO: test with no fats
-	// TODO: test with no liquid
-	// TODO: test with no NaOH
-	// TODO: test with no price
+		SoapCalculatorException exception = assertThrows(SoapCalculatorException.class, () -> {
+			calculatorService.calculate(recipeBuilder.build());
+		});
+
+		assertThat(exception.getErrors()).contains(CalculationIssue.NO_FAT_IN_RECIPE);
+	}
+
+	@Test()
+	void expectExceptionForRecipeWithoutFatsTotal() {
+		final OliveOilSoapBasicRecipeTestData soapRecipeData = new OliveOilSoapBasicRecipeTestData();
+		SoapRecipeBuilder<?, ?> recipeBuilder = soapRecipeData.getSoapRecipeBuilder().fatsTotal(null);
+
+		SoapCalculatorException exception = assertThrows(SoapCalculatorException.class, () -> {
+			calculatorService.calculate(recipeBuilder.build());
+		});
+
+		assertThat(exception.getErrors()).contains(CalculationIssue.FATS_TOTAL_MISSING);
+	}
+
+	// TODO: test error for no liquid
+	// TODO: test error for no Lye
+	// TODO: test warning for no price defined on Ingredients
+	// TODO: test warning for no KOH and not 100% NaOH
+	// TODO: test warning for not 100% Fats
 
 	// TODO: test weight
 	// TODO: test price

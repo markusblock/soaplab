@@ -36,6 +36,7 @@ public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
 			NaOHRepository naOHRepository, KOHRepository kOHRepository, SoapCalculatorService soapCalculatorService) {
 		super(callback);
 		this.soapCalculatorService = soapCalculatorService;
+		addPropertyWeightField("domain.recipe.fatstotal", SoapRecipe::getFatsTotal, SoapRecipe::setFatsTotal);
 		addPropertyPercentageField("domain.recipe.superfat", SoapRecipe::getSuperFat, SoapRecipe::setSuperFat);
 		addPropertyPercentageField("domain.recipe.liquidtofatratio", SoapRecipe::getLiquidToFatRatio,
 				SoapRecipe::setLiquidToFatRatio);
