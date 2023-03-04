@@ -30,11 +30,12 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 	@Test
 	public void createNewFat() {
 		final FatDetailsPageObject details = pageObject.getIngredientDetails();
+		final IngredientListPageObject list = pageObject.getIngredientList();
 		details.name().shouldBeReadOnly();
 		final Fat fat = RandomIngredientsTestData.getFatBuilder().sapNaoh(new BigDecimal(BigInteger.valueOf(1234), 2))
 				.build();
 
-		details.buttonAdd().click();
+		list.buttonAdd().click();
 		details.id().shouldBeReadOnly().shouldBeEmpty();
 		details.name().shouldBeEditable().setValue(fat.getName());
 		details.inci().shouldBeEditable().setValue(fat.getInci());
@@ -66,7 +67,6 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 		details.ricinoleic().shouldBeReadOnly().shouldHaveValue(fat.getRicinoleic());
 		details.stearic().shouldBeReadOnly().shouldHaveValue(fat.getStearic());
 
-		final IngredientListPageObject list = pageObject.getIngredientList();
 		list.ingredientShouldAppear(fat);
 		repoHelper.assertThatFatHasSameValuesExceptId(fat);
 	}
@@ -80,9 +80,7 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 		list.triggerReload();
 		list.ingredientShouldAppear(fat1).ingredientShouldAppear(fat2);
 		list.selectIngredient(fat1);
-
-		final IngredientDetailsPageObject details = pageObject.getIngredientDetails();
-		details.buttonRemove().click();
+		list.buttonRemove().click();
 
 		list.ingredientShouldNotAppear(fat1).ingredientShouldAppear(fat2);
 		repoHelper.assertThatFatNotExists(getTestName());

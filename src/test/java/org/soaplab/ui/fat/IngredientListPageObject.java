@@ -30,6 +30,14 @@ public class IngredientListPageObject {
 				Selectors.shadowCss("div[id='clearButton']", "vaadin-text-field[id='entitylist.search']"));
 	}
 
+	public PageObjectElement buttonAdd() {
+		return new PageObjectElement(byId("entitylist.add"));
+	}
+
+	public PageObjectElement buttonRemove() {
+		return new PageObjectElement(byId("entitylist.remove"));
+	}
+
 	public IngredientListPageObject ingredientShouldAppear(Ingredient... ingredients) {
 		grid.firstColumnShouldContain(getIngredientNameList(ingredients));
 		return this;

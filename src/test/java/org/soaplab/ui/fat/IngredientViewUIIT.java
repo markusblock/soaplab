@@ -32,15 +32,15 @@ public class IngredientViewUIIT extends UIIntegrationTestBase {
 		list.triggerReload();
 		IngredientDetailsPageObject details = pageObject.getIngredientDetails();
 		list.selectIngredient(ingredient);
-		assertThatButtonAreInNonEditModeWithSelectedIngredient(details);
-		details.buttonAdd().click();
-		assertThatButtonAreInEditMode(details);
+		assertThatButtonAreInNonEditModeWithSelectedIngredient(list, details);
+		list.buttonAdd().click();
+		assertThatButtonAreInEditMode(list, details);
 		details.buttonCancel().click();
-		assertThatButtonAreInNonEditModeWithSelectedIngredient(details);
+		assertThatButtonAreInNonEditModeWithSelectedIngredient(list, details);
 		details.buttonEdit().click();
-		assertThatButtonAreInEditMode(details);
+		assertThatButtonAreInEditMode(list, details);
 		details.buttonSave().click();
-		assertThatButtonAreInNonEditModeWithSelectedIngredient(details);
+		assertThatButtonAreInNonEditModeWithSelectedIngredient(list, details);
 	}
 
 	@Test
@@ -77,11 +77,11 @@ public class IngredientViewUIIT extends UIIntegrationTestBase {
 		list.triggerReload();
 		IngredientDetailsPageObject details = pageObject.getIngredientDetails();
 		list.selectIngredient(ingredient);
-		assertThatButtonAreInNonEditModeWithSelectedIngredient(details);
+		assertThatButtonAreInNonEditModeWithSelectedIngredient(list, details);
 		list.deSelectIngredient(ingredient);
-		assertThatButtonAreInNonEditModeWithNoSelectedIngredient(details);
+		assertThatButtonAreInNonEditModeWithNoSelectedIngredient(list, details);
 		list.selectIngredient(ingredient);
-		assertThatButtonAreInNonEditModeWithSelectedIngredient(details);
+		assertThatButtonAreInNonEditModeWithSelectedIngredient(list, details);
 	}
 
 	@Test
@@ -163,28 +163,33 @@ public class IngredientViewUIIT extends UIIntegrationTestBase {
 
 	}
 
-	private void assertThatButtonAreInEditMode(IngredientDetailsPageObject details) {
+	private void assertThatButtonAreInEditMode(IngredientListPageObject list, IngredientDetailsPageObject details) {
 		details.buttonSave().shouldBeEnabled();
 		details.buttonCancel().shouldBeEnabled();
-		details.buttonAdd().shouldBeHidden();
-		details.buttonRemove().shouldBeHidden();
 		details.buttonEdit().shouldBeHidden();
+		list.buttonAdd().shouldBeDisabled();
+		list.buttonRemove().shouldBeDisabled();
+		list.search().shouldBeDisabled();
 	}
 
-	private void assertThatButtonAreInNonEditModeWithSelectedIngredient(IngredientDetailsPageObject details) {
+	private void assertThatButtonAreInNonEditModeWithSelectedIngredient(IngredientListPageObject list,
+			IngredientDetailsPageObject details) {
 		details.buttonSave().shouldBeHidden();
 		details.buttonCancel().shouldBeHidden();
-		details.buttonAdd().shouldBeEnabled();
-		details.buttonRemove().shouldBeEnabled();
 		details.buttonEdit().shouldBeEnabled();
+		list.buttonAdd().shouldBeEnabled();
+		list.buttonRemove().shouldBeEnabled();
+		list.search().shouldBeEnabled();
 	}
 
-	private void assertThatButtonAreInNonEditModeWithNoSelectedIngredient(IngredientDetailsPageObject details) {
+	private void assertThatButtonAreInNonEditModeWithNoSelectedIngredient(IngredientListPageObject list,
+			IngredientDetailsPageObject details) {
 		details.buttonSave().shouldBeHidden();
 		details.buttonCancel().shouldBeHidden();
-		details.buttonAdd().shouldBeEnabled();
-		details.buttonRemove().shouldBeDisabled();
 		details.buttonEdit().shouldBeDisabled();
+		list.buttonAdd().shouldBeEnabled();
+		list.buttonRemove().shouldBeDisabled();
+		list.search().shouldBeEnabled();
 	}
 
 }

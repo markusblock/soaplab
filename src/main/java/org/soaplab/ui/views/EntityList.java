@@ -6,7 +6,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.soaplab.domain.NamedEntity;
+import org.springframework.util.CollectionUtils;
 
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -35,6 +37,8 @@ public class EntityList<T extends NamedEntity> extends Div {
 	private EntityViewListControllerCallback<T> callback;
 
 	private TextField searchField;
+	private final Button addButton;
+	private final Button removeButton;
 
 	public EntityList(EntityViewListControllerCallback<T> callback) {
 		super();
@@ -57,6 +61,22 @@ public class EntityList<T extends NamedEntity> extends Div {
 		searchField.setValueChangeMode(ValueChangeMode.EAGER);
 		searchField.addValueChangeListener(event -> filterEntityList(event.getValue()));
 		toolPanel.add(searchField);
+
+		addButton = new Button();
+		addButton.setId("entitylist.add");
+		addButton.setIcon(VaadinIcon.PLUS.create());
+		addButton.addClickListener(event -> {
+			callback.createNewEntity();
+		});
+		toolPanel.add(addButton);
+
+		removeButton = new Button();
+		removeButton.setId("entitylist.remove");
+		removeButton.setIcon(VaadinIcon.MINUS.create());
+		removeButton.addClickListener(event -> {
+			callback.deleteEntity(CollectionUtils.firstElement(entityGrid.getSelectedItems()));
+		});
+		toolPanel.add(removeButton);
 
 		entityGrid = new Grid<T>();
 		entityGrid.setId("entitylist.grid");
@@ -110,6 +130,7 @@ public class EntityList<T extends NamedEntity> extends Div {
 		SingleSelect<Grid<T>, T> entitySelect = entityGrid.asSingleSelect();
 		entitySelect.addValueChangeListener(e -> {
 			callback.entitySelected(e.getValue());
+			removeButton.setEnabled(e.getValue() != null);
 		});
 	}
 
@@ -129,9 +150,15 @@ public class EntityList<T extends NamedEntity> extends Div {
 
 	public void listenToSelectionChanges() {
 		entityGrid.setEnabled(true);
+		searchField.setEnabled(true);
+		addButton.setEnabled(true);
+		removeButton.setEnabled(true);
 	}
 
 	public void ignoreSelectionChanges() {
 		entityGrid.setEnabled(false);
+		searchField.setEnabled(false);
+		addButton.setEnabled(false);
+		removeButton.setEnabled(false);
 	}
 }

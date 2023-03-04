@@ -4,20 +4,12 @@ import static com.codeborne.selenide.Selectors.byId;
 
 public class IngredientDetailsPageObject {
 
-	public PageObjectElement buttonAdd() {
-		return new PageObjectElement(byId("entitydetails.add"));
-	}
-
 	public PageObjectElement buttonSave() {
 		return new PageObjectElement(byId("entitydetails.save"));
 	}
 
 	public PageObjectElement buttonCancel() {
 		return new PageObjectElement(byId("entitydetails.cancel"));
-	}
-
-	public PageObjectElement buttonRemove() {
-		return new PageObjectElement(byId("entitydetails.remove"));
 	}
 
 	public PageObjectElement buttonEdit() {

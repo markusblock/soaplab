@@ -48,8 +48,7 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 	private final List<HasEnabled> editablePropertyFields;
 
 	private final Button editButton;
-	private final Button addButton;
-	private final Button removeButton;
+
 	private final Button saveButton;
 	private final Button cancelButton;
 
@@ -66,22 +65,6 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 		add(content);
 
 		final HorizontalLayout buttonPanel = new HorizontalLayout();
-
-		addButton = new Button();
-		addButton.setId("entitydetails.add");
-		addButton.setIcon(VaadinIcon.PLUS.create());
-		addButton.addClickListener(event -> {
-			callback.createNewEntity();
-		});
-		buttonPanel.add(addButton);
-
-		removeButton = new Button();
-		removeButton.setId("entitydetails.remove");
-		removeButton.setIcon(VaadinIcon.MINUS.create());
-		removeButton.addClickListener(event -> {
-			callback.deleteEntity(entity);
-		});
-		buttonPanel.add(removeButton);
 
 		editButton = new Button();
 		editButton.setId("entitydetails.edit");
@@ -257,7 +240,6 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 	private void leaveEditModeInternal() {
 		editablePropertyFields.forEach(tf -> tf.setEnabled(false));
 		editButton.setEnabled(entity != null);
-		removeButton.setEnabled(entity != null);
 		setActionButtonVisibility(false);
 
 		leaveEditMode();
@@ -279,8 +261,6 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 
 	private void setActionButtonVisibility(boolean editMode) {
 		editButton.setVisible(!editMode);
-		addButton.setVisible(!editMode);
-		removeButton.setVisible(!editMode);
 		saveButton.setVisible(editMode);
 		cancelButton.setVisible(editMode);
 	}
@@ -302,7 +282,6 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 
 		binder.readBean(entity);
 		editButton.setEnabled(entity != null);
-		removeButton.setEnabled(entity != null);
 
 		setEntity(entity);
 	}

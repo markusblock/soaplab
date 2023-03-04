@@ -35,6 +35,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.router.RoutePrefix;
 import com.vaadin.flow.server.VaadinRequest;
+import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 
 import lombok.extern.slf4j.Slf4j;
@@ -105,7 +106,7 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 		cookie.setSecure(true);
 		cookie.setHttpOnly(true);
 		// TODO migrate to Springboot 3
-//		VaadinService.getCurrentResponse().addCookie(cookie);
+		VaadinService.getCurrentResponse().addCookie(cookie);
 		Notification.show(getTranslation("menu.locale.saved", locale.getLanguage()));
 	}
 

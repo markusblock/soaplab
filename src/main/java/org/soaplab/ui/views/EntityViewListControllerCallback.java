@@ -9,4 +9,8 @@ public interface EntityViewListControllerCallback<T extends NamedEntity> {
 
 	EntityRepository<T> getRepository();
 
+	void createNewEntity();
+
+	void deleteEntity(T entity);
+
 }
