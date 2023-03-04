@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
 
+//TODO migrate to springboot3
+//import jakarta.servlet.http.Cookie;
 import javax.servlet.http.Cookie;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +35,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.router.RoutePrefix;
 import com.vaadin.flow.server.VaadinRequest;
-import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 
 import lombok.extern.slf4j.Slf4j;
@@ -103,7 +104,8 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 		final Cookie cookie = new Cookie(LOCALE, locale.toLanguageTag());
 		cookie.setSecure(true);
 		cookie.setHttpOnly(true);
-		VaadinService.getCurrentResponse().addCookie(cookie);
+		// TODO migrate to Springboot 3
+//		VaadinService.getCurrentResponse().addCookie(cookie);
 		Notification.show(getTranslation("menu.locale.saved", locale.getLanguage()));
 	}
 
@@ -121,6 +123,7 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 	 * otherwise.
 	 */
 	private Optional<Locale> findLocaleFromCookie() {
+		// TODO migrate to Springboot 3
 		final Cookie[] cookies = VaadinRequest.getCurrent().getCookies();
 		if (cookies == null) {
 			return Optional.empty();

@@ -5,8 +5,6 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 
 import org.soaplab.domain.Percentage;
-import org.soaplab.domain.Weight;
-import org.soaplab.domain.WeightUnit;
 
 public class PercentageCalculator {
 

@@ -5,16 +5,19 @@ import java.util.stream.Collectors;
 
 import org.soaplab.domain.Ingredient;
 import org.soaplab.repository.IngredientRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import lombok.extern.slf4j.Slf4j;
+import one.microstream.storage.types.StorageManager;
 
 @Component
-@Slf4j
 public abstract class IngredientRepositoryMSImpl<T extends Ingredient> extends EntityRepositoryMSImpl<T>
 		implements IngredientRepository<T> {
 
-	public IngredientRepositoryMSImpl(MicrostreamRepository repository) {
+	private static final long serialVersionUID = 1L;
+
+	@Autowired
+	public IngredientRepositoryMSImpl(StorageManager repository) {
 		super(repository);
 	}
 

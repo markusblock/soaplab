@@ -8,23 +8,25 @@ import org.soaplab.domain.exception.EntityDeletionFailedException.REASON;
 import org.soaplab.repository.LiquidRepository;
 import org.springframework.stereotype.Component;
 
+import one.microstream.storage.types.StorageManager;
+
 @Component
 public class LiquidRepositoryMSImpl extends IngredientRepositoryMSImpl<Liquid> implements LiquidRepository {
 
 	private static final long serialVersionUID = 1L;
 
-	public LiquidRepositoryMSImpl(MicrostreamRepository repository) {
+	public LiquidRepositoryMSImpl(StorageManager repository) {
 		super(repository);
 	}
 
 	@Override
 	protected Set<Liquid> getEntitiesInternal() {
-		return repository.getRoot().getAllLiquids();
+		return getDataRoot().getAllLiquids();
 	}
 
 	@Override
 	protected void assertEntityIsNotReferencedByOtherEntities(Liquid entity) {
-		if (repository.getRoot().getAllSoapReceipts().stream().anyMatch(soapRecipe -> {
+		if (getDataRoot().getAllSoapReceipts().stream().anyMatch(soapRecipe -> {
 			return soapRecipe.getLiquids().stream()
 					.anyMatch(referencedEntity -> referencedEntity.getId().equals(entity.getId()));
 		})) {

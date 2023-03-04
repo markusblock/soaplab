@@ -25,7 +25,7 @@ import org.soaplab.ui.i18n.TranslationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -126,7 +126,7 @@ public class UIIntegrationTestBase {
 	}
 
 	private static void configureDatabaseFolder(Environment environment) {
-		String databaseFolderProperty = environment.getProperty("microstream.store.location");
+		String databaseFolderProperty = environment.getProperty("one.microstream.storage-directory");
 		if (databaseFolder == null) {
 			databaseFolder = new File(databaseFolderProperty);
 			log.info("Setting database folder to " + databaseFolder);
@@ -166,16 +166,18 @@ public class UIIntegrationTestBase {
 				// also remove old testdatabase files&folders
 				String[] testDatabasesFolders = databaseFolder.getParentFile()
 						.list((dir, name) -> name.startsWith("test-"));
-				for (int i = 0; i < testDatabasesFolders.length; i++) {
-					try {
-						File fileToDelete = new File(databaseFolder.getParentFile(), testDatabasesFolders[i]);
-						if (!fileToDelete.exists()) {
-							continue;
+				if (testDatabasesFolders != null) {
+					for (int i = 0; i < testDatabasesFolders.length; i++) {
+						try {
+							File fileToDelete = new File(databaseFolder.getParentFile(), testDatabasesFolders[i]);
+							if (!fileToDelete.exists()) {
+								continue;
+							}
+							FileUtils.forceDelete(fileToDelete);
+							log.info("[DONE] Removing testdatabase: " + fileToDelete);
+						} catch (Exception e) {
+							log.error("[ERROR] Error occured while removing testdatabase: " + databaseFolder, e);
 						}
-						FileUtils.forceDelete(fileToDelete);
-						log.info("[DONE] Removing testdatabase: " + fileToDelete);
-					} catch (Exception e) {
-						log.error("[ERROR] Error occured while removing testdatabase: " + databaseFolder, e);
 					}
 				}
 				databaseFolder = null;

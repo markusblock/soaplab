@@ -14,12 +14,12 @@ import org.soaplab.repository.KOHRepository;
 import org.soaplab.repository.LiquidRepository;
 import org.soaplab.repository.NaOHRepository;
 import org.soaplab.repository.SoapRecipeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import lombok.extern.slf4j.Slf4j;
+import one.microstream.storage.types.StorageManager;
 
 @Component
-@Slf4j
 public class SoapRecipeRepositoryMSImpl extends EntityRepositoryMSImpl<SoapRecipe> implements SoapRecipeRepository {
 
 	private static final long serialVersionUID = 1L;
@@ -31,7 +31,8 @@ public class SoapRecipeRepositoryMSImpl extends EntityRepositoryMSImpl<SoapRecip
 	private final NaOHRepository naohRepository;
 	private final KOHRepository kohRepository;
 
-	public SoapRecipeRepositoryMSImpl(MicrostreamRepository repository, FatRepository fatRepository,
+	@Autowired
+	public SoapRecipeRepositoryMSImpl(StorageManager repository, FatRepository fatRepository,
 			AcidRepository acidRepository, LiquidRepository liquidRepository, FragranceRepository fragranceRepository,
 			NaOHRepository naohRepository, KOHRepository kohRepository) {
 		super(repository);
@@ -72,16 +73,16 @@ public class SoapRecipeRepositoryMSImpl extends EntityRepositoryMSImpl<SoapRecip
 
 	@Override
 	protected Set<SoapRecipe> getEntitiesInternal() {
-		return repository.getRoot().getAllSoapReceipts();
+		return getDataRoot().getAllSoapReceipts();
 	}
 
 	@Override
 	protected void storeCompositeEntitiesInRepository(SoapRecipe soapRecipe) {
-		repository.getStorage().store(soapRecipe.getNaOH());
-		repository.getStorage().store(soapRecipe.getKOH());
-		repository.getStorage().storeAll(soapRecipe.getAcids());
-		repository.getStorage().storeAll(soapRecipe.getFats());
-		repository.getStorage().storeAll(soapRecipe.getFragrances());
-		repository.getStorage().storeAll(soapRecipe.getLiquids());
+		repository.store(soapRecipe.getNaOH());
+		repository.store(soapRecipe.getKOH());
+		repository.storeAll(soapRecipe.getAcids());
+		repository.storeAll(soapRecipe.getFats());
+		repository.storeAll(soapRecipe.getFragrances());
+		repository.storeAll(soapRecipe.getLiquids());
 	}
 }

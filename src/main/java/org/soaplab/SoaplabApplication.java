@@ -27,6 +27,8 @@ import com.vaadin.flow.theme.lumo.Lumo;
 @NpmPackage(value = "line-awesome", version = "1.3.0")
 public class SoaplabApplication extends SpringBootServletInitializer implements AppShellConfigurator {
 
+	private static final long serialVersionUID = 1L;
+
 	public static void main(String[] args) {
 		System.setProperty("vaadin.i18n.provider", TranslationProvider.class.getName());
 

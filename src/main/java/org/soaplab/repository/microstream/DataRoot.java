@@ -13,9 +13,11 @@ import org.soaplab.domain.SoapRecipe;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import one.microstream.integrations.spring.boot.types.Storage;
 
 @Getter
 @NoArgsConstructor
+@Storage
 public class DataRoot {
 
 	private final Set<Fat> allFats = new HashSet<>();

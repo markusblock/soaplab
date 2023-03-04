@@ -20,7 +20,7 @@ import org.soaplab.ui.fat.RepositoryTestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
 @ExtendWith(MockitoExtension.class)
@@ -115,7 +115,20 @@ class SoapRecipeRepositorylTest {
 		final SoapRecipe soapRecipeUpdated = SoapRecipeUtils.removeFat(soapRecipe, fat);
 		soapRecipeRepository.update(soapRecipeUpdated);
 		fatRepository.delete(fat.getId());
-
 	}
+
+//	@Test
+//	void ensureNoObjectInAcidsAfterRestart() {
+//		fail("not implemented");
+//		// TODO: REST API test or UI test
+//		final SoapRecipe soapRecipe = repoHelper.createSoapRecipeWithRandomData();
+//		// get soaprecipe
+//		// check acid
+//
+//		Restarter.getInstance().restart();
+//
+//		// get soaprecipe
+//		// check acid
+//	}
 
 }

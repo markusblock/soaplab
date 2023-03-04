@@ -14,11 +14,13 @@ import org.soaplab.domain.NamedEntity;
 import org.soaplab.domain.exception.DuplicateNameException;
 import org.soaplab.domain.exception.EntityNotFoundException;
 import org.soaplab.repository.EntityRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import lombok.extern.slf4j.Slf4j;
 import one.microstream.concurrency.XThreads;
+import one.microstream.storage.types.StorageManager;
 
 @Component
 @Slf4j
@@ -26,9 +28,10 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 
 	private static final long serialVersionUID = 1L;
 
-	protected final MicrostreamRepository repository;
+	protected final StorageManager repository;
 
-	public EntityRepositoryMSImpl(MicrostreamRepository repository) {
+	@Autowired
+	public EntityRepositoryMSImpl(StorageManager repository) {
 		super();
 		this.repository = repository;
 	}
@@ -137,7 +140,7 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 	}
 
 	private void storeEntitiesInRepository() {
-		repository.getStorage().store(this.getEntitiesInternal());
+		repository.store(this.getEntitiesInternal());
 	}
 
 	@Override
@@ -166,5 +169,12 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 			}
 		});
 		return (T) oldEntity.toBuilder().build();
+	}
+
+	protected DataRoot getDataRoot() {
+		// TODO remove log statements
+//		log.error("repo root classloader: " + repository.root().getClass().getClassLoader());
+//		log.error("DataRoot classloader: " + DataRoot.class.getClassLoader());
+		return (DataRoot) repository.root();
 	}
 }

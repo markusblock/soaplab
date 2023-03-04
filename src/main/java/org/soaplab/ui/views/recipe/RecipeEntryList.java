@@ -43,6 +43,8 @@ import lombok.Getter;
 public class RecipeEntryList<T extends Ingredient> extends Div {
 
 	private final class IngredientValueProvider implements ValueProvider<RecipeEntry<T>, String> {
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public String apply(RecipeEntry<T> entry) {
 			if (entry == null || entry.getIngredient() == null) {
@@ -53,6 +55,8 @@ public class RecipeEntryList<T extends Ingredient> extends Div {
 	}
 
 	private final class PercentageValueProvider implements ValueProvider<RecipeEntry<T>, Number> {
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Number apply(RecipeEntry<T> entry) {
 			if (entry == null || entry.getPercentage() == null) {
