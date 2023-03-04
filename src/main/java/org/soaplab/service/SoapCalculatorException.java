@@ -51,7 +51,7 @@ public class SoapCalculatorException extends SoapLabRuntimeException {
 			break;
 
 		default:
-			throw new IllegalArgumentException(String.format("'%s' is not handled."));
+			throw new IllegalArgumentException(String.format("'%s' is not handled.", issue));
 		}
 		return message;
 	}
