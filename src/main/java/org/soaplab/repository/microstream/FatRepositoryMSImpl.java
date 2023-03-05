@@ -6,20 +6,12 @@ import org.soaplab.domain.Fat;
 import org.soaplab.domain.exception.EntityDeletionFailedException;
 import org.soaplab.domain.exception.EntityDeletionFailedException.REASON;
 import org.soaplab.repository.FatRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import one.microstream.storage.types.StorageManager;
 
 @Component
 public class FatRepositoryMSImpl extends IngredientRepositoryMSImpl<Fat> implements FatRepository {
 
 	private static final long serialVersionUID = 1L;
-
-	@Autowired
-	public FatRepositoryMSImpl(StorageManager repository) {
-		super(repository);
-	}
 
 	@Override
 	protected Set<Fat> getEntitiesInternal() {

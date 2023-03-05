@@ -15,5 +15,6 @@ public class CustomStorageManagerInitializer implements StorageManagerInitialize
 	@Override
 	public void initialize(StorageManager storageManager) {
 		// Add init stuff here
+		// TODO import database if empty
 	}
 }

@@ -6,20 +6,12 @@ import org.soaplab.domain.NaOH;
 import org.soaplab.domain.exception.EntityDeletionFailedException;
 import org.soaplab.domain.exception.EntityDeletionFailedException.REASON;
 import org.soaplab.repository.NaOHRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import one.microstream.storage.types.StorageManager;
 
 @Component
 public class NaOHRepositoryMSImpl extends IngredientRepositoryMSImpl<NaOH> implements NaOHRepository {
 
 	private static final long serialVersionUID = 1L;
-
-	@Autowired
-	public NaOHRepositoryMSImpl(StorageManager repository) {
-		super(repository);
-	}
 
 	@Override
 	protected Set<NaOH> getEntitiesInternal() {

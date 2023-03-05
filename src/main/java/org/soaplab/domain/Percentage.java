@@ -15,6 +15,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
+@ImplicitEntity
 public class Percentage implements Serializable {
 
 	private static final long serialVersionUID = 1L;

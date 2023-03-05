@@ -5,21 +5,13 @@ import java.util.stream.Collectors;
 
 import org.soaplab.domain.Ingredient;
 import org.soaplab.repository.IngredientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import one.microstream.storage.types.StorageManager;
 
 @Component
 public abstract class IngredientRepositoryMSImpl<T extends Ingredient> extends EntityRepositoryMSImpl<T>
 		implements IngredientRepository<T> {
 
 	private static final long serialVersionUID = 1L;
-
-	@Autowired
-	public IngredientRepositoryMSImpl(StorageManager repository) {
-		super(repository);
-	}
 
 	@Override
 	public List<T> findByInci(String inci) {

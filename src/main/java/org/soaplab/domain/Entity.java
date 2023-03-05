@@ -1,5 +1,6 @@
 package org.soaplab.domain;
 
+import java.beans.Transient;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -26,6 +27,7 @@ public abstract class Entity implements Serializable {
 	private UUID id;
 
 	@JsonIgnore
+	@Transient
 	public abstract EntityBuilder<?, ?> getCopyBuilder();
 
 }

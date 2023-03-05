@@ -88,7 +88,8 @@ public class SoapRecipe extends NamedEntity {
 	public SoapRecipeBuilder<?, ?> getCopyBuilder() {
 		return this.toBuilder().fats(getRecipeEntryListDeepClone(fats)).acids(getRecipeEntryListDeepClone(acids))
 				.fragrances(getRecipeEntryListDeepClone(fragrances)).liquids(getRecipeEntryListDeepClone(liquids))
-				.naOH(naOH.getCopyBuilder().build()).kOH(kOH.getCopyBuilder().build());
+				.naOH(naOH == null ? null : naOH.getCopyBuilder().build())
+				.kOH(kOH == null ? null : kOH.getCopyBuilder().build());
 	}
 
 	private <T extends Ingredient> List<RecipeEntry<T>> getRecipeEntryListDeepClone(

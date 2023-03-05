@@ -18,8 +18,10 @@ public class CustomStorageManagerCustomizer implements EmbeddedStorageFoundation
 	@Override
 	public void customize(EmbeddedStorageFoundation<?> foundation) {
 
-		foundation.onConnectionFoundation(cf -> cf
-				.setClassLoaderProvider(ClassLoaderProvider.New(Thread.currentThread().getContextClassLoader())));
-		foundation.onConnectionFoundation(BinaryHandlersJDK17::registerJDK17TypeHandlers);
+		foundation.onConnectionFoundation(cf -> {
+			cf.setClassLoaderProvider(ClassLoaderProvider.New(Thread.currentThread().getContextClassLoader()));
+			cf.setReferenceFieldEagerEvaluator(new StoreEagerEvaluator());
+			BinaryHandlersJDK17.registerJDK17TypeHandlers(cf);
+		});
 	}
 }

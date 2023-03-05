@@ -187,7 +187,12 @@ public class SoapCalculatorService {
 		totalCost = priceCalc.plus(totalCost, totalFragranceCosts);
 
 		Price totalLyeCosts = Price.of(0);
-		final Percentage naohPercentage = soapRecipe.getNaOH().getPercentage();
+		final Percentage naohPercentage;
+		if (soapRecipe.getNaOH() == null) {
+			naohPercentage = Percentage.of(0d);
+		} else {
+			naohPercentage = soapRecipe.getNaOH().getPercentage();
+		}
 		final Percentage kohPercentage;
 		if (soapRecipe.getKOH() == null) {
 			kohPercentage = Percentage.of(0d);
@@ -196,13 +201,16 @@ public class SoapCalculatorService {
 		}
 		// TODO: validate koh+naoh=100%
 		final Weight naohForFatsAndAcidsAndLiquids = weightCalc.plus(naohForFats, naohForAcids, naohForLiquids);
-		final Weight naohTotal = weightCalc.calculatePercentage(naohForFatsAndAcidsAndLiquids, naohPercentage);
-		totalWeight = weightCalc.plus(totalWeight, naohTotal);
+		Weight naohTotal = Weight.of(0, WeightUnit.GRAMS);
+		if (Percentage.isGreaterThanZero(naohPercentage)) {
+			naohTotal = weightCalc.calculatePercentage(naohForFatsAndAcidsAndLiquids, naohPercentage);
+			totalWeight = weightCalc.plus(totalWeight, naohTotal);
 
-		if (soapRecipe.getNaOH().getIngredient().getCost() == null) {
-			log.warning("Ignoring price of ingredient " + soapRecipe.getNaOH().getIngredient());
-		} else {
-			totalLyeCosts = priceCalc.plus(totalLyeCosts, soapRecipe.getNaOH().getIngredient().getCost());
+			if (soapRecipe.getNaOH().getIngredient().getCost() == null) {
+				log.warning("Ignoring price of ingredient " + soapRecipe.getNaOH().getIngredient());
+			} else {
+				totalLyeCosts = priceCalc.plus(totalLyeCosts, soapRecipe.getNaOH().getIngredient().getCost());
+			}
 		}
 
 		Weight kohTotal = Weight.of(0, WeightUnit.GRAMS);
@@ -218,8 +226,8 @@ public class SoapCalculatorService {
 			} else {
 				totalLyeCosts = priceCalc.plus(totalLyeCosts, soapRecipe.getKOH().getIngredient().getCost());
 			}
-			totalCost = priceCalc.plus(totalCost, totalLyeCosts);
 		}
+		totalCost = priceCalc.plus(totalCost, totalLyeCosts);
 
 		soapRecipe.setNaohTotal(naohTotal);
 		soapRecipe.setKohTotal(kohTotal);
@@ -248,10 +256,6 @@ public class SoapCalculatorService {
 
 		validateAndHandleError(() -> soapRecipe.getFats() == null, soapRecipe, issueCollector,
 				CalculationIssue.NO_FAT_IN_RECIPE);
-
-		if (soapRecipe.getNaOH() == null) {
-
-		}
 	}
 
 	private void validateAndHandleError(BooleanSupplier validationFailedCheck,

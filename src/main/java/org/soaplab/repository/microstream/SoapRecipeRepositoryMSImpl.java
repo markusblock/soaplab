@@ -17,8 +17,6 @@ import org.soaplab.repository.SoapRecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import one.microstream.storage.types.StorageManager;
-
 @Component
 public class SoapRecipeRepositoryMSImpl extends EntityRepositoryMSImpl<SoapRecipe> implements SoapRecipeRepository {
 
@@ -32,10 +30,9 @@ public class SoapRecipeRepositoryMSImpl extends EntityRepositoryMSImpl<SoapRecip
 	private final KOHRepository kohRepository;
 
 	@Autowired
-	public SoapRecipeRepositoryMSImpl(StorageManager repository, FatRepository fatRepository,
+	public SoapRecipeRepositoryMSImpl(FatRepository fatRepository,
 			AcidRepository acidRepository, LiquidRepository liquidRepository, FragranceRepository fragranceRepository,
 			NaOHRepository naohRepository, KOHRepository kohRepository) {
-		super(repository);
 		this.fatRepository = fatRepository;
 		this.acidRepository = acidRepository;
 		this.liquidRepository = liquidRepository;
@@ -74,15 +71,5 @@ public class SoapRecipeRepositoryMSImpl extends EntityRepositoryMSImpl<SoapRecip
 	@Override
 	protected Set<SoapRecipe> getEntitiesInternal() {
 		return getDataRoot().getAllSoapReceipts();
-	}
-
-	@Override
-	protected void storeCompositeEntitiesInRepository(SoapRecipe soapRecipe) {
-		repository.store(soapRecipe.getNaOH());
-		repository.store(soapRecipe.getKOH());
-		repository.storeAll(soapRecipe.getAcids());
-		repository.storeAll(soapRecipe.getFats());
-		repository.storeAll(soapRecipe.getFragrances());
-		repository.storeAll(soapRecipe.getLiquids());
 	}
 }

@@ -28,13 +28,11 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 
 	private static final long serialVersionUID = 1L;
 
-	protected final StorageManager repository;
+	@Autowired
+	private DataRoot dataRoot;
 
 	@Autowired
-	public EntityRepositoryMSImpl(StorageManager repository) {
-		super();
-		this.repository = repository;
-	}
+	protected StorageManager repository;
 
 	@Override
 	public T create(T entity) {
@@ -49,7 +47,6 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 		XThreads.executeSynchronized(() -> {
 			getEntitiesInternal().add(entityCopy);
 			storeEntitiesInRepository();
-			storeCompositeEntitiesInRepository(entityCopy);
 		});
 		return (T) entityCopy.toBuilder().build();
 	}
@@ -129,18 +126,12 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 
 	protected abstract Set<T> getEntitiesInternal();
 
-	/**
-	 * Implemented in subclasses to store referenced composite entities.
-	 *
-	 * @param entity the parent entity that is stored and for this entity the
-	 *               composite entities should be stored.
-	 */
-	protected void storeCompositeEntitiesInRepository(T entity) {
-		// NoOp
-	}
-
 	private void storeEntitiesInRepository() {
 		repository.store(this.getEntitiesInternal());
+	}
+
+	private void storeEntityInRepository(T entity) {
+		repository.store(entity);
 	}
 
 	@Override
@@ -150,31 +141,31 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 		log.info("Updating entity " + entity);
 
 		// would throw not found exception if not present
-		final T oldEntity = getInternal(entity.getId());
+		final T persistedEntity = getInternal(entity.getId());
 
 		XThreads.executeSynchronized(() -> {
 
-			if (!oldEntity.getName().equals(entity.getName())) {
+			if (!persistedEntity.getName().equals(entity.getName())) {
 				// if name has changed check that no entity with new name already exists
 				assertNoEntityWithNameExists(entity);
 			}
 
 			// copy updated entity values to persistedEntity
 			try {
-				BeanUtils.copyProperties(oldEntity, entity);
+				BeanUtils.copyProperties(persistedEntity, entity);
+				storeEntityInRepository(persistedEntity);
 				storeEntitiesInRepository();
-				storeCompositeEntitiesInRepository(entity);
 			} catch (IllegalAccessException | InvocationTargetException e) {
 				log.error(e.getMessage(), e);
 			}
 		});
-		return (T) oldEntity.toBuilder().build();
+		return (T) persistedEntity.toBuilder().build();
 	}
 
 	protected DataRoot getDataRoot() {
 		// TODO remove log statements
-//		log.error("repo root classloader: " + repository.root().getClass().getClassLoader());
+//		log.error("repo root classloader: " + dataRoot.getClass().getClassLoader());
 //		log.error("DataRoot classloader: " + DataRoot.class.getClassLoader());
-		return (DataRoot) repository.root();
+		return dataRoot;
 	}
 }

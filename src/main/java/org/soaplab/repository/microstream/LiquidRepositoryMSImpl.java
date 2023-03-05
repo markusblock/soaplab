@@ -8,16 +8,10 @@ import org.soaplab.domain.exception.EntityDeletionFailedException.REASON;
 import org.soaplab.repository.LiquidRepository;
 import org.springframework.stereotype.Component;
 
-import one.microstream.storage.types.StorageManager;
-
 @Component
 public class LiquidRepositoryMSImpl extends IngredientRepositoryMSImpl<Liquid> implements LiquidRepository {
 
 	private static final long serialVersionUID = 1L;
-
-	public LiquidRepositoryMSImpl(StorageManager repository) {
-		super(repository);
-	}
 
 	@Override
 	protected Set<Liquid> getEntitiesInternal() {
