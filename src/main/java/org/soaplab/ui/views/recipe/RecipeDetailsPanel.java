@@ -18,6 +18,7 @@ import org.soaplab.repository.NaOHRepository;
 import org.soaplab.service.SoapCalculatorService;
 import org.soaplab.ui.views.EntityDetails;
 import org.soaplab.ui.views.EntityViewDetailsControllerCallback;
+import org.springframework.util.CollectionUtils;
 
 public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
 
@@ -51,29 +52,29 @@ public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
 		addPropertyPriceFieldReadOnly("domain.recipe.costsTotal", SoapRecipe::getCostsTotal);
 
 		naOH = new RecipeEntryList<NaOH>(naOHRepository, "domain.naoh");
-		naOH.setSizeFull();
-		getContent().add(naOH);
+		naOH.setWidthFull();
+		addContent(naOH);
 
 		kOH = new RecipeEntryList<KOH>(kOHRepository, "domain.koh");
-		kOH.setSizeFull();
-		getContent().add(kOH);
+		kOH.setWidthFull();
+		addContent(kOH);
 
 		fats = new RecipeEntryList<Fat>(fatRepository, "domain.fats");
 		// TODO add panel the same way as the propertypanels
-		fats.setSizeFull();
-		getContent().add(fats);
+		fats.setWidthFull();
+		addContent(fats);
 
 		acids = new RecipeEntryList<>(acidRepository, "domain.acids");
-		acids.setSizeFull();
-		getContent().add(acids);
+		acids.setWidthFull();
+		addContent(acids);
 
 		liquids = new RecipeEntryList<>(liquidRepository, "domain.liquids");
-		liquids.setSizeFull();
-		getContent().add(liquids);
+		liquids.setWidthFull();
+		addContent(liquids);
 
 		fragrances = new RecipeEntryList<>(fragranceRepository, "domain.fragrances");
-		fragrances.setSizeFull();
-		getContent().add(fragrances);
+		fragrances.setWidthFull();
+		addContent(fragrances);
 
 	}
 
@@ -102,8 +103,8 @@ public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
 	@Override
 	protected void preSave() {
 		super.preSave();
-		soapRecipe.setNaOH(naOH.getData().get(0));
-		soapRecipe.setKOH(kOH.getData().get(0));
+		soapRecipe.setNaOH(CollectionUtils.firstElement(naOH.getData()));
+		soapRecipe.setKOH(CollectionUtils.firstElement(kOH.getData()));
 		soapRecipe.setFats(List.copyOf(fats.getData()));
 		soapRecipe.setAcids(List.copyOf(acids.getData()));
 		soapRecipe.setLiquids(List.copyOf(liquids.getData()));
@@ -129,8 +130,16 @@ public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
 			liquids.setData();
 			fragrances.setData();
 		} else {
-			naOH.setData(List.of(soapRecipe.getNaOH()));
-			kOH.setData(List.of(soapRecipe.getKOH()));
+			if (soapRecipe.getNaOH() == null) {
+				naOH.setData();
+			} else {
+				naOH.setData(List.of(soapRecipe.getNaOH()));
+			}
+			if (soapRecipe.getKOH() == null) {
+				kOH.setData();
+			} else {
+				kOH.setData(List.of(soapRecipe.getKOH()));
+			}
 			fats.setData(soapRecipe.getFats());
 			acids.setData(soapRecipe.getAcids());
 			liquids.setData(soapRecipe.getLiquids());

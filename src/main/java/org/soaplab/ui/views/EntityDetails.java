@@ -11,11 +11,13 @@ import org.soaplab.domain.Price;
 import org.soaplab.domain.Weight;
 import org.springframework.util.Assert;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
+import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep.LabelsPosition;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -32,17 +34,14 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveObserver;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-
 public abstract class EntityDetails<T extends NamedEntity> extends Div
 		implements BeforeEnterObserver, BeforeLeaveObserver {
 
 	private static final long serialVersionUID = 1L;
 
-	@Getter(value = AccessLevel.PROTECTED)
 	private final VerticalLayout content;
-	private final FormLayout detailsPanel;
+	private final FormLayout commonEntityDetailsSection;
+	private final FormLayout propertySection;
 
 	private final Binder<T> binder;
 	private final List<HasEnabled> editablePropertyFields;
@@ -92,26 +91,45 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 
 		content.add(buttonPanel);
 
-		detailsPanel = new FormLayout();
-		detailsPanel.setResponsiveSteps(
+		commonEntityDetailsSection = new FormLayout();
+		commonEntityDetailsSection.setId("entitydetails.section.common");
+		commonEntityDetailsSection.setResponsiveSteps(
 				// Use one column by default
-				new ResponsiveStep("0", 1));
-		content.add(detailsPanel);
+				new ResponsiveStep("0", 1, LabelsPosition.ASIDE));
+		content.add(commonEntityDetailsSection);
 
 		final TextField idField = createPropertyTextField("domain.entity.id");
-		detailsPanel.addFormItem(idField, getTranslation("domain.entity.id"));
+		commonEntityDetailsSection.addFormItem(idField, getTranslation("domain.entity.id"));
 		binder.forField(idField).bindReadOnly(ingred -> Objects.toString(ingred.getId(), ""));
 
 		addPropertyStringField("domain.entity.name", T::getName, T::setName, true);
 
+		propertySection = new FormLayout();
+		propertySection.setId("entitydetails.section.properties");
+		propertySection.setResponsiveSteps(
+				// Use two columns by default
+				new ResponsiveStep("0", 3, LabelsPosition.TOP));
+		content.add(propertySection);
+
 		setActionButtonVisibility(false);
+	}
+
+	protected void addContent(Component component) {
+		content.add(component);
+	}
+	protected void addEntityDetail(Component component) {
+		commonEntityDetailsSection.add(component);
+	}
+
+	protected void addEntityProperty(Component component) {
+		commonEntityDetailsSection.add(component);
 	}
 
 	protected void addPropertyBigDecimalField(String id, ValueProvider<T, BigDecimal> getter,
 			Setter<T, BigDecimal> setter) {
 		final TextField propertyField = createPropertyTextField(id);
 		editablePropertyFields.add(propertyField);
-		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		propertySection.addFormItem(propertyField, getTranslation(id));
 		binder.forField(propertyField).withNullRepresentation("").withConverter(new MyStringToBigDecConverter(""))
 				.bind(getter, setter);
 	}
@@ -119,7 +137,7 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 	protected void addPropertyIntegerField(String id, ValueProvider<T, Integer> getter, Setter<T, Integer> setter) {
 		final TextField propertyField = createPropertyTextField(id);
 		editablePropertyFields.add(propertyField);
-		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		propertySection.addFormItem(propertyField, getTranslation(id));
 		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToIntegerConverter(""))
 				.bind(getter, setter);
 	}
@@ -129,7 +147,7 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 		final TextField propertyField = createPropertyTextField(id);
 		propertyField.setSuffixComponent(new Div(new Text("%")));
 		editablePropertyFields.add(propertyField);
-		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		propertySection.addFormItem(propertyField, getTranslation(id));
 		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToPercentageConverter())
 				.bind(getter, setter);
 	}
@@ -137,15 +155,16 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 	protected void addPropertyPriceField(String id, ValueProvider<T, Price> getter, Setter<T, Price> setter) {
 		final TextField propertyField = createPropertyTextField(id);
 		propertyField.setSuffixComponent(new Div(new Text("€")));
-		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		editablePropertyFields.add(propertyField);
+		propertySection.addFormItem(propertyField, getTranslation(id));
 		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToPriceValueConverter())
-				.bindReadOnly(getter);
+				.bind(getter, setter);
 	}
 
 	protected void addPropertyPriceFieldReadOnly(String id, ValueProvider<T, Price> getter) {
 		final TextField propertyField = createPropertyTextField(id);
 		propertyField.setSuffixComponent(new Div(new Text("€")));
-		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		propertySection.addFormItem(propertyField, getTranslation(id));
 		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToPriceValueConverter())
 				.bindReadOnly(getter);
 	}
@@ -154,7 +173,7 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 			boolean required) {
 		final TextField propertyField = createPropertyTextField(id);
 		editablePropertyFields.add(propertyField);
-		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		commonEntityDetailsSection.addFormItem(propertyField, getTranslation(id));
 		final BindingBuilder<T, String> bindingBuilder = binder.forField(propertyField);
 		if (required) {
 			bindingBuilder.asRequired();
@@ -165,7 +184,7 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 	protected void addPropertyTextArea(String id, ValueProvider<T, String> getter, Setter<T, String> setter) {
 		final TextArea propertyField = createPropertyTextArea(id);
 		editablePropertyFields.add(propertyField);
-		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		commonEntityDetailsSection.addFormItem(propertyField, getTranslation(id));
 		binder.forField(propertyField).bind(getter, setter);
 	}
 
@@ -173,7 +192,7 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 		final TextField propertyField = createPropertyTextField(id);
 		propertyField.setSuffixComponent(new Div(new Text("g")));
 		editablePropertyFields.add(propertyField);
-		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		propertySection.addFormItem(propertyField, getTranslation(id));
 		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToWeightValueConverter())
 				.bind(getter, setter);
 	}
@@ -181,7 +200,7 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 	protected void addPropertyWeightFieldReadOnly(String id, ValueProvider<T, Weight> getter) {
 		final TextField propertyField = createPropertyTextField(id);
 		propertyField.setSuffixComponent(new Div(new Text("g")));
-		detailsPanel.addFormItem(propertyField, getTranslation(id));
+		propertySection.addFormItem(propertyField, getTranslation(id));
 		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToWeightValueConverter())
 				.bindReadOnly(getter);
 	}

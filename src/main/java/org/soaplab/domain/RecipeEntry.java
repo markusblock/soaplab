@@ -15,6 +15,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
+@ImplicitEntity
 public class RecipeEntry<T extends Ingredient> extends Entity {
 
 	private static final long serialVersionUID = 1L;

@@ -18,7 +18,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
@@ -78,14 +77,15 @@ public class RecipeEntryList<T extends Ingredient> extends Div {
 	@Getter
 	private List<RecipeEntry<T>> data;
 
-	private Column<RecipeEntry<T>> manageColumn;
-
 	private boolean editMode;
 
 	private Button addButton;
+	private Button removeButton;
 
 	public RecipeEntryList(EntityRepository<T> repository, String headerTextId) {
 		super();
+
+		setSizeFull();
 
 		content = new VerticalLayout();
 		content.setSizeFull();
@@ -96,10 +96,15 @@ public class RecipeEntryList<T extends Ingredient> extends Div {
 
 		selectedEntities = new Grid<RecipeEntry<T>>();
 		selectedEntities.setId("recipe.entitylist.grid");
+		selectedEntities.setSizeFull();
 		selectedEntities.setSelectionMode(SelectionMode.SINGLE);
 		selectedEntities.addThemeVariants(GridVariant.LUMO_ROW_STRIPES, GridVariant.LUMO_COMPACT,
 				GridVariant.LUMO_NO_BORDER);
+		selectedEntities.getStyle().set("font-size", "var(--lumo-font-size-s)").set("margin", "0");
 		selectedEntities.setSelectionMode(SelectionMode.SINGLE);
+		selectedEntities
+				.addSelectionListener(
+						event -> removeButton.setEnabled(editMode && event.getFirstSelectedItem().isPresent()));
 		Column<RecipeEntry<T>> fatNameColumn = selectedEntities.addColumn(new IngredientValueProvider())
 				.setHeader(getTranslation("domain.entity.name")).setSortable(true);
 		NumberFormat formatter = NumberFormat.getInstance();
@@ -107,28 +112,6 @@ public class RecipeEntryList<T extends Ingredient> extends Div {
 		Column<RecipeEntry<T>> percentageColumn = selectedEntities
 				.addColumn(new NumberRenderer<RecipeEntry<T>>(new PercentageValueProvider(), formatter)).setHeader("%")
 				.setSortable(true);
-		manageColumn = selectedEntities.addComponentColumn(recipeEntry -> {
-			Button removeButton = new Button();
-			removeButton.setId("recipe.entitylist.remove");
-			removeButton.addClickListener(e -> this.removeRecipeEntry(recipeEntry));
-			removeButton.setIcon(VaadinIcon.MINUS.create());
-			removeButton.setEnabled(editMode);
-//			removeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
-//			removeButton.setWidth("24px");
-//			removeButton.setHeight("24px");
-			return removeButton;
-//			HorizontalLayout toolbar = new HorizontalLayout();
-//			toolbar.setSizeFull();
-//			toolbar.add(removeButton);
-//			toolbar.setJustifyContentMode(JustifyContentMode.END);
-//			toolbar.setPadding(false);
-//			toolbar.setSpacing(false);
-//			toolbar.setMargin(false);
-//			toolbar.setHeight("24px");
-//			toolbar.setAlignItems(Alignment.CENTER);
-//			return toolbar;
-		}).setHeader(getTranslation("recipe.entitylist.grid.header.manage")).setFlexGrow(0).setAutoWidth(true)
-				.setTextAlign(ColumnTextAlign.END);
 
 		HorizontalLayout toolbar = new HorizontalLayout();
 		toolbar.setSizeFull();
@@ -139,15 +122,23 @@ public class RecipeEntryList<T extends Ingredient> extends Div {
 		listHeader.setSizeFull();
 		toolbar.add(listHeader);
 		addButton = new Button();
-		addButton.setId("recipe.entitylist.addEntity");
+		addButton.setId("recipe.entitylist.addRecipeEntry");
 		addButton.setIcon(VaadinIcon.PLUS.create());
 		addButton.addClickListener(e -> addRecipeEntry());
 		addButton.setEnabled(false);
 		addButton.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_SMALL);
 		toolbar.add(addButton);
 
+		removeButton = new Button();
+		removeButton.setId("recipe.entitylist.removeRecipeEntry");
+		removeButton.setIcon(VaadinIcon.MINUS.create());
+		removeButton.addClickListener(e -> this.removeRecipeEntry());
+		removeButton.setEnabled(false);
+		removeButton.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_SMALL);
+		toolbar.add(removeButton);
+
 		HeaderRow headerRow = selectedEntities.prependHeaderRow();
-		headerRow.join(fatNameColumn, percentageColumn, manageColumn);
+		headerRow.join(fatNameColumn, percentageColumn);
 		headerRow.getCell(fatNameColumn).setComponent(toolbar);
 
 		content.add(selectedEntities);
@@ -188,7 +179,8 @@ public class RecipeEntryList<T extends Ingredient> extends Div {
 		setData(newData);
 	}
 
-	private void removeRecipeEntry(RecipeEntry<T> recipeEntry) {
+	private void removeRecipeEntry() {
+		RecipeEntry<T> recipeEntry = selectedEntities.asSingleSelect().getValue();
 		List<RecipeEntry<T>> newData = new ArrayList<>(this.data);
 		newData.remove(recipeEntry);
 		setData(newData);
