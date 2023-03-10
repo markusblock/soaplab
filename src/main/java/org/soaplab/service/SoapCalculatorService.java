@@ -37,8 +37,7 @@ import lombok.extern.java.Log;
 public class SoapCalculatorService {
 
 	public enum CalculationIssue {
-		FATS_TOTAL_MISSING,
-		NO_FAT_IN_RECIPE
+		FATS_TOTAL_MISSING, NO_FAT_IN_RECIPE
 	}
 
 	private static RoundingMode roundingMode = RoundingMode.HALF_UP;
@@ -46,7 +45,7 @@ public class SoapCalculatorService {
 	private final WeightCalculator weightCalc = new WeightCalculator(decimalPlaces, roundingMode);
 	private final PercentageCalculator percentageCalc = new PercentageCalculator(decimalPlaces, roundingMode);
 	private final PriceCalculator priceCalc = new PriceCalculator(decimalPlaces, roundingMode);
-	private Environment env;
+	private final Environment env;
 
 	@Autowired
 	public SoapCalculatorService(Environment env) {
@@ -55,7 +54,7 @@ public class SoapCalculatorService {
 
 	/**
 	 * Calculates the values for {@link SoapRecipe}.
-	 * 
+	 *
 	 * @param soapRecipe the {@link SoapRecipe} with the provided values will be
 	 *                   filled with the calculated values.
 	 * @return {@link SoapRecipe} with calculated values
@@ -64,7 +63,7 @@ public class SoapCalculatorService {
 	 *                                 be returned in {@link SoapRecipe}.
 	 */
 	public SoapRecipe calculate(final SoapRecipe soapRecipe) {
-		SoapCalculatorIssueCollector issueCollector = new SoapCalculatorIssueCollector();
+		final SoapCalculatorIssueCollector issueCollector = new SoapCalculatorIssueCollector();
 
 		Weight totalWeight = Weight.of(0, WeightUnit.GRAMS);
 		Price totalCost = Price.of(0);
@@ -115,7 +114,7 @@ public class SoapCalculatorService {
 				final Weight naoh100 = weightCalc.multiply(acidWeight, sapNaoh);
 
 				naohForAcids = weightCalc.plus(naohForAcids, naoh100);
-				totalAcidWeight = weightCalc.plus(totalFatWeight, acidWeight);
+				totalAcidWeight = weightCalc.plus(totalAcidWeight, acidWeight);
 
 				if (acid.getCost() == null) {
 					log.warning("Ignoring price of ingredient " + acid);
@@ -245,21 +244,21 @@ public class SoapCalculatorService {
 	/**
 	 * Validates the {@link SoapRecipe} so afterwards the calculation can
 	 * technically be done even some information is wrong or missing.
-	 * 
+	 *
 	 * @param soapRecipe
 	 * @param issueCollector
 	 */
 	private void validateSoapRecipeForErros(SoapRecipe soapRecipe, SoapCalculatorIssueCollector issueCollector) {
 
-		validateAndHandleError(() -> soapRecipe.getFatsTotal() == null, soapRecipe,
-				issueCollector, CalculationIssue.FATS_TOTAL_MISSING);
+		validateAndHandleError(() -> soapRecipe.getFatsTotal() == null, soapRecipe, issueCollector,
+				CalculationIssue.FATS_TOTAL_MISSING);
 
 		validateAndHandleError(() -> soapRecipe.getFats() == null, soapRecipe, issueCollector,
 				CalculationIssue.NO_FAT_IN_RECIPE);
 	}
 
-	private void validateAndHandleError(BooleanSupplier validationFailedCheck,
-			SoapRecipe soapRecipe, SoapCalculatorIssueCollector issueCollector, CalculationIssue issue) {
+	private void validateAndHandleError(BooleanSupplier validationFailedCheck, SoapRecipe soapRecipe,
+			SoapCalculatorIssueCollector issueCollector, CalculationIssue issue) {
 		if (validationFailedCheck.getAsBoolean()) {
 			issueCollector.addError(issue);
 			throw new SoapCalculatorException(env, soapRecipe, issueCollector);

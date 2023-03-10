@@ -24,7 +24,7 @@ import org.springframework.core.env.Environment;
 public class SoapCalculatorServiceTest {
 
 	private SoapCalculatorService calculatorService;
-	
+
 	@Mock
 	Environment envMock;
 
@@ -47,10 +47,28 @@ public class SoapCalculatorServiceTest {
 		final SoapRecipe calculatedSoapRecipeResult = calculatorService
 				.calculate(oliveOilSoapRecipe.createSoapRecipe());
 
+		// Lye
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getNaohTotal()).isEqualToWeightInGrams(12.15);
-		Assertions.assertThat(calculatedSoapRecipeResult.getLiquids().size()).isEqualTo(1);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getKohTotal()).isEqualToWeightInGrams(0);
+
+		// Liquids
+		Assertions.assertThat(calculatedSoapRecipeResult.getLiquids()).hasSize(1);
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquids().get(0).getWeight()).isEqualToWeightInGrams(33);
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquidTotal()).isEqualToWeightInGrams(33);
+
+		// Fats
+		Assertions.assertThat(calculatedSoapRecipeResult.getFats()).hasSize(1);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getFats().get(0).getWeight()).isEqualToWeightInGrams(100);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getFatsTotal()).isEqualToWeightInGrams(100);
+
+		// Fragrances
+		Assertions.assertThat(calculatedSoapRecipeResult.getFragrances()).isNullOrEmpty();
+
+		// Acids
+		Assertions.assertThat(calculatedSoapRecipeResult.getAcids()).isNullOrEmpty();
+
+		// Totals
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getWeightTotal()).isEqualToWeightInGrams(145.15);
 	}
 
 	@Test
@@ -59,30 +77,53 @@ public class SoapCalculatorServiceTest {
 		final SoapRecipe calculatedSoapRecipeResult = calculatorService
 				.calculate(oliveOilSoapRecipe.createSoapRecipe());
 
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getNaohTotal()).isEqualToWeightInGrams(13.7682d);
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getKohTotal()).isEqualToWeightInGrams(2.3841d);
-		Assertions.assertThat(calculatedSoapRecipeResult.getLiquids().size()).isEqualTo(1);
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquids().get(0).getWeight()).isEqualToWeightInGrams(33);
+		// Lye
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getNaohTotal()).isEqualToWeightInGrams(14.2726d);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getKohTotal()).isEqualToWeightInGrams(2.4848d);
+
+		// Liquids
+		Assertions.assertThat(calculatedSoapRecipeResult.getLiquids()).hasSize(2);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquids().get(0).getWeight())
+				.isEqualToWeightInGrams(16.5d);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquids().get(1).getWeight())
+				.isEqualToWeightInGrams(16.5d);
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquidTotal()).isEqualToWeightInGrams(33);
+
+		// Fats
+		Assertions.assertThat(calculatedSoapRecipeResult.getFats()).hasSize(2);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getFats().get(0).getWeight()).isEqualToWeightInGrams(80d);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getFats().get(1).getWeight()).isEqualToWeightInGrams(20d);
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getFatsTotal()).isEqualToWeightInGrams(100);
+
+		// Fragrances
+		Assertions.assertThat(calculatedSoapRecipeResult.getFragrances()).hasSize(1);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getFragrances().get(0).getWeight())
+				.isEqualToWeightInGrams(3d);
+
+		// Acids
+		Assertions.assertThat(calculatedSoapRecipeResult.getAcids()).hasSize(1);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getAcids().get(0).getWeight()).isEqualToWeightInGrams(4d);
+
+		// Totals
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getWeightTotal()).isEqualToWeightInGrams(156.7574);
 	}
-	
+
 	@Test
 	void ensureCalculationNoKOH() {
 		final OliveOilSoapBasicRecipeTestData soapRecipeData = new OliveOilSoapBasicRecipeTestData();
-		SoapRecipeBuilder<?,?> recipeBuilder = soapRecipeData.getSoapRecipeBuilder().kOH(null).naOH(createRecipeEntry(soapRecipeData.getNaOH(), 100d));
-		final SoapRecipe calculatedSoapRecipeResult = calculatorService
-				.calculate(recipeBuilder.build());
+		final SoapRecipeBuilder<?, ?> recipeBuilder = soapRecipeData.getSoapRecipeBuilder().kOH(null)
+				.naOH(createRecipeEntry(soapRecipeData.getNaOH(), 100d));
+		final SoapRecipe calculatedSoapRecipeResult = calculatorService.calculate(recipeBuilder.build());
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getNaohTotal()).isEqualToWeightInGrams(12.15d);
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getKohTotal()).isEqualToWeightInGrams(0d);
 	}
-	
+
 	@Test()
 	void expectExceptionForRecipeWithNoFat() {
 		final OliveOilSoapBasicRecipeTestData soapRecipeData = new OliveOilSoapBasicRecipeTestData();
-		SoapRecipeBuilder<?,?> recipeBuilder = soapRecipeData.getSoapRecipeBuilder().fats(null);
+		final SoapRecipeBuilder<?, ?> recipeBuilder = soapRecipeData.getSoapRecipeBuilder().fats(null);
 
-		SoapCalculatorException exception = assertThrows(SoapCalculatorException.class, () -> {
+		final SoapCalculatorException exception = assertThrows(SoapCalculatorException.class, () -> {
 			calculatorService.calculate(recipeBuilder.build());
 		});
 
@@ -92,9 +133,9 @@ public class SoapCalculatorServiceTest {
 	@Test()
 	void expectExceptionForRecipeWithoutFatsTotal() {
 		final OliveOilSoapBasicRecipeTestData soapRecipeData = new OliveOilSoapBasicRecipeTestData();
-		SoapRecipeBuilder<?, ?> recipeBuilder = soapRecipeData.getSoapRecipeBuilder().fatsTotal(null);
+		final SoapRecipeBuilder<?, ?> recipeBuilder = soapRecipeData.getSoapRecipeBuilder().fatsTotal(null);
 
-		SoapCalculatorException exception = assertThrows(SoapCalculatorException.class, () -> {
+		final SoapCalculatorException exception = assertThrows(SoapCalculatorException.class, () -> {
 			calculatorService.calculate(recipeBuilder.build());
 		});
 

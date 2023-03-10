@@ -64,9 +64,9 @@ public class OliveOilSoapRecipeTestData extends OliveOilSoapBasicRecipeTestData 
 						createRecipeEntry(coconutOil, 20d))) //
 				.acids(createRecipeEntries( //
 						createRecipeEntry(citricAcid, 4d))) //
-				.liquids(createRecipeEntries(//
-						createRecipeEntry(getWater(), 100d))) //
-				// createReceiptEntry(appleVinegar, 50d))) //
+				.liquids(createRecipeEntries( //
+						createRecipeEntry(getWater(), 50d), //
+						createRecipeEntry(appleVinegar, 50d))) //
 				.fragrances(createRecipeEntries( //
 						createRecipeEntry(lavendelFragrance, 100d)));
 	}

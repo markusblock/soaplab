@@ -77,7 +77,7 @@ public class IngredientsExampleData {
 
 	public static KOHBuilder<?, ?> getKOHBuilder() {
 		return KOH.builder().id(UUID.randomUUID()).name(KOH_NAME).inci("Potassium Hydroxide")
-				.kOHPurity(Percentage.of(90d)).cost(Price.of(0.74d));
+				.kOHPurity(Percentage.of(89.5d)).cost(Price.of(0.74d));
 	}
 
 }

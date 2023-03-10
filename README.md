@@ -18,7 +18,7 @@ Create and manage soape recipes and ingredients. A soap recipe calculator suppor
 ## Start
 Start the class class org.soaplab.SoaplabApplication
 
-Because of a classloading issue with springboot devtools and microstream the restart feature of springboot devtools need to be disabled with VM argument "-Dspring.devtools.restart.enabled=false" at startup.
+At the moment there are classloading issues with springboot devtools and microstream. You can ignore a failing first start and just start a second time or you can disable the springboot devtools restart feature by adding a VM argument "-Dspring.devtools.restart.enabled=false" to the startup command.
 
 Data will be stored in the folder ${user.home}/microstream-soaplab
 
