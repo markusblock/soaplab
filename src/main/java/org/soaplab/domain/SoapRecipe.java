@@ -39,26 +39,38 @@ public class SoapRecipe extends NamedEntity {
 	 */
 	private Percentage superFat;
 	/**
-	 * Amount of fragrance in percentage regarding total oil
+	 * Amount of fragrance in percentage regarding total fats
 	 */
-	private Percentage fragranceTotal;
+	private Percentage fragranceToFatRatio;
 
 	/**
 	 * Optional notes on the recipt.
 	 */
 	private String notes;
 	/**
-	 * Calculated value. Total amount of NaOH.
+	 * Calculated value. Total weight of NaOH.
 	 */
 	private Weight naohTotal;
 	/**
-	 * Calculated value. Total amount of KOH.
+	 * Calculated value. Total weight of KOH.
 	 */
 	private Weight kohTotal;
 	/**
-	 * Calculated value. Total amount of liquids.
+	 * Calculated value. Total weight of lye.
 	 */
-	private Weight liquidTotal;
+	private Weight lyeTotal;
+	/**
+	 * Calculated value. Total weight of liquids.
+	 */
+	private Weight liquidsTotal;
+	/**
+	 * Calculated value. Total weight of acids.
+	 */
+	private Weight acidsTotal;
+	/**
+	 * Calculated value. Total weight of fragrances.
+	 */
+	private Weight fragrancesTotal;
 	/**
 	 * Calculated value. Total weight of all ingredients in the recipe.
 	 */
@@ -67,6 +79,30 @@ public class SoapRecipe extends NamedEntity {
 	 * Calculated value. Total costs of all ingredients in the recipe.
 	 */
 	private Price costsTotal;
+	/**
+	 * Calculated value. Total costs of all ingredients in the recipe per 100g.
+	 */
+	private Price costsTotalPer100g;
+	/**
+	 * Calculated value. Fats costs.
+	 */
+	private Price fatsCosts;
+	/**
+	 * Calculated value. Acids costs.
+	 */
+	private Price acidsCosts;
+	/**
+	 * Calculated value. Lye costs.
+	 */
+	private Price lyeCosts;
+	/**
+	 * Calculated value. Fragrances costs.
+	 */
+	private Price fragrancesCosts;
+	/**
+	 * Calculated value. Liquids costs.
+	 */
+	private Price liquidsCosts;
 
 	private List<RecipeEntry<Fat>> fats = new ArrayList<>();
 	private List<RecipeEntry<Acid>> acids = new ArrayList<>();

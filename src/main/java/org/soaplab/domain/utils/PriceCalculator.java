@@ -20,36 +20,50 @@ public class PriceCalculator {
 	public PriceCalculator(int decimalPlaces, RoundingMode roundingMode) {
 		this(new MathContext(decimalPlaces, roundingMode));
 	}
-	
+
 	private Price createNewPrice(BigDecimal bd) {
 		return new Price(bd.setScale(resultMathContext.getPrecision(), resultMathContext.getRoundingMode()));
 	}
-	
+
 	private BigDecimal adjustResultScale(BigDecimal bd) {
 		return bd.setScale(resultMathContext.getPrecision(), resultMathContext.getRoundingMode());
 	}
 
 	public Price calculatePriceForWeight(Price pricePer100g, Weight weight) {
-		return createNewPrice(multiply(divide(pricePer100g, BigDecimal.valueOf(100)),weight.getWeight()));
+		return multiply(divide(pricePer100g, BigDecimal.valueOf(100)), weight.getWeight());
 	}
 
-	public BigDecimal multiply(Price price, BigDecimal multiplicator) {
-		return adjustResultScale(price.getValue().multiply(multiplicator, MathContext.DECIMAL32));
+	public Price calculatePricePer100g(Price totalCost, Weight totalWeight) {
+
+		final BigDecimal result = totalCost.getValue().divide(totalWeight.getWeight(), MathContext.DECIMAL32);
+		return createNewPrice(multiply(result, BigDecimal.valueOf(100)));
+		
+		//TODO add test
+		// return multiply(divide(totalCost, totalWeight.getWeight()),
+		// BigDecimal.valueOf(100));
 	}
-	
+
+	public Price multiply(Price price, BigDecimal multiplicator) {
+		return createNewPrice(price.getValue().multiply(multiplicator, MathContext.DECIMAL32));
+	}
+
+	private BigDecimal multiply(BigDecimal bd1, BigDecimal bd2) {
+		return bd1.multiply(bd2);
+	}
+
 	public Price divide(Price divident, BigDecimal divisor) {
 		return createNewPrice(divident.getValue().divide(divisor, MathContext.DECIMAL32));
 	}
-	
+
 	public BigDecimal divide(Price divident, Price divisor) {
 		return adjustResultScale(divident.getValue().divide(divisor.getValue(), MathContext.DECIMAL32));
 	}
-	
-	public Price calculatePercentage(Price price,Percentage percentage) {
-		return createNewPrice(multiply(price, percentage.getNumber().divide(BigDecimal.valueOf(100),MathContext.DECIMAL32)));
+
+	public Price calculatePercentage(Price price, Percentage percentage) {
+		return multiply(price, percentage.getNumber().divide(BigDecimal.valueOf(100), MathContext.DECIMAL32));
 	}
 
-	public Price subtract(Price price,Price subtractor) {
+	public Price subtract(Price price, Price subtractor) {
 		return createNewPrice(price.getValue().subtract(subtractor.getValue()));
 	}
 

@@ -54,25 +54,25 @@ public class IngredientsExampleData {
 
 	public static AcidBuilder<?, ?> getCitricAcidBuilder() {
 		return Acid.builder().id(UUID.randomUUID()).name(CIDRIC_ACID_ANHYDRAT_NAME).inci("Citric Acid").sapNaoh(0.571d)
-				.cost(Price.of(0.5d));
+				.cost(Price.of(1.44d));
 	}
 
 	public static LiquidBuilder<?, ?> getWaterBuilder() {
-		return Liquid.builder().id(UUID.randomUUID()).name(WATER_NAME).inci("Aqua").cost(Price.of(0.1d));
+		return Liquid.builder().id(UUID.randomUUID()).name(WATER_NAME).inci("Aqua").cost(Price.of(0.05d));
 	}
 
 	public static LiquidBuilder<?, ?> getAppleVinegarBuilder() {
 		return Liquid.builder().id(UUID.randomUUID()).name(APPLE_VINEGAR_NAME).inci("").sapNaoh(0.666d * 0.051d)
-				.cost(Price.of(0.16));
+				.cost(Price.of(0.16d));
 	}
 
 	public static FragranceBuilder<?, ?> getLavendelFragranceBuilder() {
 		return Fragrance.builder().id(UUID.randomUUID()).name(LAVENDEL_NAME).inci("").type(FragranceType.VOLATILE_OIL)
-				.cost(Price.of(25d));
+				.cost(Price.of(30d));
 	}
 
 	public static NaOHBuilder<?, ?> getNaOHBuilder() {
-		return NaOH.builder().id(UUID.randomUUID()).name(NAOH_NAME).inci("Sodium Hydroxide").cost(Price.of(0.5d));
+		return NaOH.builder().id(UUID.randomUUID()).name(NAOH_NAME).inci("Sodium Hydroxide").cost(Price.of(0.75d));
 	}
 
 	public static KOHBuilder<?, ?> getKOHBuilder() {

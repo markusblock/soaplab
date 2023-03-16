@@ -25,7 +25,7 @@ public class SoapRecipeAssert extends AbstractAssert<SoapRecipeAssert, SoapRecip
 		Assertions.assertThat(actual.getId()).isEqualTo(expected.getId());
 		Assertions.assertThat(actual.getName()).isEqualTo(expected.getName());
 		Assertions.assertThat(actual.getFatsTotal()).isEqualTo(expected.getFatsTotal());
-		Assertions.assertThat(actual.getFragranceTotal()).isEqualTo(expected.getFragranceTotal());
+		Assertions.assertThat(actual.getFragranceToFatRatio()).isEqualTo(expected.getFragranceToFatRatio());
 		Assertions.assertThat(actual.getLiquidToFatRatio()).isEqualTo(expected.getLiquidToFatRatio());
 		Assertions.assertThat(actual.getManufacturingDate()).isEqualTo(expected.getManufacturingDate());
 		Assertions.assertThat(actual.getNotes()).isEqualTo(expected.getNotes());

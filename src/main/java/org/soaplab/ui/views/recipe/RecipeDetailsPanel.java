@@ -41,13 +41,13 @@ public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
 		addPropertyPercentageField("domain.recipe.superfat", SoapRecipe::getSuperFat, SoapRecipe::setSuperFat);
 		addPropertyPercentageField("domain.recipe.liquidtofatratio", SoapRecipe::getLiquidToFatRatio,
 				SoapRecipe::setLiquidToFatRatio);
-		addPropertyPercentageField("domain.recipe.fragrancetotal", SoapRecipe::getFragranceTotal,
-				SoapRecipe::setFragranceTotal);
+		addPropertyPercentageField("domain.recipe.fragrancetotal", SoapRecipe::getFragranceToFatRatio,
+				SoapRecipe::setFragranceToFatRatio);
 		addPropertyTextArea("domain.recipe.notes", SoapRecipe::getNotes, SoapRecipe::setNotes);
 
 		addPropertyWeightFieldReadOnly("domain.recipe.naohTotal", SoapRecipe::getNaohTotal);
 		addPropertyWeightFieldReadOnly("domain.recipe.kohTotal", SoapRecipe::getKohTotal);
-		addPropertyWeightFieldReadOnly("domain.recipe.liquidTotal", SoapRecipe::getLiquidTotal);
+		addPropertyWeightFieldReadOnly("domain.recipe.liquidTotal", SoapRecipe::getLiquidsTotal);
 		addPropertyWeightFieldReadOnly("domain.recipe.weightTotal", SoapRecipe::getWeightTotal);
 		addPropertyPriceFieldReadOnly("domain.recipe.costsTotal", SoapRecipe::getCostsTotal);
 

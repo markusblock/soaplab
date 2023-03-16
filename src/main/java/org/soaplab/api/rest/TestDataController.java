@@ -107,7 +107,7 @@ public class TestDataController {
 				.naOH(createRecipeEntry(naOH, 100d)) //
 				.kOH(createRecipeEntry(kOH, 0d)) //
 				.fatsTotal(Weight.of(100, WeightUnit.GRAMS)).liquidToFatRatio(Percentage.of(33))
-				.superFat(Percentage.of(10)).fragranceTotal(Percentage.of(3)).fats(List.of( //
+				.superFat(Percentage.of(10)).fragranceToFatRatio(Percentage.of(3)).fats(List.of( //
 						createRecipeEntry(oliveOil, 80d), //
 						createRecipeEntry(coconutOil, 20d)))
 				.acids(List.of(//
