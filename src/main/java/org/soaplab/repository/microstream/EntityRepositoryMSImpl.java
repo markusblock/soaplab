@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.soaplab.SoaplabProperties;
 import org.soaplab.domain.NamedEntity;
 import org.soaplab.domain.exception.DuplicateNameException;
 import org.soaplab.domain.exception.EntityNotFoundException;
@@ -33,6 +34,9 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 
 	@Autowired
 	protected StorageManager repository;
+
+	@Autowired
+	SoaplabProperties properties;
 
 	@Override
 	public T create(T entity) {
@@ -159,6 +163,12 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 				log.error(e.getMessage(), e);
 			}
 		});
+
+		// TODO EXPORT only temporary
+		// new
+		// MicrostreamDatabaseImportExport(repository).export(properties.getInitfolder(),
+		// false);
+
 		return (T) persistedEntity.toBuilder().build();
 	}
 
