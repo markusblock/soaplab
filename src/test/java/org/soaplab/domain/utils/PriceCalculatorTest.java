@@ -21,7 +21,7 @@ class PriceCalculatorTest {
 
 	@Test
 	void calculatePricePer100g() {
-		PriceAssert.assertThat(calc.calculatePricePer100g(Price.of(0.75), Weight.ofGrams(12.15))).isEqualToValue(0.09);
+		PriceAssert.assertThat(calc.calculatePricePer100g(Price.of(0.75), Weight.ofGrams(12.15))).isEqualToValue(6.17);
 	}
 
 	@Test
