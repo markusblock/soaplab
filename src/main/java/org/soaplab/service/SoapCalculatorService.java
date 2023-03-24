@@ -189,6 +189,7 @@ public class SoapCalculatorService {
 		soapRecipe.setCostsTotal(priceCalc.plus(soapRecipe.getCostsTotal(), soapRecipe.getFragrancesCosts()));
 
 		soapRecipe.setLyeCosts(Price.of(0));
+		soapRecipe.setLyeTotal(Weight.of(0, WeightUnit.GRAMS));
 		final Percentage naohPercentage;
 		if (soapRecipe.getNaOH() == null) {
 			naohPercentage = Percentage.of(0d);
@@ -208,6 +209,7 @@ public class SoapCalculatorService {
 			soapRecipe.setNaohTotal(weightCalc.calculatePercentage(naohForFatsAndAcidsAndLiquids, naohPercentage));
 			soapRecipe.getNaOH().setWeight(soapRecipe.getNaohTotal());
 			soapRecipe.setWeightTotal(weightCalc.plus(soapRecipe.getWeightTotal(), soapRecipe.getNaohTotal()));
+			soapRecipe.setLyeTotal(weightCalc.plus(soapRecipe.getLyeTotal(), soapRecipe.getNaohTotal()));
 
 			if (soapRecipe.getNaOH().getIngredient().getCost() == null) {
 				log.warning("Ignoring price of ingredient " + soapRecipe.getNaOH().getIngredient());
@@ -227,6 +229,7 @@ public class SoapCalculatorService {
 					percentageCalc.divide(kohPercentage, kohPurity)));
 			soapRecipe.getKOH().setWeight(soapRecipe.getKohTotal());
 			soapRecipe.setWeightTotal(weightCalc.plus(soapRecipe.getWeightTotal(), soapRecipe.getKohTotal()));
+			soapRecipe.setLyeTotal(weightCalc.plus(soapRecipe.getLyeTotal(), soapRecipe.getKohTotal()));
 
 			if (soapRecipe.getKOH().getIngredient().getCost() == null) {
 				log.warning("Ignoring price of ingredient " + soapRecipe.getKOH().getIngredient());

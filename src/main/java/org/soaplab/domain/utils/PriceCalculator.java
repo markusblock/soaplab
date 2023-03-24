@@ -11,10 +11,12 @@ import org.soaplab.domain.Weight;
 public class PriceCalculator {
 
 	private final MathContext resultMathContext;
+	private final BigDecimalCalculator calculator;
 
 	public PriceCalculator(MathContext resultMathContext) {
 		super();
 		this.resultMathContext = resultMathContext;
+		this.calculator = new BigDecimalCalculator();
 	}
 
 	public PriceCalculator(int decimalPlaces, RoundingMode roundingMode) {
@@ -25,49 +27,34 @@ public class PriceCalculator {
 		return new Price(bd.setScale(resultMathContext.getPrecision(), resultMathContext.getRoundingMode()));
 	}
 
-	private BigDecimal adjustResultScale(BigDecimal bd) {
-		return bd.setScale(resultMathContext.getPrecision(), resultMathContext.getRoundingMode());
-	}
-
 	public Price calculatePriceForWeight(Price pricePer100g, Weight weight) {
-		return multiply(divide(pricePer100g, BigDecimal.valueOf(100)), weight.getWeight());
+		return createNewPrice(
+				calculator.multiply(calculator.divide(pricePer100g.getValue(), BigDecimal.valueOf(100)),
+						weight.getWeight()));
 	}
 
 	public Price calculatePricePer100g(Price totalCost, Weight totalWeight) {
-
-		final BigDecimal result = totalCost.getValue().divide(totalWeight.getWeight(), MathContext.DECIMAL32);
-		return createNewPrice(multiply(result, BigDecimal.valueOf(100)));
-		
-		//TODO add test
-		// return multiply(divide(totalCost, totalWeight.getWeight()),
-		// BigDecimal.valueOf(100));
+		return createNewPrice(calculator.multiply(calculator.divide(totalCost.getValue(), totalWeight.getWeight()),
+				BigDecimal.valueOf(100)));
 	}
 
 	public Price multiply(Price price, BigDecimal multiplicator) {
-		return createNewPrice(price.getValue().multiply(multiplicator, MathContext.DECIMAL32));
-	}
-
-	private BigDecimal multiply(BigDecimal bd1, BigDecimal bd2) {
-		return bd1.multiply(bd2);
+		return createNewPrice(calculator.multiply(price.getValue(), multiplicator));
 	}
 
 	public Price divide(Price divident, BigDecimal divisor) {
-		return createNewPrice(divident.getValue().divide(divisor, MathContext.DECIMAL32));
-	}
-
-	public BigDecimal divide(Price divident, Price divisor) {
-		return adjustResultScale(divident.getValue().divide(divisor.getValue(), MathContext.DECIMAL32));
+		return createNewPrice(calculator.divide(divident.getValue(), divisor));
 	}
 
 	public Price calculatePercentage(Price price, Percentage percentage) {
-		return multiply(price, percentage.getNumber().divide(BigDecimal.valueOf(100), MathContext.DECIMAL32));
+		return multiply(price, calculator.divide(percentage.getNumber(), BigDecimal.valueOf(100)));
 	}
 
 	public Price subtract(Price price, Price subtractor) {
-		return createNewPrice(price.getValue().subtract(subtractor.getValue()));
+		return createNewPrice(calculator.subtract(price.getValue(), subtractor.getValue()));
 	}
 
 	public Price plus(Price price, Price summand) {
-		return createNewPrice(price.getValue().add(summand.getValue()));
+		return createNewPrice(calculator.plus(price.getValue(), summand.getValue()));
 	}
 }

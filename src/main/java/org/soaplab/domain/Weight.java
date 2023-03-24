@@ -30,4 +30,8 @@ public class Weight implements Serializable {
 	public static Weight of(double weight, WeightUnit unit) {
 		return new Weight(BigDecimal.valueOf(weight), unit);
 	}
+
+	public static Weight ofGrams(double weight) {
+		return new Weight(BigDecimal.valueOf(weight), WeightUnit.GRAMS);
+	}
 }

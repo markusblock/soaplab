@@ -54,7 +54,7 @@ public class IngredientsExampleData {
 
 	public static AcidBuilder<?, ?> getCitricAcidBuilder() {
 		return Acid.builder().id(UUID.randomUUID()).name(CIDRIC_ACID_ANHYDRAT_NAME).inci("Citric Acid").sapNaoh(0.571d)
-				.cost(Price.of(1.44d));
+				.cost(Price.of(1.45d));
 	}
 
 	public static LiquidBuilder<?, ?> getWaterBuilder() {

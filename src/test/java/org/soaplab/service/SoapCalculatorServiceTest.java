@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.soaplab.assertions.PriceAssert;
 import org.soaplab.assertions.WeightAssert;
+import org.soaplab.domain.Ingredient;
+import org.soaplab.domain.RecipeEntry;
 import org.soaplab.domain.SoapRecipe;
 import org.soaplab.domain.SoapRecipe.SoapRecipeBuilder;
 import org.soaplab.service.SoapCalculatorService.CalculationIssue;
@@ -50,19 +52,17 @@ public class SoapCalculatorServiceTest {
 
 		// Lye
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getNaohTotal()).isEqualToWeightInGrams(12.15);
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getNaOH().getWeight()).isEqualToWeightInGrams(12.15);
-		PriceAssert.assertThat(calculatedSoapRecipeResult.getNaOH().getPrice()).isEqualToValue(0.911d);
+		assertRecipeEntry(calculatedSoapRecipeResult.getNaOH(), 12.15, 0.09);
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getKohTotal()).isEqualToWeightInGrams(0);
 		assertThat(calculatedSoapRecipeResult.getKOH()).isNull();
-		PriceAssert.assertThat(calculatedSoapRecipeResult.getLyeCosts()).isEqualToValue(0.911d);
+		PriceAssert.assertThat(calculatedSoapRecipeResult.getLyeCosts()).isEqualToValue(0.09);
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getLyeTotal()).isEqualToWeightInGrams(12.15);
 
 		// Liquids
 		Assertions.assertThat(calculatedSoapRecipeResult.getLiquids()).hasSize(1);
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquids().get(0).getWeight()).isEqualToWeightInGrams(33);
-		PriceAssert.assertThat(calculatedSoapRecipeResult.getLiquids().get(0).getPrice()).isEqualToValue(0.0165);
+		assertRecipeEntry(calculatedSoapRecipeResult.getLiquids().get(0), 33, 0.02);
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquidsTotal()).isEqualToWeightInGrams(33);
-		PriceAssert.assertThat(calculatedSoapRecipeResult.getLiquidsCosts()).isEqualToValue(0.0165);
+		PriceAssert.assertThat(calculatedSoapRecipeResult.getLiquidsCosts()).isEqualToValue(0.02);
 
 		// Acids
 		Assertions.assertThat(calculatedSoapRecipeResult.getAcids()).isNullOrEmpty();
@@ -71,8 +71,7 @@ public class SoapCalculatorServiceTest {
 
 		// Fats
 		Assertions.assertThat(calculatedSoapRecipeResult.getFats()).hasSize(1);
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getFats().get(0).getWeight()).isEqualToWeightInGrams(100);
-		PriceAssert.assertThat(calculatedSoapRecipeResult.getFats().get(0).getPrice()).isEqualToValue(0.61);
+		assertRecipeEntry(calculatedSoapRecipeResult.getFats().get(0), 100, 0.61);
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getFatsTotal()).isEqualToWeightInGrams(100);
 		PriceAssert.assertThat(calculatedSoapRecipeResult.getFatsCosts()).isEqualToValue(0.61);
 
@@ -83,8 +82,8 @@ public class SoapCalculatorServiceTest {
 
 		// Soaprecipe Totals
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getWeightTotal()).isEqualToWeightInGrams(145.15);
-		PriceAssert.assertThat(calculatedSoapRecipeResult.getCostsTotal()).isEqualToValue(0.7176d);
-		PriceAssert.assertThat(calculatedSoapRecipeResult.getCostsTotalPer100g()).isEqualToValue(0.5d);
+		PriceAssert.assertThat(calculatedSoapRecipeResult.getCostsTotal()).isEqualToValue(0.72);
+		PriceAssert.assertThat(calculatedSoapRecipeResult.getCostsTotalPer100g()).isEqualToValue(0.5);
 	}
 
 	@Test
@@ -94,34 +93,48 @@ public class SoapCalculatorServiceTest {
 				.calculate(oliveOilSoapRecipe.createSoapRecipe());
 
 		// Lye
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getNaohTotal()).isEqualToWeightInGrams(14.2726d);
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getKohTotal()).isEqualToWeightInGrams(2.4848d);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getNaohTotal()).isEqualToWeightInGrams(14.2726);
+		assertRecipeEntry(calculatedSoapRecipeResult.getNaOH(), 14.2726, 0.11);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getKohTotal()).isEqualToWeightInGrams(2.4848);
+		assertRecipeEntry(calculatedSoapRecipeResult.getKOH(), 2.4848, 0.02);
+		PriceAssert.assertThat(calculatedSoapRecipeResult.getLyeCosts()).isEqualToValue(0.13);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getLyeTotal()).isEqualToWeightInGrams(16.7574);
 
 		// Liquids
 		Assertions.assertThat(calculatedSoapRecipeResult.getLiquids()).hasSize(2);
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquids().get(0).getWeight())
-				.isEqualToWeightInGrams(16.5d);
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquids().get(1).getWeight())
-				.isEqualToWeightInGrams(16.5d);
+		assertRecipeEntry(calculatedSoapRecipeResult.getLiquids().get(0), 16.5, 0.01);
+		assertRecipeEntry(calculatedSoapRecipeResult.getLiquids().get(1), 16.5, 0.03);
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getLiquidsTotal()).isEqualToWeightInGrams(33);
-
-		// Fats
-		Assertions.assertThat(calculatedSoapRecipeResult.getFats()).hasSize(2);
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getFats().get(0).getWeight()).isEqualToWeightInGrams(80d);
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getFats().get(1).getWeight()).isEqualToWeightInGrams(20d);
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getFatsTotal()).isEqualToWeightInGrams(100);
-
-		// Fragrances
-		Assertions.assertThat(calculatedSoapRecipeResult.getFragrances()).hasSize(1);
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getFragrances().get(0).getWeight())
-				.isEqualToWeightInGrams(3d);
+		PriceAssert.assertThat(calculatedSoapRecipeResult.getLiquidsCosts()).isEqualToValue(0.04);
 
 		// Acids
 		Assertions.assertThat(calculatedSoapRecipeResult.getAcids()).hasSize(1);
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getAcids().get(0).getWeight()).isEqualToWeightInGrams(4d);
+		assertRecipeEntry(calculatedSoapRecipeResult.getAcids().get(0), 4, 0.06);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getAcidsTotal()).isEqualToWeightInGrams(4);
+		PriceAssert.assertThat(calculatedSoapRecipeResult.getAcidsCosts()).isEqualToValue(0.06);
 
-		// Totals
+		// Fats
+		Assertions.assertThat(calculatedSoapRecipeResult.getFats()).hasSize(2);
+		assertRecipeEntry(calculatedSoapRecipeResult.getFats().get(0), 80, 0.49);
+		assertRecipeEntry(calculatedSoapRecipeResult.getFats().get(1), 20, 0.21);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getFatsTotal()).isEqualToWeightInGrams(100);
+		PriceAssert.assertThat(calculatedSoapRecipeResult.getFatsCosts()).isEqualToValue(0.7);
+
+		// Fragrances
+		Assertions.assertThat(calculatedSoapRecipeResult.getFragrances()).hasSize(1);
+		assertRecipeEntry(calculatedSoapRecipeResult.getFragrances().get(0), 3, 0.9);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getFragrancesTotal()).isEqualToWeightInGrams(3);
+		PriceAssert.assertThat(calculatedSoapRecipeResult.getFragrancesCosts()).isEqualToValue(0.9);
+
+		// Soaprecipe Totals
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getWeightTotal()).isEqualToWeightInGrams(156.7574);
+		PriceAssert.assertThat(calculatedSoapRecipeResult.getCostsTotal()).isEqualToValue(1.83);
+		PriceAssert.assertThat(calculatedSoapRecipeResult.getCostsTotalPer100g()).isEqualToValue(1.17);
+	}
+
+	private <T extends Ingredient> void assertRecipeEntry(RecipeEntry<T> entry, double weightInGrams, double price) {
+		WeightAssert.assertThat(entry.getWeight()).isEqualToWeightInGrams(weightInGrams);
+		PriceAssert.assertThat(entry.getPrice()).isEqualToValue(price);
 	}
 
 	@Test

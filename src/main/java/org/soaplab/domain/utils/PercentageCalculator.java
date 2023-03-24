@@ -9,10 +9,12 @@ import org.soaplab.domain.Percentage;
 public class PercentageCalculator {
 
 	private final MathContext resultMathContext;
+	private final BigDecimalCalculator calculator;
 
 	public PercentageCalculator(MathContext resultMathContext) {
 		super();
 		this.resultMathContext = resultMathContext;
+		this.calculator = new BigDecimalCalculator();
 	}
 
 	public PercentageCalculator(int decimalPlaces, RoundingMode roundingMode) {
@@ -22,12 +24,9 @@ public class PercentageCalculator {
 	private Percentage createNewPercentage(BigDecimal bd) {
 		return new Percentage(bd.setScale(resultMathContext.getPrecision(), resultMathContext.getRoundingMode()));
 	}
-	
-	private BigDecimal adjustResultScale(BigDecimal bd) {
-		return bd.setScale(resultMathContext.getPrecision(), resultMathContext.getRoundingMode());
-	}
 
 	public BigDecimal divide(Percentage divident, Percentage divisor) {
-		return adjustResultScale(divident.getNumber().divide(divisor.getNumber(), MathContext.DECIMAL32));
+		return calculator.adjustResultScale(calculator.divide(divident.getNumber(), divisor.getNumber()),
+				resultMathContext);
 	}
 }
