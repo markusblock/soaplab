@@ -15,7 +15,7 @@ class PriceCalculatorTest {
 	private PriceCalculator calc;
 
 	@BeforeEach
-	public void beforeEach() {
+	void beforeEach() {
 		calc = new PriceCalculator(mathContext);
 	}
 

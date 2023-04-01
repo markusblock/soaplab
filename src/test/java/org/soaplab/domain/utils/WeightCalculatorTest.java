@@ -15,7 +15,7 @@ class WeightCalculatorTest {
 	private WeightCalculator calc;
 
 	@BeforeEach
-	public void beforeEach() {
+	void beforeEach() {
 		calc = new WeightCalculator(mathContext);
 	}
 

@@ -32,7 +32,7 @@ public class SoapCalculatorServiceTest {
 	Environment envMock;
 
 	@BeforeEach
-	private void beforeTest() {
+	void beforeTest() {
 		lenient().when(envMock.getProperty(anyString())).thenReturn("");
 		calculatorService = new SoapCalculatorService(envMock);
 	}
@@ -177,8 +177,6 @@ public class SoapCalculatorServiceTest {
 	// TODO: test warning for no KOH and not 100% NaOH
 	// TODO: test warning for not 100% Fats
 
-	// TODO: test weight
-	// TODO: test price
 	// TODO: test lye calculation (only NaOH / mixed / only KOH)
 	// TODO: test inci summary (also with ingredients without inci)
 	// TODO: test calculated soap properties

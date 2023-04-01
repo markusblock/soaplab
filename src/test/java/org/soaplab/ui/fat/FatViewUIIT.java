@@ -18,12 +18,12 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 	private RepositoryTestHelper repoHelper;
 
 	@BeforeEach
-	public void beforeEach() {
+	void beforeEach() {
 		pageObject = new FatViewPageObject();
 	}
 
 	@AfterEach
-	public void afterEach() {
+	void afterEach() {
 		pageObject.reset();
 	}
 

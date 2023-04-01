@@ -4,10 +4,6 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
 
-//TODO migrate to springboot3
-//import jakarta.servlet.http.Cookie;
-import javax.servlet.http.Cookie;
-
 import org.apache.commons.lang3.StringUtils;
 import org.soaplab.ui.i18n.TranslationProvider;
 import org.soaplab.ui.views.MenuBar;
@@ -38,6 +34,7 @@ import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 
+import jakarta.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 
 @RoutePrefix("soaplab/ui")

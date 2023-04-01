@@ -4,6 +4,22 @@ Create and manage soape recipes and ingredients. A soap recipe calculator suppor
 # Getting started
 - [Java 17 JRE](https://adoptium.net/de/temurin/releases/?version=17) runtime is required
 
+## Running locally
+```
+git clone https://github.com/markusblock/soaplab.git
+cd soaplab
+mvn spring-boot:run
+```
+
+Data will be stored in the folder ${user.home}/microstream-soaplab
+
+### Access web application
+http://localhost:8080/soaplab/ui/
+
+### Access REST API
+http://localhost:8080/soaplab/rest
+
+
 # Development
 ## Setting up IDE
 - [Java 17 JDK](https://adoptium.net/de/temurin/releases/?version=17) development kit is required
@@ -17,9 +33,5 @@ Create and manage soape recipes and ingredients. A soap recipe calculator suppor
 
 ## Start
 Start the class class org.soaplab.SoaplabApplication
-
-At the moment there are classloading issues with springboot devtools and microstream. You can ignore a failing first start and just start a second time or you can disable the springboot devtools restart feature by adding a VM argument "-Dspring.devtools.restart.enabled=false" to the startup command.
-
-Data will be stored in the folder ${user.home}/microstream-soaplab
 
 

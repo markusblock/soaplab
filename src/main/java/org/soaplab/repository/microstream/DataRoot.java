@@ -17,6 +17,7 @@ import one.microstream.integrations.spring.boot.types.Storage;
 
 @Getter
 @NoArgsConstructor
+//No constructor injection supported on @Storage Beans.
 @Storage
 public class DataRoot {
 

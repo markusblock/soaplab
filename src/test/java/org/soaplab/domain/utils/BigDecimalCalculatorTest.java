@@ -14,7 +14,7 @@ class BigDecimalCalculatorTest {
 	private BigDecimalCalculator calc;
 
 	@BeforeEach
-	public void beforeEach() {
+	void beforeEach() {
 		calc = new BigDecimalCalculator(mathContext);
 	}
 
