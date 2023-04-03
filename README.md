@@ -13,19 +13,20 @@ mvn spring-boot:run
 
 Data will be stored in the folder ${user.home}/microstream-soaplab
 
-### Access web application
-http://localhost:8080/soaplab/ui/
+### Application
+- Web UI [http://localhost:8080/soaplab/ui](http://localhost:8080/soaplab/ui)
+- REST API [http://localhost:8080/soaplab/rest](http://localhost:8080/soaplab/rest)
 
-### Access REST API
-http://localhost:8080/soaplab/rest
-
+### REST API documentation
+- Swagger UI [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+- OpenAPI docs [http://localhost:8080/api-docs](http://localhost:8080/api-docs)
 
 # Development
 ## Setting up IDE
 - [Java 17 JDK](https://adoptium.net/de/temurin/releases/?version=17) development kit is required
-- [Eclipse](https://www.eclipse.org/) Choosing your favorite IDE like eclipse or IntelliJ
-- [lombok](https://projectlombok.org/) Install lombock plugin in your IDE
-- [Docker](https://www.docker.com/) Docker can be used in tests to host a browser container
+- [Eclipse](https://www.eclipse.org) Choosing your favorite IDE like eclipse or IntelliJ
+- [lombok](https://projectlombok.org) Install lombock plugin in your IDE
+- [Docker](https://www.docker.com) Docker can be used in tests to host a browser container
 
 ## Tests
 - geckodriver needs to be installed
