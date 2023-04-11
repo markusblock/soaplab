@@ -16,12 +16,14 @@
 	
 	<properties>
 		<java.version>17</java.version>
-		<vaadin.version>24.0.2</vaadin.version>
+		<vaadin.version>24.0.3</vaadin.version>
 		<microstream.version>08.00.00-MS-EA2</microstream.version>
 		<beantutils.version>1.9.4</beantutils.version>
 		<springdoc.version>2.0.4</springdoc.version>
 		<equalsverifier.version>3.13</equalsverifier.version>
-		<selenide.version>6.12.0</selenide.version>
+		<selenide.version>6.13.0</selenide.version>
+		<!-- Overriding to avoid ClassNotFound in WebDriverManager -->
+		<httpclient5.version>5.2.1</httpclient5.version>
 		<selenium.version>4.8.0</selenium.version>
 		<testcontainers.version>1.17.1</testcontainers.version>
 		<sonar.organization>markusblock</sonar.organization>
@@ -73,71 +75,7 @@
             </url>
         </pluginRepository>
     </pluginRepositories>  
-    
-    <dependencyManagement>
-        <dependencies>
-	        
-	        <!-- MICROSTREAM -->
-	        <dependency>
-	            <groupId>one.microstream</groupId>
-	            <artifactId>microstream-storage-embedded</artifactId>
-	            <version>${microstream.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>one.microstream</groupId>
-	            <artifactId>microstream-storage-embedded-configuration</artifactId>
-	            <version>${microstream.version}</version>
-	        </dependency>	        
-			<dependency>
-				<groupId>one.microstream</groupId>
-			    <artifactId>microstream-integrations-spring-boot3</artifactId>
-			    <version>${microstream.version}</version>
-			</dependency>	
-			<dependency>
-				<groupId>one.microstream</groupId>
-				<artifactId>microstream-persistence-binary-jdk17</artifactId>
-				<version>${microstream.version}</version>
-			</dependency>	
-	
-	        <!-- VAADIN -->
-	        <dependency>
-	            <groupId>com.vaadin</groupId>
-	            <artifactId>vaadin-bom</artifactId>
-	            <version>${vaadin.version}</version>
-	            <type>pom</type>
-	            <scope>import</scope>
-	        </dependency>     
-	        
-	        <dependency>
-                <groupId>commons-beanutils</groupId>
-                <artifactId>commons-beanutils</artifactId>
-                <version>${beantutils.version}</version>
-            </dependency>   
-            
-			<dependency>
-				<groupId>org.springdoc</groupId>
-				<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-				<version>${springdoc.version}</version>
-			</dependency>            
-	        
-	         <!-- EQUALSVERIFIER -->       
-	        <dependency>
-	            <groupId>nl.jqno.equalsverifier</groupId>
-	            <artifactId>equalsverifier</artifactId>
-	            <version>${equalsverifier.version}</version>
-	            <scope>test</scope>
-	        </dependency>   
-	        
-	        <!-- SELENIDE -->
-	        <dependency>
-	            <groupId>com.codeborne</groupId>
-	            <artifactId>selenide</artifactId>
-	            <version>${selenide.version}</version>
-	            <scope>test</scope>
-	        </dependency>      
-            
-        </dependencies>
-    </dependencyManagement> 	
+  
 	
 	<dependencies>
 	
@@ -156,23 +94,28 @@
 	        <optional>true</optional>
 	    </dependency>	
 		
-		<!-- MICROSTREAM -->
-		<dependency>
-			<groupId>one.microstream</groupId>
-			<artifactId>microstream-storage-embedded</artifactId>
-		</dependency>
+		
+        <!-- MICROSTREAM -->
+        <dependency>
+            <groupId>one.microstream</groupId>
+            <artifactId>microstream-storage-embedded</artifactId>
+            <version>${microstream.version}</version>
+        </dependency>
         <dependency>
             <groupId>one.microstream</groupId>
             <artifactId>microstream-storage-embedded-configuration</artifactId>
+            <version>${microstream.version}</version>
         </dependency>	        
 		<dependency>
 			<groupId>one.microstream</groupId>
 		    <artifactId>microstream-integrations-spring-boot3</artifactId>
-		</dependency>
+		    <version>${microstream.version}</version>
+		</dependency>	
 		<dependency>
 			<groupId>one.microstream</groupId>
 			<artifactId>microstream-persistence-binary-jdk17</artifactId>
-		</dependency>		
+			<version>${microstream.version}</version>
+		</dependency>			
 		
 		<!-- LOMBOK -->
 		<dependency>
@@ -186,21 +129,25 @@
             <groupId>com.vaadin</groupId>
             <!-- Replace artifactId with vaadin-core to use only free components -->
             <artifactId>vaadin-core</artifactId>
+            <version>${vaadin.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
+            <version>${vaadin.version}</version>
         </dependency>	
-        
+            
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-		</dependency>       
+			<version>${springdoc.version}</version>
+		</dependency>          
 		
-		<dependency>
+        <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
-        </dependency>   
+            <version>${beantutils.version}</version>
+        </dependency>   		      
 		
 		<!-- TEST -->
 		<dependency>
@@ -209,18 +156,26 @@
 			<scope>test</scope>
 		</dependency>
 		
+        <dependency>
+            <groupId>nl.jqno.equalsverifier</groupId>
+            <artifactId>equalsverifier</artifactId>
+            <version>${equalsverifier.version}</version>
+            <scope>test</scope>
+        </dependency> 
+		
+        <dependency>
+            <groupId>com.codeborne</groupId>
+            <artifactId>selenide</artifactId>
+            <version>${selenide.version}</version>
+            <scope>test</scope>
+        </dependency>   
+        
 		<dependency>
-		    <groupId>nl.jqno.equalsverifier</groupId>
-		    <artifactId>equalsverifier</artifactId>
+		    <groupId>org.apache.httpcomponents.client5</groupId>
+		    <artifactId>httpclient5</artifactId>
 		    <scope>test</scope>
 		</dependency>	
 		
-		<dependency>
-		    <groupId>com.codeborne</groupId>
-		    <artifactId>selenide</artifactId>
-		    <scope>test</scope>
-		</dependency>
-			
 	</dependencies>
 
 
