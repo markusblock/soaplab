@@ -125,6 +125,11 @@
 		</dependency>	
 
 		<!-- VAADIN -->
+		<dependency>
+		    <groupId>com.vaadin</groupId>
+		    <artifactId>vaadin</artifactId>
+		    <version>${vaadin.version}</version>
+		</dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <!-- Replace artifactId with vaadin-core to use only free components -->
@@ -168,7 +173,7 @@
             <artifactId>selenide</artifactId>
             <version>${selenide.version}</version>
             <scope>test</scope>
-        </dependency>   
+        </dependency>
         
 		<dependency>
 		    <groupId>org.apache.httpcomponents.client5</groupId>
