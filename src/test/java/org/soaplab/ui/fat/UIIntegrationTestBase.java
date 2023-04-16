@@ -14,6 +14,7 @@ import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.soaplab.TestSystemPropertyHelper;
 import org.soaplab.TestSystemPropertyHelper.TestEnvironment;
@@ -43,12 +44,19 @@ import lombok.extern.slf4j.Slf4j;
 public class UIIntegrationTestBase {
 
 	private static File databaseFolder;
-	
-	//static instance used by all tests. Without static started/stopped after each test
+
+	private static FirefoxProfile profile = new FirefoxProfile();
+	private static FirefoxOptions options = new FirefoxOptions();
+	static {
+		profile.setPreference("intl.accept_languages", Locale.getDefault().getLanguage());
+		profile.setPreference("network.cookie.cookieBehavior", 0);
+		options.setProfile(profile).addArguments("--no-sandbox").addArguments("--disable-dev-shm-usage");
+	}
+
+	// static instance used by all tests. Without static started/stopped after each
+	// test
 	public static BrowserWebDriverContainer<?> webDriverContainer = new BrowserWebDriverContainer<>()
-			.withCapabilities(new FirefoxOptions()
-					.addArguments("--no-sandbox")
-					.addArguments("--disable-dev-shm-usage"));
+			.withCapabilities(options);
 
 	@LocalServerPort
 	private Integer port;
@@ -68,7 +76,7 @@ public class UIIntegrationTestBase {
 		setupTestEnvironment(environment);
 
 		registerShutdownHook();
-		
+
 		open("/soaplab/ui/fats");
 
 		WebDriverRunner.getAndCheckWebDriver().manage().deleteAllCookies();
@@ -115,21 +123,20 @@ public class UIIntegrationTestBase {
 	}
 
 	private static void setupTestEnvironment(Environment environment) {
-	    
+
 		Testcontainers.exposeHostPorts(environment.getProperty("local.server.port", Integer.class));
-	    webDriverContainer.start();
-	    log.info("Open VNC conncection with: open "+webDriverContainer.getVncAddress());
-	    
-		RemoteWebDriver remoteWebDriver = new RemoteWebDriver(webDriverContainer.getSeleniumAddress(), new FirefoxOptions());
-	    WebDriverRunner.setWebDriver(remoteWebDriver);
-		
-		
+		webDriverContainer.start();
+		log.info("Open VNC conncection with: open " + webDriverContainer.getVncAddress());
+
+		RemoteWebDriver remoteWebDriver = new RemoteWebDriver(webDriverContainer.getSeleniumAddress(), options);
+		WebDriverRunner.setWebDriver(remoteWebDriver);
+
 		TestEnvironment testEnvironment = TestSystemPropertyHelper.getTestEnvironment();
 		Integer port = environment.getProperty("local.server.port", Integer.class);
 		switch (testEnvironment) {
 		case LOCAL:
 			Configuration.baseUrl = String.format("http://host.testcontainers.internal:%d", port);
-			//TODO adapt
+			// TODO adapt
 //			Configuration.baseUrl = "http://localhost:" + port;
 			Configuration.driverManagerEnabled = true;
 			log.info("Setting up Selenide to use local browser and app at {}", Configuration.baseUrl);
