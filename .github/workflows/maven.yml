@@ -55,5 +55,6 @@ jobs:
       with:
           name: test-report
           path: |
-              **/soaplab/target/failsafe-reports/
-              **/soaplab/target/surefire-reports/
+              /home/runner/work/soaplab/soaplab/target/failsafe-reports/
+              /home/runner/work/soaplab/soaplab/target/surefire-reports/
+          retention-days: 7
