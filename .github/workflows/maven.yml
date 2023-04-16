@@ -41,11 +41,19 @@ jobs:
     - name: Cache SonarCloud packages
       uses: actions/cache@v3
       with:
-        path: ~/.sonar/cache
-        key: ${{ runner.os }}-sonar
-        restore-keys: ${{ runner.os }}-sonar    
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar    
     - name: build-test-sonar
       env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: mvn -B install sonar:sonar -Pproduction -Dsonar.projectKey=markusblock_soaplab -Dsonar.qualitygate.wait=true -Dsonar.qualitygate.timeout=600 -DtestBrowser=firefox -DtestEnvironment=local -DtestLocale=EN -Dheadless=true
+    - name: Upload failsafe and surefire testreports on failure
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v3
+      with:
+          name: test-report
+          path: |
+              **/soaplab/target/failsafe-reports/
+              **/soaplab/target/surefire-reports/
