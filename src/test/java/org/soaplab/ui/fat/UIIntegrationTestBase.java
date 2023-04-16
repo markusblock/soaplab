@@ -13,12 +13,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.Cookie;
-import org.openqa.selenium.MutableCapabilities;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.soaplab.TestSystemPropertyHelper;
-import org.soaplab.TestSystemPropertyHelper.TestBrowser;
 import org.soaplab.TestSystemPropertyHelper.TestEnvironment;
 import org.soaplab.TestSystemPropertyHelper.TestLocale;
 import org.soaplab.ui.i18n.TranslationProvider;
@@ -28,8 +25,9 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.Testcontainers;
+import org.testcontainers.containers.BrowserWebDriverContainer;
 
-import com.codeborne.selenide.Browsers;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.WebDriverRunner;
 import com.codeborne.selenide.junit5.BrowserStrategyExtension;
@@ -45,6 +43,12 @@ import lombok.extern.slf4j.Slf4j;
 public class UIIntegrationTestBase {
 
 	private static File databaseFolder;
+	
+	//static instance used by all tests. Without static started/stopped after each test
+	public static BrowserWebDriverContainer<?> webDriverContainer = new BrowserWebDriverContainer<>()
+			.withCapabilities(new FirefoxOptions()
+					.addArguments("--no-sandbox")
+					.addArguments("--disable-dev-shm-usage"));
 
 	@LocalServerPort
 	private Integer port;
@@ -59,12 +63,12 @@ public class UIIntegrationTestBase {
 
 		configureSelenideBaseSetup();
 
-		configureBrowser();
+//		configureBrowser();
 
 		setupTestEnvironment(environment);
 
 		registerShutdownHook();
-
+		
 		open("/soaplab/ui/fats");
 
 		WebDriverRunner.getAndCheckWebDriver().manage().deleteAllCookies();
@@ -74,34 +78,34 @@ public class UIIntegrationTestBase {
 		VaadinUtils.waitUntilPageLoaded();
 	}
 
-	private static void configureBrowser() {
-		boolean isHeadless = TestSystemPropertyHelper.isHeadless();
-		TestBrowser browser = TestSystemPropertyHelper.getBrowser();
-		MutableCapabilities browserOptions = null;
-		switch (browser) {
-		case CHROME:
-			Configuration.browser = Browsers.CHROME;
-			browserOptions = new ChromeOptions().setHeadless(isHeadless).addArguments("--no-sandbox")
-					.addArguments("--disable-dev-shm-usage")
-					.addArguments("--lang=" + Locale.getDefault().getLanguage());
-			break;
-
-		case FIREFOX:
-			Configuration.browser = Browsers.FIREFOX;
-			FirefoxProfile profile = new FirefoxProfile();
-			profile.setPreference("intl.accept_languages", Locale.getDefault().getLanguage());
-			browserOptions = new FirefoxOptions().setProfile(profile).setHeadless(isHeadless)
-					.addArguments("--no-sandbox").addArguments("--disable-dev-shm-usage");
-			break;
-
-		default:
-			throw new EnumConstantNotPresentException(TestSystemPropertyHelper.TestBrowser.class,
-					Objects.toString(browser));
-		}
-		Configuration.headless = isHeadless;
-		Configuration.browserCapabilities = browserOptions;
-		log.info("Using browser {} with configuration {}", browser, browserOptions);
-	}
+//	private static void configureBrowser() {
+//		boolean isHeadless = TestSystemPropertyHelper.isHeadless();
+//		TestBrowser browser = TestSystemPropertyHelper.getBrowser();
+//		MutableCapabilities browserOptions = null;
+//		switch (browser) {
+//		case CHROME:
+//			Configuration.browser = Browsers.CHROME;
+//			browserOptions = new ChromeOptions().setHeadless(isHeadless).addArguments("--no-sandbox")
+//					.addArguments("--disable-dev-shm-usage")
+//					.addArguments("--lang=" + Locale.getDefault().getLanguage());
+//			break;
+//
+//		case FIREFOX:
+//			Configuration.browser = Browsers.FIREFOX;
+//			FirefoxProfile profile = new FirefoxProfile();
+//			profile.setPreference("intl.accept_languages", Locale.getDefault().getLanguage());
+//			browserOptions = new FirefoxOptions().setProfile(profile).setHeadless(isHeadless)
+//					.addArguments("--no-sandbox").addArguments("--disable-dev-shm-usage");
+//			break;
+//
+//		default:
+//			throw new EnumConstantNotPresentException(TestSystemPropertyHelper.TestBrowser.class,
+//					Objects.toString(browser));
+//		}
+//		Configuration.headless = isHeadless;
+//		Configuration.browserCapabilities = browserOptions;
+//		log.info("Using browser {} with configuration {}", browser, browserOptions);
+//	}
 
 	private static void configureSelenideBaseSetup() {
 		Configuration.reportsFolder = "target/failsafe-reports";
@@ -111,11 +115,22 @@ public class UIIntegrationTestBase {
 	}
 
 	private static void setupTestEnvironment(Environment environment) {
+	    
+		Testcontainers.exposeHostPorts(environment.getProperty("local.server.port", Integer.class));
+	    webDriverContainer.start();
+	    log.info("Open VNC conncection with: open "+webDriverContainer.getVncAddress());
+	    
+		RemoteWebDriver remoteWebDriver = new RemoteWebDriver(webDriverContainer.getSeleniumAddress(), new FirefoxOptions());
+	    WebDriverRunner.setWebDriver(remoteWebDriver);
+		
+		
 		TestEnvironment testEnvironment = TestSystemPropertyHelper.getTestEnvironment();
 		Integer port = environment.getProperty("local.server.port", Integer.class);
 		switch (testEnvironment) {
 		case LOCAL:
-			Configuration.baseUrl = "http://localhost:" + port;
+			Configuration.baseUrl = String.format("http://host.testcontainers.internal:%d", port);
+			//TODO adapt
+//			Configuration.baseUrl = "http://localhost:" + port;
 			Configuration.driverManagerEnabled = true;
 			log.info("Setting up Selenide to use local browser and app at {}", Configuration.baseUrl);
 			break;

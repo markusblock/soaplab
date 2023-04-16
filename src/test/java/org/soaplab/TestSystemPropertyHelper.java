@@ -6,10 +6,12 @@ import org.apache.commons.lang3.EnumUtils;
 public class TestSystemPropertyHelper {
 
 	public enum TestEnvironment {
+		//TODO adapt with CONTAINER
 		LOCAL
 	}
 
 	public enum TestBrowser {
+		//TODO check if possible with testcontainers
 		FIREFOX, CHROME
 	}
 
