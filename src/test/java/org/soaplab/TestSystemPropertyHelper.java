@@ -7,7 +7,7 @@ public class TestSystemPropertyHelper {
 
 	public enum TestEnvironment {
 		//TODO adapt with CONTAINER
-		LOCAL
+		LOCAL, CONTAINER
 	}
 
 	public enum TestBrowser {
