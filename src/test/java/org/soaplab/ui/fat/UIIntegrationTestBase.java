@@ -19,7 +19,6 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.soaplab.TestSystemPropertyHelper;
-import org.soaplab.TestSystemPropertyHelper.TestBrowser;
 import org.soaplab.TestSystemPropertyHelper.TestEnvironment;
 import org.soaplab.TestSystemPropertyHelper.TestLocale;
 import org.soaplab.ui.i18n.TranslationProvider;
@@ -31,6 +30,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.Testcontainers;
 import org.testcontainers.containers.BrowserWebDriverContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import com.codeborne.selenide.Browsers;
 import com.codeborne.selenide.Configuration;
@@ -49,29 +49,88 @@ public class UIIntegrationTestBase {
 
 	private static File databaseFolder;
 
-	private static FirefoxProfile firefoxProfile = new FirefoxProfile();
-	private static FirefoxOptions firefoxOptions = new FirefoxOptions();
-	
-	private static ChromeOptions chromeOptions = new ChromeOptions();
-	static {
-		firefoxProfile.setPreference("intl.accept_languages", Locale.getDefault().getLanguage());
-		firefoxProfile.setPreference("network.cookie.cookieBehavior", 0);
-		firefoxOptions.setProfile(firefoxProfile).addArguments("--no-sandbox").addArguments("--disable-dev-shm-usage");
-		
-		chromeOptions.addArguments("--no-sandbox").addArguments("--disable-dev-shm-usage")
-				.addArguments("--lang=" + Locale.getDefault().getLanguage());
-	}
+	private static MutableCapabilities browserOptions;
 
 	// static instance used by all tests. Without static started/stopped after each
 	// test
-	public static BrowserWebDriverContainer<?> firefoxWebDriverContainer = new BrowserWebDriverContainer<>()
-			.withCapabilities(firefoxOptions);
-	public static BrowserWebDriverContainer<?> chromeWebDriverContainer = new BrowserWebDriverContainer<>()
-			.withCapabilities(chromeOptions);
+	public static BrowserWebDriverContainer<?> webDriverContainer = new BrowserWebDriverContainer<>(
+			isARM64() ? DockerImageName.parse(getSeleniarmImageName()).asCompatibleSubstituteFor(getSeleniumImageName())
+					: DockerImageName.parse(getSeleniumImageName()))
+			.withCapabilities(getBrowserOptions());
+
 
 	@LocalServerPort
 	private Integer port;
 	private TestInfo testInfo;
+
+	private static MutableCapabilities getBrowserOptions() {
+		boolean isHeadless = TestSystemPropertyHelper.isHeadless();
+		Configuration.headless = isHeadless;
+		switch (TestSystemPropertyHelper.getBrowser()) {
+		case CHROME:
+			Configuration.browser = Browsers.CHROME;
+			ChromeOptions chromeOptions = new ChromeOptions();
+			chromeOptions.addArguments("--no-sandbox").addArguments("--disable-dev-shm-usage")
+					.addArguments("--lang=" + Locale.getDefault().getLanguage())
+					.addArguments("--remote-allow-origins=*");
+			if (isHeadless) {
+				chromeOptions.addArguments("--headless");
+			}
+			browserOptions = chromeOptions;
+			break;
+
+		case FIREFOX:
+			Configuration.browser = Browsers.FIREFOX;
+			FirefoxProfile firefoxProfile = new FirefoxProfile();
+			FirefoxOptions firefoxOptions = new FirefoxOptions();
+			firefoxProfile.setPreference("intl.accept_languages", Locale.getDefault().getLanguage());
+			firefoxOptions.setProfile(firefoxProfile).addArguments("--no-sandbox")
+					.addArguments("--disable-dev-shm-usage");
+			if (isHeadless) {
+				firefoxOptions.addArguments("--headless");
+			}
+			browserOptions = firefoxOptions;
+			break;
+
+		default:
+			throw new EnumConstantNotPresentException(TestSystemPropertyHelper.TestBrowser.class,
+					Objects.toString(TestSystemPropertyHelper.getBrowser()));
+		}
+
+		return browserOptions;
+	}
+
+	private static String getSeleniarmImageName() {
+		switch (TestSystemPropertyHelper.getBrowser()) {
+		case CHROME:
+			return "seleniarm/standalone-chromium";
+
+		case FIREFOX:
+			return "seleniarm/standalone-firefox";
+
+		default:
+			throw new EnumConstantNotPresentException(TestSystemPropertyHelper.TestBrowser.class,
+					Objects.toString(TestSystemPropertyHelper.getBrowser()));
+		}
+	}
+
+	private static String getSeleniumImageName() {
+		switch (TestSystemPropertyHelper.getBrowser()) {
+		case CHROME:
+			return "selenium/standalone-chrome";
+
+		case FIREFOX:
+			return "selenium/standalone-firefox";
+
+		default:
+			throw new EnumConstantNotPresentException(TestSystemPropertyHelper.TestBrowser.class,
+					Objects.toString(TestSystemPropertyHelper.getBrowser()));
+		}
+	}
+
+	private static boolean isARM64() {
+		return System.getProperty("os.arch").equals("aarch64");
+	}
 
 	@BeforeAll
 	public static void baseBeforeAll(@Autowired Environment environment) {
@@ -104,61 +163,32 @@ public class UIIntegrationTestBase {
 	}
 
 	private static void setupTestEnvironment(Environment environment) {
-		
-		TestBrowser browser = TestSystemPropertyHelper.getBrowser();
-		
-		MutableCapabilities browserOptions = null;
-		BrowserWebDriverContainer<?> webDriverContainer=null;
-		
-		switch (browser) {
-		case CHROME:
-			Configuration.browser = Browsers.CHROME;
-			webDriverContainer = chromeWebDriverContainer;
-			browserOptions = chromeOptions;
-			break;
-
-		case FIREFOX:
-			Configuration.browser = Browsers.FIREFOX;
-			webDriverContainer = firefoxWebDriverContainer;	
-			browserOptions = firefoxOptions;
-			break;
-
-		default:
-			throw new EnumConstantNotPresentException(TestSystemPropertyHelper.TestBrowser.class,
-					Objects.toString(browser));
-		}
-		
-		//TODO adapt;
-		boolean isHeadless = TestSystemPropertyHelper.isHeadless();
-		if(isHeadless) {
-			firefoxOptions.addArguments("--headless");
-			chromeOptions.addArguments("--headless");
-		}
-		
-		Configuration.headless = isHeadless;
-		Configuration.browserCapabilities = browserOptions;
-		log.info("Using browser {} with configuration {}", browser, browserOptions);
-
 		TestEnvironment testEnvironment = TestSystemPropertyHelper.getTestEnvironment();
 		Integer port = environment.getProperty("local.server.port", Integer.class);
+		log.info("Using browser options " + browserOptions);
 		switch (testEnvironment) {
 		case LOCAL:
 			Configuration.baseUrl = "http://localhost:" + port;
-			Configuration.driverManagerEnabled = true;
 			log.info("Setting up Selenide to use local browser and app at {}", Configuration.baseUrl);
 			break;
 		case CONTAINER:
-			Testcontainers.exposeHostPorts(environment.getProperty("local.server.port", Integer.class));
-			
+
+			log.info("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE={}",
+					System.getenv("TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE"));
+			log.info("DOCKER_HOST={}", System.getenv("DOCKER_HOST"));
+			log.info("TESTCONTAINERS_RYUK_DISABLED={}", System.getenv("TESTCONTAINERS_RYUK_DISABLED"));
+
 			Configuration.baseUrl = String.format("http://host.testcontainers.internal:%d", port);
-			Configuration.driverManagerEnabled = false;
-			
 			log.info("Setting up Selenide to use browser in container at {}", Configuration.baseUrl);
 			
+			Testcontainers.exposeHostPorts(port);
 			webDriverContainer.start();
 			log.info("Open VNC conncection with: open " + webDriverContainer.getVncAddress());
 
-			RemoteWebDriver remoteWebDriver = new RemoteWebDriver(webDriverContainer.getSeleniumAddress(), browserOptions);
+			log.info("Starting webdriver with selenium address " + webDriverContainer.getSeleniumAddress());
+			Configuration.remote = webDriverContainer.getSeleniumAddress().toString();
+			RemoteWebDriver remoteWebDriver = new RemoteWebDriver(webDriverContainer.getSeleniumAddress(),
+					browserOptions);
 			WebDriverRunner.setWebDriver(remoteWebDriver);
 			
 			break;	
