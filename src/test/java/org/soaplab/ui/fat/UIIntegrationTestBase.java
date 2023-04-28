@@ -58,18 +58,17 @@ public class UIIntegrationTestBase {
 					: DockerImageName.parse(getSeleniumImageName()))
 			.withCapabilities(getBrowserOptions());
 
-
 	@LocalServerPort
 	private Integer port;
 	private TestInfo testInfo;
 
 	private static MutableCapabilities getBrowserOptions() {
-		boolean isHeadless = TestSystemPropertyHelper.isHeadless();
+		final boolean isHeadless = TestSystemPropertyHelper.isHeadless();
 		Configuration.headless = isHeadless;
 		switch (TestSystemPropertyHelper.getBrowser()) {
 		case CHROME:
 			Configuration.browser = Browsers.CHROME;
-			ChromeOptions chromeOptions = new ChromeOptions();
+			final ChromeOptions chromeOptions = new ChromeOptions();
 			chromeOptions.addArguments("--no-sandbox").addArguments("--disable-dev-shm-usage")
 					.addArguments("--lang=" + Locale.getDefault().getLanguage())
 					.addArguments("--remote-allow-origins=*");
@@ -81,8 +80,8 @@ public class UIIntegrationTestBase {
 
 		case FIREFOX:
 			Configuration.browser = Browsers.FIREFOX;
-			FirefoxProfile firefoxProfile = new FirefoxProfile();
-			FirefoxOptions firefoxOptions = new FirefoxOptions();
+			final FirefoxProfile firefoxProfile = new FirefoxProfile();
+			final FirefoxOptions firefoxOptions = new FirefoxOptions();
 			firefoxProfile.setPreference("intl.accept_languages", Locale.getDefault().getLanguage());
 			firefoxOptions.setProfile(firefoxProfile).addArguments("--no-sandbox")
 					.addArguments("--disable-dev-shm-usage");
@@ -145,11 +144,13 @@ public class UIIntegrationTestBase {
 
 		registerShutdownHook();
 
-		open("/soaplab/ui/fats");
+		final String url = Configuration.baseUrl + "/soaplab/ui/fats";
+		log.info("Openeing URL " + url);
+		open(url);
 
-		//TODO find replacement for cookies (DB or session?)
+		// TODO find replacement for cookies (DB or session?)
 		WebDriverRunner.getAndCheckWebDriver().manage().deleteAllCookies();
-		Cookie cookie = new Cookie("locale", Locale.getDefault().toLanguageTag());
+		final Cookie cookie = new Cookie("locale", Locale.getDefault().toLanguageTag());
 		WebDriverRunner.getAndCheckWebDriver().manage().addCookie(cookie);
 
 		VaadinUtils.waitUntilPageLoaded();
@@ -163,8 +164,8 @@ public class UIIntegrationTestBase {
 	}
 
 	private static void setupTestEnvironment(Environment environment) {
-		TestEnvironment testEnvironment = TestSystemPropertyHelper.getTestEnvironment();
-		Integer port = environment.getProperty("local.server.port", Integer.class);
+		final TestEnvironment testEnvironment = TestSystemPropertyHelper.getTestEnvironment();
+		final Integer port = environment.getProperty("local.server.port", Integer.class);
 		log.info("Using browser options " + browserOptions);
 		switch (testEnvironment) {
 		case LOCAL:
@@ -180,18 +181,18 @@ public class UIIntegrationTestBase {
 
 			Configuration.baseUrl = String.format("http://host.testcontainers.internal:%d", port);
 			log.info("Setting up Selenide to use browser in container at {}", Configuration.baseUrl);
-			
+
 			Testcontainers.exposeHostPorts(port);
 			webDriverContainer.start();
 			log.info("Open VNC conncection with: open " + webDriverContainer.getVncAddress());
 
 			log.info("Starting webdriver with selenium address " + webDriverContainer.getSeleniumAddress());
 			Configuration.remote = webDriverContainer.getSeleniumAddress().toString();
-			RemoteWebDriver remoteWebDriver = new RemoteWebDriver(webDriverContainer.getSeleniumAddress(),
+			final RemoteWebDriver remoteWebDriver = new RemoteWebDriver(webDriverContainer.getSeleniumAddress(),
 					browserOptions);
 			WebDriverRunner.setWebDriver(remoteWebDriver);
-			
-			break;	
+
+			break;
 		default:
 			throw new EnumConstantNotPresentException(TestSystemPropertyHelper.TestEnvironment.class,
 					Objects.toString(testEnvironment));
@@ -199,7 +200,7 @@ public class UIIntegrationTestBase {
 	}
 
 	private static void configureDatabaseFolder(Environment environment) {
-		String databaseFolderProperty = environment.getProperty("one.microstream.storage-directory");
+		final String databaseFolderProperty = environment.getProperty("one.microstream.storage-directory");
 		if (databaseFolder == null) {
 			databaseFolder = new File(databaseFolderProperty);
 			log.info("Setting database folder to " + databaseFolder);
@@ -207,7 +208,7 @@ public class UIIntegrationTestBase {
 	}
 
 	private static void configureDefaultLocale() {
-		TestLocale locale = TestSystemPropertyHelper.getTestLocale();
+		final TestLocale locale = TestSystemPropertyHelper.getTestLocale();
 		log.info("Setting locale to {}", locale);
 		switch (locale) {
 		case DE:
@@ -237,36 +238,36 @@ public class UIIntegrationTestBase {
 		try {
 			if (databaseFolder != null) {
 				// also remove old testdatabase files&folders
-				String[] testDatabasesFolders = databaseFolder.getParentFile()
+				final String[] testDatabasesFolders = databaseFolder.getParentFile()
 						.list((dir, name) -> name.startsWith("test-"));
 				if (testDatabasesFolders != null) {
 					for (int i = 0; i < testDatabasesFolders.length; i++) {
 						try {
-							File fileToDelete = new File(databaseFolder.getParentFile(), testDatabasesFolders[i]);
+							final File fileToDelete = new File(databaseFolder.getParentFile(), testDatabasesFolders[i]);
 							if (!fileToDelete.exists()) {
 								continue;
 							}
 							FileUtils.forceDelete(fileToDelete);
 							log.info("[DONE] Removing testdatabase: " + fileToDelete);
-						} catch (Exception e) {
+						} catch (final Exception e) {
 							log.error("[ERROR] Error occured while removing testdatabase: " + databaseFolder, e);
 						}
 					}
 				}
 				databaseFolder = null;
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			log.error("[ERROR] Error occured while removing testdatabase: " + databaseFolder, e);
 		}
 	}
 
 	private static void registerShutdownHook() {
-		Runnable shutdownTask = () -> {
+		final Runnable shutdownTask = () -> {
 			WebDriverRunner.closeWebDriver();
 			removeDatabaseFolder();
 		};
 
-		Thread shutdownThread = new Thread(shutdownTask, "Database Shutdown Thread");
+		final Thread shutdownThread = new Thread(shutdownTask, "Database Shutdown Thread");
 		Runtime.getRuntime().addShutdownHook(shutdownThread);
 	}
 }
