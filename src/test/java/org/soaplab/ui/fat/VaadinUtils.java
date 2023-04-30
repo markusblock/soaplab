@@ -39,6 +39,13 @@ public class VaadinUtils {
 			Selenide.Wait().withTimeout(Duration.ofSeconds(30))
 					.until(d -> Float.parseFloat($(".v-loading-indicator").getCssValue("opacity")) <= 0);
 		}
+		if ($(".v-system-error").$("caption").has(Condition.text("Cookies disabled"))) {
+			log.info("error message 'Cookies diabled appeared... Refreshing page...'");
+			Selenide.refresh();
+			$(".v-system-error").shouldNotBe(Condition.visible, Duration.ofSeconds(30));
+			waitUntilPageLoaded();
+		}
+
 		log.info("waiting for soaplab.id to become visible");
 		$(Selectors.byId("soaplab.id")).shouldBe(Condition.visible, Duration.ofSeconds(30));
 
