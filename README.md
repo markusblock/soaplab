@@ -3,7 +3,7 @@ Create and manage soape recipes and ingredients. A soap recipe calculator suppor
 
 # Getting started
 - [Java 17 JRE](https://adoptium.net/de/temurin/releases/?version=17) runtime is required
-- maven
+- [Apache Maven](https://maven.apache.org/) to start from commandline
 
 ## Running locally
 ```

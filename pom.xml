@@ -16,7 +16,7 @@
 	
 	<properties>
 		<java.version>17</java.version>
-		<vaadin.version>24.0.3</vaadin.version>
+		<vaadin.version>24.0.5</vaadin.version>
 		<microstream.version>08.00.00-MS-EA2</microstream.version>
 		<beantutils.version>1.9.4</beantutils.version>
 		<springdoc.version>2.0.4</springdoc.version>

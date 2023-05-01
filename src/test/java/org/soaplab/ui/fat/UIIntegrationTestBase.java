@@ -145,7 +145,7 @@ public class UIIntegrationTestBase {
 		registerShutdownHook();
 
 		final String url = Configuration.baseUrl + "/soaplab/ui/fats";
-		log.info("Openeing URL " + url);
+		log.info("Openeing browser with URL " + url);
 		open(url);
 
 		// TODO find replacement for cookies (DB or session?)
