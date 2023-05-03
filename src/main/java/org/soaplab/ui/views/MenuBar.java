@@ -13,7 +13,7 @@ public class MenuBar extends Div {
 
 	private static final long serialVersionUID = 1L;
 
-	private Tabs menuComponentItems;
+	private final Tabs menuComponentItems;
 
 	public MenuBar() {
 		super();
@@ -23,11 +23,11 @@ public class MenuBar extends Div {
 	}
 
 	public void addMenuItem(VaadinIcon viewIcon, String viewName, Class<? extends Component> viewClass) {
-		Icon icon = viewIcon.create();
+		final Icon icon = viewIcon.create();
 		icon.getStyle().set("box-sizing", "border-box").set("margin-inline-end", "var(--lumo-space-m)")
 				.set("margin-inline-start", "var(--lumo-space-xs)").set("padding", "var(--lumo-space-xs)");
 
-		RouterLink link = new RouterLink();
+		final RouterLink link = new RouterLink();
 		link.add(icon, new Span(viewName));
 		link.setRoute(viewClass);
 		link.setTabIndex(-1);

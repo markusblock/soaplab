@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - master
+      - '**'        # matches every branch
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -26,11 +27,6 @@ jobs:
           java-version: 17
           java-package: jdk
           cache: maven
-    - name: Setup firefox
-      uses: browser-actions/setup-firefox@latest
-      with: 
-          firefox-version: latest
-    - run: firefox --version 
     - name: Cache Maven packages
       uses: actions/cache@v2
       with:
@@ -40,11 +36,20 @@ jobs:
     - name: Cache SonarCloud packages
       uses: actions/cache@v3
       with:
-        path: ~/.sonar/cache
-        key: ${{ runner.os }}-sonar
-        restore-keys: ${{ runner.os }}-sonar    
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar    
     - name: build-test-sonar
       env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: mvn -B install sonar:sonar -Pproduction -Dsonar.projectKey=markusblock_soaplab -Dsonar.qualitygate.wait=true -Dsonar.qualitygate.timeout=600 -DtestBrowser=firefox -DtestEnvironment=local -DtestLocale=EN -Dheadless=true
+      run: mvn -B install sonar:sonar -Pproduction -Dsonar.projectKey=markusblock_soaplab -Dsonar.qualitygate.wait=true -Dsonar.qualitygate.timeout=600 -DtestBrowser=firefox -DtestEnvironment=container -DtestLocale=EN -Dheadless=true -Dfailsafe.rerunFailingTestsCount=2
+    - name: Upload failsafe and surefire testreports on failure
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v3
+      with:
+          name: test-report
+          path: |
+              /home/runner/work/soaplab/soaplab/target/failsafe-reports/
+              /home/runner/work/soaplab/soaplab/target/surefire-reports/
+          retention-days: 7

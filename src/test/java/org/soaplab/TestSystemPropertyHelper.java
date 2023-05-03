@@ -6,7 +6,7 @@ import org.apache.commons.lang3.EnumUtils;
 public class TestSystemPropertyHelper {
 
 	public enum TestEnvironment {
-		LOCAL
+		LOCAL, CONTAINER
 	}
 
 	public enum TestBrowser {
@@ -18,22 +18,22 @@ public class TestSystemPropertyHelper {
 	}
 
 	public static boolean isHeadless() {
-		String property = System.getProperty("headless", Boolean.FALSE.toString());
+		final String property = System.getProperty("headless", Boolean.FALSE.toString());
 		return BooleanUtils.toBoolean(property);
 	}
 
 	public static TestBrowser getBrowser() {
-		String property = System.getProperty("testBrowser", TestBrowser.FIREFOX.name());
+		final String property = System.getProperty("testBrowser", TestBrowser.FIREFOX.name());
 		return EnumUtils.getEnumIgnoreCase(TestBrowser.class, property);
 	}
 
 	public static TestEnvironment getTestEnvironment() {
-		String property = System.getProperty("testEnvironment", TestEnvironment.LOCAL.name());
+		final String property = System.getProperty("testEnvironment", TestEnvironment.LOCAL.name());
 		return EnumUtils.getEnumIgnoreCase(TestEnvironment.class, property);
 	}
 
 	public static TestLocale getTestLocale() {
-		String property = System.getProperty("testLocale", TestLocale.EN.name());
+		final String property = System.getProperty("testLocale", TestLocale.EN.name());
 		return EnumUtils.getEnumIgnoreCase(TestLocale.class, property);
 	}
 

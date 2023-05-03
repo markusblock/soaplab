@@ -3,6 +3,7 @@ Create and manage soape recipes and ingredients. A soap recipe calculator suppor
 
 # Getting started
 - [Java 17 JRE](https://adoptium.net/de/temurin/releases/?version=17) runtime is required
+- [Apache Maven](https://maven.apache.org/) to start from commandline
 
 ## Running locally
 ```
@@ -24,13 +25,26 @@ Data will be stored in the folder ${user.home}/microstream-soaplab
 # Development
 ## Setting up IDE
 - [Java 17 JDK](https://adoptium.net/de/temurin/releases/?version=17) development kit is required
+- [Apache Maven](https://maven.apache.org/) As build tool when building or starting from commandline
 - [Eclipse](https://www.eclipse.org) Choosing your favorite IDE like eclipse or IntelliJ
 - [lombok](https://projectlombok.org) Install lombock plugin in your IDE
 - [Docker](https://www.docker.com) Docker can be used in tests to host a browser container
 
 ## Tests
-- geckodriver needs to be installed
-- Firefox will be used to execute the UI tests
+Tests can be parameterized with following parameters
+- -DtestBrowser=firefox|chrome selecting the browser for testing. In combination with local this browser needs to be installed on your system
+- -DtestEnvironment=local|container either using local browser or browser in docker container
+- -DtestLocale=EN
+- -Dheadless=true|false running in headless mode
+
+### MAC OS with Colima as container runtime and testcontainers
+Make sure that file /var/run/docker.sock exists. Otherwise create a link with 
+- sudo ln -sf $HOME/.colima/default/docker.sock /var/run/docker.sock
+
+For the IDE to be able to access the environment variables they need to be set with launchctl:
+- launchctl setenv TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock
+- launchctl setenv DOCKER_HOST "unix://${HOME}/.colima/docker.sock"
+- launchctl setenv TESTCONTAINERS_RYUK_DISABLED true
 
 ## Start
 Start the class class org.soaplab.SoaplabApplication

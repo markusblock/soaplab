@@ -16,7 +16,7 @@
 	
 	<properties>
 		<java.version>17</java.version>
-		<vaadin.version>24.0.3</vaadin.version>
+		<vaadin.version>24.0.5</vaadin.version>
 		<microstream.version>08.00.00-MS-EA2</microstream.version>
 		<beantutils.version>1.9.4</beantutils.version>
 		<springdoc.version>2.0.4</springdoc.version>
@@ -25,7 +25,7 @@
 		<!-- Overriding to avoid ClassNotFound in WebDriverManager -->
 		<httpclient5.version>5.2.1</httpclient5.version>
 		<selenium.version>4.8.0</selenium.version>
-		<testcontainers.version>1.17.1</testcontainers.version>
+		<testcontainers.version>1.18.0</testcontainers.version>
 		<sonar.organization>markusblock</sonar.organization>
   		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
   		<jacoco.version>0.8.8</jacoco.version>
@@ -140,12 +140,10 @@
             <groupId>com.vaadin</groupId>
             <!-- Replace artifactId with vaadin-core to use only free components -->
             <artifactId>vaadin-core</artifactId>
-            <version>${vaadin.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
-            <version>${vaadin.version}</version>
         </dependency>	
             
 		<dependency>
@@ -180,13 +178,47 @@
             <version>${selenide.version}</version>
             <scope>test</scope>
         </dependency>
-        
+
 		<dependency>
 		    <groupId>org.apache.httpcomponents.client5</groupId>
 		    <artifactId>httpclient5</artifactId>
 		    <scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+		  	<artifactId>selenium</artifactId>
+		  	<version>${testcontainers.version}</version>
+		  	<scope>test</scope>
 		</dependency>	
-		
+		<dependency>
+		    <groupId>org.testcontainers</groupId>
+		    <artifactId>junit-jupiter</artifactId>
+		    <version>${testcontainers.version}</version>
+		    <scope>test</scope>
+		</dependency>
+
+		<!-- Testcontainer and selenium setup, NoClassDefFoundError -->
+		<dependency>
+		    <groupId>io.opentelemetry</groupId>
+		    <artifactId>opentelemetry-sdk-extension-autoconfigure-spi</artifactId>
+		    <version>1.25.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>io.opentelemetry</groupId>
+		    <artifactId>opentelemetry-api</artifactId>
+		    <version>1.25.0</version>
+		</dependency>	
+		<dependency>
+		    <groupId>io.opentelemetry</groupId>
+		    <artifactId>opentelemetry-sdk</artifactId>
+		    <version>1.25.0</version>
+		</dependency>			
+		<dependency>
+		    <groupId>io.opentelemetry</groupId>
+		    <artifactId>opentelemetry-sdk-metrics</artifactId>
+		    <version>1.25.0</version>
+		</dependency>
 	</dependencies>
 
 
@@ -270,6 +302,9 @@
         <profile>
             <!-- Production mode is activated using -Pproduction -->
             <id>production</id>
+            <properties>
+            	<vaadin.productionMode>true</vaadin.productionMode>
+            </properties> 
             <build>
                 <plugins>
                     <plugin>
@@ -286,7 +321,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                             <productionMode>true</productionMode>
+                            <productionMode>true</productionMode>
                             <pnpmEnable>true</pnpmEnable>
                         </configuration>
                     </plugin>

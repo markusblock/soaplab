@@ -146,5 +146,4 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 			event.forwardTo(FatsView.class);
 		}
 	}
-
 }
