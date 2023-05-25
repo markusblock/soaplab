@@ -8,6 +8,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.soaplab.domain.Acid;
 import org.soaplab.domain.Acid.AcidBuilder;
+import org.soaplab.domain.Additive;
+import org.soaplab.domain.Additive.AdditiveBuilder;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fat.FatBuilder;
 import org.soaplab.domain.Fragrance;
@@ -17,6 +19,8 @@ import org.soaplab.domain.KOH;
 import org.soaplab.domain.KOH.KOHBuilder;
 import org.soaplab.domain.Liquid;
 import org.soaplab.domain.Liquid.LiquidBuilder;
+import org.soaplab.domain.LyeRecipe;
+import org.soaplab.domain.LyeRecipe.LyeRecipeBuilder;
 import org.soaplab.domain.NaOH;
 import org.soaplab.domain.NaOH.NaOHBuilder;
 import org.soaplab.domain.Percentage;
@@ -30,6 +34,14 @@ public class RandomIngredientsTestData {
 	private final static int STRING_LENGTH = 5;
 
 	public RandomIngredientsTestData() {
+	}
+
+	public static LyeRecipeBuilder<?, ?> getLyeRecipeBuilder() {
+		return LyeRecipe.builder().id(getRandomUUID()).name(getRandomString()).notes(getRandomString());
+	}
+
+	public static AdditiveBuilder<?, ?> getAdditiveBuilder() {
+		return Additive.builder().id(getRandomUUID()).name(getRandomString()).inci(getRandomString());
 	}
 
 	public static NaOHBuilder<?, ?> getNaOHBuilder() {

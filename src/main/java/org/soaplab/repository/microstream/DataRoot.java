@@ -4,10 +4,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.soaplab.domain.Acid;
+import org.soaplab.domain.Additive;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
 import org.soaplab.domain.KOH;
 import org.soaplab.domain.Liquid;
+import org.soaplab.domain.LyeRecipe;
 import org.soaplab.domain.NaOH;
 import org.soaplab.domain.SoapRecipe;
 
@@ -28,4 +30,6 @@ public class DataRoot {
 	private final Set<Liquid> allLiquids = new HashSet<>();
 	private final Set<KOH> allKOH = new HashSet<>();
 	private final Set<NaOH> allNaOH = new HashSet<>();
+	private final Set<Additive> allAdditives = new HashSet<>();
+	private final Set<LyeRecipe> allLyeRecipes = new HashSet<>();
 }

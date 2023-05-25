@@ -5,6 +5,8 @@ import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntry;
 
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Liquid;
+import org.soaplab.domain.LyeRecipe;
+import org.soaplab.domain.LyeRecipe.LyeRecipeBuilder;
 import org.soaplab.domain.NaOH;
 import org.soaplab.domain.SoapRecipe.SoapRecipeBuilder;
 import org.soaplab.domain.utils.IngredientsExampleData;
@@ -12,20 +14,18 @@ import org.soaplab.domain.utils.IngredientsExampleData;
 import lombok.Getter;
 
 @Getter
-public class OliveOilSoapBasicRecipeTestData extends RecipeTestDataBuilder {
+public class OliveOilSoapBasicRecipeTestData extends SoapRecipeTestDataBuilder {
 
 	private static final String OLIVE_SOAP_RECIPE_NAME = "Basic Olive Soap";
 
+	private Liquid water;
 	private NaOH naOH;
 	private Fat oliveOil;
-	private Liquid water;
+	private LyeRecipe lyeRecipe;
+
 
 	public OliveOilSoapBasicRecipeTestData() {
 		super();
-	}
-
-	protected NaOH createNaOH() {
-		return IngredientsExampleData.getNaOHBuilder().build();
 	}
 
 	protected Fat createFatOliveOil() {
@@ -35,20 +35,30 @@ public class OliveOilSoapBasicRecipeTestData extends RecipeTestDataBuilder {
 	protected Liquid createLiquidWater() {
 		return IngredientsExampleData.getWaterBuilder().build();
 	}
+	protected NaOH createNaOH() {
+		return IngredientsExampleData.getNaOHBuilder().build();
+	}
+
+	protected LyeRecipe createLyeRecipe() {
+		return createLyeRecipeBuilder().build();
+	}
+
+	protected LyeRecipeBuilder<?, ?> createLyeRecipeBuilder() {
+		return IngredientsExampleData.getLyRecipeBuilderNaOH() //
+				.naOH(createRecipeEntry(naOH, 100d)) //
+				.liquids(createRecipeEntries(createRecipeEntry(water, 100d)));
+	}
 
 	@Override
 	public SoapRecipeBuilder<?, ?> getSoapRecipeBuilder() {
-		naOH = createNaOH();
 		oliveOil = createFatOliveOil();
+		naOH = createNaOH();
 		water = createLiquidWater();
+		lyeRecipe = createLyeRecipe();
 
 		return super.getSoapRecipeBuilder() //
 				.name(OLIVE_SOAP_RECIPE_NAME) //
-				.naOH(createRecipeEntry(naOH, 100d)) //
-				.fats(createRecipeEntries( //
-						createRecipeEntry(oliveOil, 100d))) //
-				.liquids(createRecipeEntries( //
-						createRecipeEntry(water, 100d) //
-				));
+				.lyeRecipe(lyeRecipe) //
+				.fats(createRecipeEntries(createRecipeEntry(oliveOil, 100d)));
 	}
 }

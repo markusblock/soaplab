@@ -13,11 +13,11 @@ import org.soaplab.domain.WeightUnit;
 import lombok.Getter;
 
 @Getter
-public class RecipeTestDataBuilder {
+public class SoapRecipeTestDataBuilder {
 
 	private final SoapRecipeBuilder<?, ?> soapRecipeBuilder = SoapRecipe.builder();
 
-	public RecipeTestDataBuilder() {
+	public SoapRecipeTestDataBuilder() {
 		soapRecipeBuilder.id(UUID.randomUUID()).manufacturingDate(Date.from(Instant.now()))
 				.fatsTotal(Weight.of(100, WeightUnit.GRAMS)) //
 				.liquidToFatRatio(Percentage.of(33)) //

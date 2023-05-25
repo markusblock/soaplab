@@ -99,6 +99,9 @@ public class SoapCalculatorServiceTest {
 		assertRecipeEntry(calculatedSoapRecipeResult.getKOH(), 2.4848, 0.02);
 		PriceAssert.assertThat(calculatedSoapRecipeResult.getLyeCosts()).isEqualToValue(0.13);
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getLyeTotal()).isEqualToWeightInGrams(16.7574);
+		Assertions.assertThat(calculatedSoapRecipeResult.getLyeAdditives()).hasSize(2);
+		assertRecipeEntry(calculatedSoapRecipeResult.getLyeAdditives().get(0), 3, 0);
+		assertRecipeEntry(calculatedSoapRecipeResult.getLyeAdditives().get(1), 2, 0);
 
 		// Liquids
 		Assertions.assertThat(calculatedSoapRecipeResult.getLiquids()).hasSize(2);
@@ -126,10 +129,16 @@ public class SoapCalculatorServiceTest {
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getFragrancesTotal()).isEqualToWeightInGrams(3);
 		PriceAssert.assertThat(calculatedSoapRecipeResult.getFragrancesCosts()).isEqualToValue(0.9);
 
+		// Soap Batter Additives
+		Assertions.assertThat(calculatedSoapRecipeResult.getSoapBatterAdditives()).hasSize(1);
+		assertRecipeEntry(calculatedSoapRecipeResult.getSoapBatterAdditives().get(0), 1, 0.16);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getSoapBatterAdditivesTotal()).isEqualToWeightInGrams(1);
+		PriceAssert.assertThat(calculatedSoapRecipeResult.getSoapBatterAdditivesCosts()).isEqualToValue(0.16);
+
 		// Soaprecipe Totals
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getWeightTotal()).isEqualToWeightInGrams(156.7574);
-		PriceAssert.assertThat(calculatedSoapRecipeResult.getCostsTotal()).isEqualToValue(1.83);
-		PriceAssert.assertThat(calculatedSoapRecipeResult.getCostsTotalPer100g()).isEqualToValue(1.17);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getWeightTotal()).isEqualToWeightInGrams(162.7574);
+		PriceAssert.assertThat(calculatedSoapRecipeResult.getCostsTotal()).isEqualToValue(1.99);
+		PriceAssert.assertThat(calculatedSoapRecipeResult.getCostsTotalPer100g()).isEqualToValue(1.22);
 	}
 
 	private <T extends Ingredient> void assertRecipeEntry(RecipeEntry<T> entry, double weightInGrams, double price) {

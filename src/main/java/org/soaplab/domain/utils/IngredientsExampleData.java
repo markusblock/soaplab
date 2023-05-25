@@ -1,9 +1,14 @@
 package org.soaplab.domain.utils;
 
+import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntries;
+import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntry;
+
 import java.util.UUID;
 
 import org.soaplab.domain.Acid;
 import org.soaplab.domain.Acid.AcidBuilder;
+import org.soaplab.domain.Additive;
+import org.soaplab.domain.Additive.AdditiveBuilder;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fat.FatBuilder;
 import org.soaplab.domain.Fragrance;
@@ -13,6 +18,8 @@ import org.soaplab.domain.KOH;
 import org.soaplab.domain.KOH.KOHBuilder;
 import org.soaplab.domain.Liquid;
 import org.soaplab.domain.Liquid.LiquidBuilder;
+import org.soaplab.domain.LyeRecipe;
+import org.soaplab.domain.LyeRecipe.LyeRecipeBuilder;
 import org.soaplab.domain.NaOH;
 import org.soaplab.domain.NaOH.NaOHBuilder;
 import org.soaplab.domain.Percentage;
@@ -36,6 +43,9 @@ public class IngredientsExampleData {
 	public static final String OLIVE_OIL_NAME = "Olive Oil";
 	public static final String NAOH_NAME = "NaOH";
 	public static final String KOH_NAME = "KOH";
+	public static final String MICA_NAME = "Mica Dark Night";
+	public static final String SALT_NAME = "Salt";
+	public static final String SUGAR_NAME = "Sugar";
 
 	private IngredientsExampleData() {
 	}
@@ -78,6 +88,50 @@ public class IngredientsExampleData {
 	public static KOHBuilder<?, ?> getKOHBuilder() {
 		return KOH.builder().id(UUID.randomUUID()).name(KOH_NAME).inci("Potassium Hydroxide")
 				.kOHPurity(Percentage.of(89.5d)).cost(Price.of(0.74d));
+	}
+
+	public static AdditiveBuilder<?, ?> getMicaBuilder() {
+		return Additive.builder().id(UUID.randomUUID()).name(MICA_NAME).inci("Mica").cost(Price.of(15.8d));
+	}
+
+	public static AdditiveBuilder<?, ?> getSaltBuilder() {
+		return Additive.builder().id(UUID.randomUUID()).name(SALT_NAME).inci("Sodium chloride")
+				.cost(Price.of(0.07d));
+	}
+
+	public static AdditiveBuilder<?, ?> getSugarBuilder() {
+		return Additive.builder().id(UUID.randomUUID()).name(SUGAR_NAME).inci("Glukose").cost(Price.of(0.1d));
+	}
+
+	public static LyeRecipeBuilder<?, ?> getLyRecipeBuilder() {
+		return LyeRecipe.builder().id(UUID.randomUUID());
+	}
+
+	public static LyeRecipeBuilder<?, ?> getLyRecipeBuilderNaOH() {
+		return getLyRecipeBuilder().name("Simple NaOH Lye")
+				.naOH(createRecipeEntry(getNaOHBuilder().build(), 100d))
+				.liquids(SoapRecipeUtils.createRecipeEntries(createRecipeEntry(getWaterBuilder().build(), 100d)));
+	}
+
+	public static LyeRecipeBuilder<?, ?> getLyRecipeBuilderMixed() {
+		return getLyRecipeBuilder().name("Mixed Lye") //
+				.naOH(createRecipeEntry(getNaOHBuilder().build(), 50d)) //
+				.kOH(createRecipeEntry(getKOHBuilder().build(), 50d)) //
+				.liquids(createRecipeEntries(createRecipeEntry(getWaterBuilder().build(), 100d)));
+	}
+
+	public static LyeRecipeBuilder<?, ?> getLyRecipeBuilderMixedWithAcids() {
+		return getLyRecipeBuilderMixed().name("Mixed Lye with acids") //
+				.acids(createRecipeEntries(createRecipeEntry(getCitricAcidBuilder().build(), 4d))) //
+				.liquids(createRecipeEntries( //
+						createRecipeEntry(getWaterBuilder().build(), 50d), //
+						createRecipeEntry(getAppleVinegarBuilder().build(), 50d)));
+	}
+
+	public static LyeRecipeBuilder<?, ?> getLyRecipeBuilderMixedWithAcidsAndAdditives() {
+		return getLyRecipeBuilderMixedWithAcids().name("Mixed Lye with acids and additives") //
+				.additives(createRecipeEntries(createRecipeEntry(getSaltBuilder().build(), 2d), //
+						createRecipeEntry(getSugarBuilder().build(), 3d)));
 	}
 
 }

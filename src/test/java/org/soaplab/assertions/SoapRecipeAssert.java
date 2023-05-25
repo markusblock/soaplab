@@ -31,13 +31,8 @@ public class SoapRecipeAssert extends AbstractAssert<SoapRecipeAssert, SoapRecip
 		Assertions.assertThat(actual.getNotes()).isEqualTo(expected.getNotes());
 		Assertions.assertThat(actual.getSuperFat()).isEqualTo(expected.getSuperFat());
 
-		RecipeEntryAssert.assertThat(actual.getKOH()).isDeepEqualTo(expected.getKOH());
-		RecipeEntryAssert.assertThat(actual.getNaOH()).isDeepEqualTo(expected.getNaOH());
-
-		assertIngredientMapsAreDeepEqual(actual.getAcids(), expected.getAcids());
 		assertIngredientMapsAreDeepEqual(actual.getFats(), expected.getFats());
 		assertIngredientMapsAreDeepEqual(actual.getFragrances(), expected.getFragrances());
-		assertIngredientMapsAreDeepEqual(actual.getLiquids(), expected.getLiquids());
 
 		return this;
 	}

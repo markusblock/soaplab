@@ -27,6 +27,10 @@ public class SoapRecipe extends NamedEntity {
 	private Date manufacturingDate;
 
 	/**
+	 * Optional notes on the recipt.
+	 */
+	private String notes;
+	/**
 	 * Liquid in regards to the total amount of fats
 	 */
 	private Percentage liquidToFatRatio;
@@ -43,34 +47,34 @@ public class SoapRecipe extends NamedEntity {
 	 */
 	private Percentage fragranceToFatRatio;
 
-	/**
-	 * Optional notes on the recipt.
-	 */
-	private String notes;
-	/**
-	 * Calculated value. Total weight of NaOH.
-	 */
-	private Weight naohTotal;
-	/**
-	 * Calculated value. Total weight of KOH.
-	 */
-	private Weight kohTotal;
-	/**
-	 * Calculated value. Total weight of lye.
-	 */
-	private Weight lyeTotal;
-	/**
-	 * Calculated value. Total weight of liquids.
-	 */
-	private Weight liquidsTotal;
-	/**
-	 * Calculated value. Total weight of acids.
-	 */
-	private Weight acidsTotal;
+	private LyeRecipe lyeRecipe;
+
+	private List<RecipeEntry<Fragrance>> fragrances = new ArrayList<>();
 	/**
 	 * Calculated value. Total weight of fragrances.
 	 */
 	private Weight fragrancesTotal;
+	/**
+	 * Calculated value. Fragrances costs.
+	 */
+	private Price fragrancesCosts;
+
+	private List<RecipeEntry<Fat>> fats = new ArrayList<>();
+	/**
+	 * Calculated value. Fats costs.
+	 */
+	private Price fatsCosts;
+
+	private List<RecipeEntry<Additive>> additives = new ArrayList<>();
+	/**
+	 * Calculated value. Total weight of soap batter additives.
+	 */
+	private Weight additivesTotal;
+	/**
+	 * Calculated value. Soap batter additives costs.
+	 */
+	private Price additivesCosts;
+
 	/**
 	 * Calculated value. Total weight of all ingredients in the recipe.
 	 */
@@ -83,49 +87,13 @@ public class SoapRecipe extends NamedEntity {
 	 * Calculated value. Total costs of all ingredients in the recipe per 100g.
 	 */
 	private Price costsTotalPer100g;
-	/**
-	 * Calculated value. Fats costs.
-	 */
-	private Price fatsCosts;
-	/**
-	 * Calculated value. Acids costs.
-	 */
-	private Price acidsCosts;
-	/**
-	 * Calculated value. Lye costs.
-	 */
-	private Price lyeCosts;
-	/**
-	 * Calculated value. Fragrances costs.
-	 */
-	private Price fragrancesCosts;
-	/**
-	 * Calculated value. Liquids costs.
-	 */
-	private Price liquidsCosts;
 
-	private List<RecipeEntry<Fat>> fats = new ArrayList<>();
-	private List<RecipeEntry<Acid>> acids = new ArrayList<>();
-	private List<RecipeEntry<Fragrance>> fragrances = new ArrayList<>();
-	private List<RecipeEntry<Liquid>> liquids = new ArrayList<>();
-	/**
-	 * NaOH and KOH in sum 100%
-	 */
-	private RecipeEntry<NaOH> naOH;
 
-	/**
-	 * NaOH and KOH in sum 100%
-	 */
-	private RecipeEntry<KOH> kOH;
-
-	// customAdditives
 
 	@Override
 	public SoapRecipeBuilder<?, ?> getCopyBuilder() {
-		return this.toBuilder().fats(getRecipeEntryListDeepClone(fats)).acids(getRecipeEntryListDeepClone(acids))
-				.fragrances(getRecipeEntryListDeepClone(fragrances)).liquids(getRecipeEntryListDeepClone(liquids))
-				.naOH(naOH == null ? null : naOH.getCopyBuilder().build())
-				.kOH(kOH == null ? null : kOH.getCopyBuilder().build());
+		return this.toBuilder().fats(getRecipeEntryListDeepClone(fats))
+				.fragrances(getRecipeEntryListDeepClone(fragrances)).additives(getRecipeEntryListDeepClone(additives));
 	}
 
 	private <T extends Ingredient> List<RecipeEntry<T>> getRecipeEntryListDeepClone(

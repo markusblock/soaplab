@@ -1,55 +1,57 @@
 package org.soaplab.testdata;
 
+import java.util.Collection;
+
 import org.soaplab.domain.Acid;
 import org.soaplab.domain.Entity;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
+import org.soaplab.domain.Ingredient;
 import org.soaplab.domain.Liquid;
+import org.soaplab.domain.LyeRecipe;
 import org.soaplab.domain.NamedEntity;
+import org.soaplab.domain.RecipeEntry;
 import org.soaplab.domain.SoapRecipe;
 import org.soaplab.repository.AcidRepository;
+import org.soaplab.repository.AdditiveRepository;
 import org.soaplab.repository.EntityRepository;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.FragranceRepository;
+import org.soaplab.repository.KOHRepository;
 import org.soaplab.repository.LiquidRepository;
+import org.soaplab.repository.LyeRecipeRepository;
+import org.soaplab.repository.NaOHRepository;
 import org.soaplab.repository.SoapRecipeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 @Component
 public class OliveOilSoapRecipeRepositoryTestData extends OliveOilSoapRecipeTestData {
 
-	@Autowired
 	private final FatRepository fatRepository;
-
-	@Autowired
 	private final LiquidRepository liquidRepository;
-
-	@Autowired
 	private final AcidRepository acidRepository;
-
-	@Autowired
 	private final FragranceRepository fragranceRepository;
-
-	@Autowired
 	private final SoapRecipeRepository soapRecipeRepository;
-
-	public OliveOilSoapRecipeRepositoryTestData(SoapRecipeRepository soapRecipeRepository, FatRepository fatRepository,
-			AcidRepository acidRepository, LiquidRepository liquidRepository, FragranceRepository fragranceRepository) {
-		super();
-		this.soapRecipeRepository = soapRecipeRepository;
-		this.fatRepository = fatRepository;
-		this.acidRepository = acidRepository;
-		this.liquidRepository = liquidRepository;
-		this.fragranceRepository = fragranceRepository;
-	}
+	private final KOHRepository kohRepository;
+	private final NaOHRepository naohRepository;
+	private final AdditiveRepository additiveRepository;
+	private final LyeRecipeRepository lyeRecipeRepository;
 
 	private <T extends NamedEntity> T createEntityInRepo(T entity, EntityRepository<T> repository) {
 		final Entity persistedEntity = repository.create(entity);
 		return (T) persistedEntity;
+	}
+
+	private <T extends Ingredient> void createEntitiesInRepo(Collection<RecipeEntry<T>> recipeEntries,
+			EntityRepository<T> repository) {
+		for (RecipeEntry<T> recipeEntry : recipeEntries) {
+			createEntityInRepo(recipeEntry.getIngredient(), repository);
+		}
 	}
 
 	@Override
@@ -81,6 +83,19 @@ public class OliveOilSoapRecipeRepositoryTestData extends OliveOilSoapRecipeTest
 	@Override
 	protected Liquid createLiquidWater() {
 		return createEntityInRepo(super.createLiquidWater(), liquidRepository);
+	}
+
+	@Override
+	protected LyeRecipe createLyeRecipe() {
+		LyeRecipe lyeRecipe = super.createLyeRecipe();
+		createEntitiesInRepo(lyeRecipe.getAcids(), acidRepository);
+		createEntityInRepo(lyeRecipe.getKOH().getIngredient(),kohRepository);
+		createEntityInRepo(lyeRecipe.getNaOH().getIngredient(), naohRepository);
+		createEntitiesInRepo(lyeRecipe.getLiquids(), liquidRepository);
+		createEntitiesInRepo(lyeRecipe.getAdditives(), additiveRepository);
+		createEntityInRepo(lyeRecipe, lyeRecipeRepository);
+
+		return lyeRecipe;
 	}
 
 	@Override

@@ -20,8 +20,8 @@ public class LiquidRepositoryMSImpl extends IngredientRepositoryMSImpl<Liquid> i
 
 	@Override
 	protected void assertEntityIsNotReferencedByOtherEntities(Liquid entity) {
-		if (getDataRoot().getAllSoapReceipts().stream().anyMatch(soapRecipe -> {
-			return soapRecipe.getLiquids().stream()
+		if (getDataRoot().getAllLyeRecipes().stream().anyMatch(lyeRecipe -> {
+			return lyeRecipe.getLiquids().stream()
 					.anyMatch(referencedEntity -> referencedEntity.getId().equals(entity.getId()));
 		})) {
 			throw new EntityDeletionFailedException(entity, REASON.ENTITY_STILL_REFERENCED);
