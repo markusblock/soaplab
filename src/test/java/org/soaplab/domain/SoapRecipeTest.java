@@ -2,7 +2,7 @@ package org.soaplab.domain;
 
 import org.junit.jupiter.api.Test;
 import org.soaplab.assertions.SoapRecipeAssert;
-import org.soaplab.testdata.OliveOilSoapRecipeTestData;
+import org.soaplab.domain.utils.OliveOilSoapRecipeTestData;
 
 class SoapRecipeTest {
 

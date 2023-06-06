@@ -13,7 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class MicrostreamRepositorylTest {
+class MicrostreamRepositoryITest {
 	@LocalServerPort
 	private int port;
 

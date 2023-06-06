@@ -45,9 +45,9 @@ public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
 				SoapRecipe::setFragranceToFatRatio);
 		addPropertyTextArea("domain.recipe.notes", SoapRecipe::getNotes, SoapRecipe::setNotes);
 
-		addPropertyWeightFieldReadOnly("domain.recipe.naohTotal", SoapRecipe::getNaohTotal);
-		addPropertyWeightFieldReadOnly("domain.recipe.kohTotal", SoapRecipe::getKohTotal);
-		addPropertyWeightFieldReadOnly("domain.recipe.liquidTotal", SoapRecipe::getLiquidsTotal);
+		addPropertyWeightFieldReadOnly("domain.recipe.naohTotal", recipe -> recipe.getLyeRecipe().getNaohTotal());
+		addPropertyWeightFieldReadOnly("domain.recipe.kohTotal", recipe -> recipe.getLyeRecipe().getKohTotal());
+		addPropertyWeightFieldReadOnly("domain.recipe.liquidTotal", recipe -> recipe.getLyeRecipe().getLiquidsTotal());
 		addPropertyWeightFieldReadOnly("domain.recipe.weightTotal", SoapRecipe::getWeightTotal);
 		addPropertyPriceFieldReadOnly("domain.recipe.costsTotal", SoapRecipe::getCostsTotal);
 
@@ -103,11 +103,11 @@ public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
 	@Override
 	protected void preSave() {
 		super.preSave();
-		soapRecipe.setNaOH(CollectionUtils.firstElement(naOH.getData()));
-		soapRecipe.setKOH(CollectionUtils.firstElement(kOH.getData()));
+		soapRecipe.getLyeRecipe().setNaOH(CollectionUtils.firstElement(naOH.getData()));
+		soapRecipe.getLyeRecipe().setKOH(CollectionUtils.firstElement(kOH.getData()));
 		soapRecipe.setFats(List.copyOf(fats.getData()));
-		soapRecipe.setAcids(List.copyOf(acids.getData()));
-		soapRecipe.setLiquids(List.copyOf(liquids.getData()));
+		soapRecipe.getLyeRecipe().setAcids(List.copyOf(acids.getData()));
+		soapRecipe.getLyeRecipe().setLiquids(List.copyOf(liquids.getData()));
 		soapRecipe.setFragrances(List.copyOf(fragrances.getData()));
 	}
 
@@ -130,19 +130,19 @@ public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
 			liquids.setData();
 			fragrances.setData();
 		} else {
-			if (soapRecipe.getNaOH() == null) {
+			if (soapRecipe.getLyeRecipe().getNaOH() == null) {
 				naOH.setData();
 			} else {
-				naOH.setData(List.of(soapRecipe.getNaOH()));
+				naOH.setData(List.of(soapRecipe.getLyeRecipe().getNaOH()));
 			}
-			if (soapRecipe.getKOH() == null) {
+			if (soapRecipe.getLyeRecipe().getKOH() == null) {
 				kOH.setData();
 			} else {
-				kOH.setData(List.of(soapRecipe.getKOH()));
+				kOH.setData(List.of(soapRecipe.getLyeRecipe().getKOH()));
 			}
 			fats.setData(soapRecipe.getFats());
-			acids.setData(soapRecipe.getAcids());
-			liquids.setData(soapRecipe.getLiquids());
+			acids.setData(soapRecipe.getLyeRecipe().getAcids());
+			liquids.setData(soapRecipe.getLyeRecipe().getLiquids());
 			fragrances.setData(soapRecipe.getFragrances());
 		}
 	}

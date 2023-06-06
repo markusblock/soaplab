@@ -31,22 +31,20 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 
 	@Autowired
 	private DataRoot dataRoot;
-
+	@Autowired
+	private SoaplabProperties properties;
 	@Autowired
 	protected StorageManager repository;
 
-	@Autowired
-	SoaplabProperties properties;
-
 	@Override
 	public T create(T entity) {
+		log.debug("Adding new provided entity " + entity);
 		Assert.notNull(entity, "Entity must not be null");
 		assertNoEntityWithNameExists(entity);
 
-		log.info("Adding new entity " + entity);
-
 		final UUID uuid = UUID.randomUUID();
 		final T entityCopy = (T) entity.toBuilder().id(uuid).build();
+		log.info("Adding new entity " + entityCopy);
 
 		XThreads.executeSynchronized(() -> {
 			getEntitiesInternal().add(entityCopy);

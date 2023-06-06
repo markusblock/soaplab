@@ -24,7 +24,7 @@ public class CustomStorageManagerInitializer implements StorageManagerInitialize
 		// import database if empty
 		if (storageManager.root() == null || isDatabaseEmpty(storageManager)) {
 			// database empty
-			//TODO error while importing database
+			// TODO error while importing database
 			new MicrostreamDatabaseImportExport(storageManager).importDatabase(properties.getInitfolder());
 		}
 	}
@@ -38,7 +38,7 @@ public class CustomStorageManagerInitializer implements StorageManagerInitialize
 					|| CollectionUtils.isEmpty(dataRoot.getAllKOH())
 					|| CollectionUtils.isEmpty(dataRoot.getAllLiquids())
 					|| CollectionUtils.isEmpty(dataRoot.getAllNaOH())
-					|| CollectionUtils.isEmpty(dataRoot.getAllSoapReceipts());
+					|| CollectionUtils.isEmpty(dataRoot.getAllSoapRecipes());
 		}
 		// if not instanceof DataRoot than root was loaded by another Classloader means
 		// first run

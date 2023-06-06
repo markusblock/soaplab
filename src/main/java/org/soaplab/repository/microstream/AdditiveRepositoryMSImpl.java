@@ -33,7 +33,7 @@ public class AdditiveRepositoryMSImpl extends IngredientRepositoryMSImpl<Additiv
 	}
 
 	private boolean isEntityReferencedBySoapRecipe(Additive entity) {
-		return getDataRoot().getAllSoapReceipts().stream().anyMatch(soapRecipe -> {
+		return getDataRoot().getAllSoapRecipes().stream().anyMatch(soapRecipe -> {
 			return soapRecipe.getAdditives().stream()
 					.anyMatch(referencedEntity -> referencedEntity.getId().equals(entity.getId()));
 		});

@@ -1,4 +1,4 @@
-package org.soaplab.testdata;
+package org.soaplab.domain.utils;
 
 import java.time.Instant;
 import java.util.Date;
@@ -16,9 +16,11 @@ import lombok.Getter;
 public class SoapRecipeTestDataBuilder {
 
 	private final SoapRecipeBuilder<?, ?> soapRecipeBuilder = SoapRecipe.builder();
+	private SoapRecipe soapRecipe;
 
 	public SoapRecipeTestDataBuilder() {
-		soapRecipeBuilder.id(UUID.randomUUID()).manufacturingDate(Date.from(Instant.now()))
+		soapRecipeBuilder.id(UUID.randomUUID()) //
+				.manufacturingDate(Date.from(Instant.now())) //
 				.fatsTotal(Weight.of(100, WeightUnit.GRAMS)) //
 				.liquidToFatRatio(Percentage.of(33)) //
 				.superFat(Percentage.of(10)) //
@@ -30,6 +32,7 @@ public class SoapRecipeTestDataBuilder {
 	}
 
 	public SoapRecipe createSoapRecipe() {
-		return getSoapRecipeBuilder().build();
+		soapRecipe = getSoapRecipeBuilder().build();
+		return soapRecipe;
 	}
 }

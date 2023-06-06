@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)

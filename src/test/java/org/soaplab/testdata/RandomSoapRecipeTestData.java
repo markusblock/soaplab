@@ -12,6 +12,7 @@ import org.soaplab.domain.Liquid;
 import org.soaplab.domain.LyeRecipe;
 import org.soaplab.domain.NaOH;
 import org.soaplab.domain.SoapRecipe.SoapRecipeBuilder;
+import org.soaplab.domain.utils.SoapRecipeTestDataBuilder;
 
 import lombok.Getter;
 

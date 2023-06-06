@@ -88,12 +88,12 @@ public class SoapRecipe extends NamedEntity {
 	 */
 	private Price costsTotalPer100g;
 
-
-
 	@Override
 	public SoapRecipeBuilder<?, ?> getCopyBuilder() {
-		return this.toBuilder().fats(getRecipeEntryListDeepClone(fats))
-				.fragrances(getRecipeEntryListDeepClone(fragrances)).additives(getRecipeEntryListDeepClone(additives));
+		return this.toBuilder() //
+				.fats(getRecipeEntryListDeepClone(fats)) //
+				.fragrances(getRecipeEntryListDeepClone(fragrances)) //
+				.additives(getRecipeEntryListDeepClone(additives));
 	}
 
 	private <T extends Ingredient> List<RecipeEntry<T>> getRecipeEntryListDeepClone(

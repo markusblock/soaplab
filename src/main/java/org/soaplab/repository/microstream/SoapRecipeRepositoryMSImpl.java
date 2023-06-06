@@ -36,6 +36,6 @@ public class SoapRecipeRepositoryMSImpl extends EntityRepositoryMSImpl<SoapRecip
 
 	@Override
 	protected Set<SoapRecipe> getEntitiesInternal() {
-		return getDataRoot().getAllSoapReceipts();
+		return getDataRoot().getAllSoapRecipes();
 	}
 }

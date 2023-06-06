@@ -87,9 +87,11 @@ public class LyeRecipe extends NamedEntity {
 
 	@Override
 	public LyeRecipeBuilder<?, ?> getCopyBuilder() {
-		return this.toBuilder().acids(getRecipeEntryListDeepClone(acids)).liquids(getRecipeEntryListDeepClone(liquids))
-				.additives(getRecipeEntryListDeepClone(additives))
-				.naOH(naOH == null ? null : naOH.getCopyBuilder().build())
+		return this.toBuilder() //
+				.acids(getRecipeEntryListDeepClone(acids)) //
+				.liquids(getRecipeEntryListDeepClone(liquids)) //
+				.additives(getRecipeEntryListDeepClone(additives)) //
+				.naOH(naOH == null ? null : naOH.getCopyBuilder().build()) //
 				.kOH(kOH == null ? null : kOH.getCopyBuilder().build());
 	}
 

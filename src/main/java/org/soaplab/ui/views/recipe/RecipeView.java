@@ -29,6 +29,7 @@ import com.vaadin.flow.router.Route;
 public class RecipeView extends EntityView<SoapRecipe> {
 
 	private static final long serialVersionUID = 1L;
+
 	private final FatRepository fatRepository;
 	private final AcidRepository acidRepository;
 	private final LiquidRepository liquidRepository;
@@ -72,9 +73,9 @@ public class RecipeView extends EntityView<SoapRecipe> {
 		// TODO move to builder
 		final SoapRecipe soapRecipe = SoapRecipe.builder().build();
 		soapRecipe.setFats(new ArrayList<RecipeEntry<Fat>>());
-		soapRecipe.setAcids(new ArrayList<RecipeEntry<Acid>>());
 		soapRecipe.setFragrances(new ArrayList<RecipeEntry<Fragrance>>());
-		soapRecipe.setLiquids(new ArrayList<RecipeEntry<Liquid>>());
+		soapRecipe.getLyeRecipe().setAcids(new ArrayList<RecipeEntry<Acid>>());
+		soapRecipe.getLyeRecipe().setLiquids(new ArrayList<RecipeEntry<Liquid>>());
 		return soapRecipe;
 	}
 }

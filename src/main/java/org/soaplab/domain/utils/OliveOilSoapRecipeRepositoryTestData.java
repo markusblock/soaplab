@@ -1,16 +1,15 @@
-package org.soaplab.testdata;
-
-import java.util.Collection;
+package org.soaplab.domain.utils;
 
 import org.soaplab.domain.Acid;
+import org.soaplab.domain.Additive;
 import org.soaplab.domain.Entity;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
-import org.soaplab.domain.Ingredient;
+import org.soaplab.domain.KOH;
 import org.soaplab.domain.Liquid;
 import org.soaplab.domain.LyeRecipe;
+import org.soaplab.domain.NaOH;
 import org.soaplab.domain.NamedEntity;
-import org.soaplab.domain.RecipeEntry;
 import org.soaplab.domain.SoapRecipe;
 import org.soaplab.repository.AcidRepository;
 import org.soaplab.repository.AdditiveRepository;
@@ -42,22 +41,9 @@ public class OliveOilSoapRecipeRepositoryTestData extends OliveOilSoapRecipeTest
 	private final AdditiveRepository additiveRepository;
 	private final LyeRecipeRepository lyeRecipeRepository;
 
-	private <T extends NamedEntity> T createEntityInRepo(T entity, EntityRepository<T> repository) {
-		final Entity persistedEntity = repository.create(entity);
-		return (T) persistedEntity;
-	}
-
-	private <T extends Ingredient> void createEntitiesInRepo(Collection<RecipeEntry<T>> recipeEntries,
-			EntityRepository<T> repository) {
-		for (RecipeEntry<T> recipeEntry : recipeEntries) {
-			createEntityInRepo(recipeEntry.getIngredient(), repository);
-		}
-	}
-
 	@Override
 	protected Liquid createAcidAppleVinegar() {
 		return createEntityInRepo(super.createAcidAppleVinegar(), liquidRepository);
-
 	}
 
 	@Override
@@ -86,20 +72,65 @@ public class OliveOilSoapRecipeRepositoryTestData extends OliveOilSoapRecipeTest
 	}
 
 	@Override
-	protected LyeRecipe createLyeRecipe() {
-		LyeRecipe lyeRecipe = super.createLyeRecipe();
-		createEntitiesInRepo(lyeRecipe.getAcids(), acidRepository);
-		createEntityInRepo(lyeRecipe.getKOH().getIngredient(),kohRepository);
-		createEntityInRepo(lyeRecipe.getNaOH().getIngredient(), naohRepository);
-		createEntitiesInRepo(lyeRecipe.getLiquids(), liquidRepository);
-		createEntitiesInRepo(lyeRecipe.getAdditives(), additiveRepository);
-		createEntityInRepo(lyeRecipe, lyeRecipeRepository);
+	protected NaOH createNaOH() {
+		return createEntityInRepo(super.createNaOH(), naohRepository);
+	}
 
-		return lyeRecipe;
+	@Override
+	protected KOH createKOH() {
+		return createEntityInRepo(super.createKOH(), kohRepository);
+	}
+
+	@Override
+	protected Additive createMica() {
+		return createEntityInRepo(super.createMica(), additiveRepository);
+	}
+
+	@Override
+	protected Additive createSalt() {
+		return createEntityInRepo(super.createSalt(), additiveRepository);
+	}
+
+	@Override
+	protected Additive createSugar() {
+		return createEntityInRepo(super.createSugar(), additiveRepository);
+	}
+
+	@Override
+	protected LyeRecipe createLyeRecipe() {
+		return createEntityInRepo(super.createLyeRecipe(), lyeRecipeRepository);
 	}
 
 	@Override
 	public SoapRecipe createSoapRecipe() {
 		return createEntityInRepo(super.createSoapRecipe(), soapRecipeRepository);
+	}
+
+	public void deleteSoapRecipe() {
+		deleteEntityInRepository(IngredientsExampleData.SOAP_RECIPE_NAME, soapRecipeRepository);
+
+		deleteEntityInRepository(IngredientsExampleData.LYE_RECIPE_NAME, lyeRecipeRepository);
+
+		deleteEntityInRepository(IngredientsExampleData.OLIVE_OIL_NAME, fatRepository);
+		deleteEntityInRepository(IngredientsExampleData.COCONUT_OIL_NAME, fatRepository);
+		deleteEntityInRepository(IngredientsExampleData.LAVENDEL_NAME, fragranceRepository);
+		deleteEntityInRepository(IngredientsExampleData.MICA_NAME, additiveRepository);
+
+		deleteEntityInRepository(IngredientsExampleData.KOH_NAME, kohRepository);
+		deleteEntityInRepository(IngredientsExampleData.NAOH_NAME, naohRepository);
+		deleteEntityInRepository(IngredientsExampleData.CIDRIC_ACID_ANHYDRAT_NAME, acidRepository);
+		deleteEntityInRepository(IngredientsExampleData.WATER_NAME, liquidRepository);
+		deleteEntityInRepository(IngredientsExampleData.APPLE_VINEGAR_NAME, liquidRepository);
+		deleteEntityInRepository(IngredientsExampleData.SALT_NAME, additiveRepository);
+		deleteEntityInRepository(IngredientsExampleData.SUGAR_NAME, additiveRepository);
+	}
+
+	private <T extends NamedEntity> T createEntityInRepo(T entity, EntityRepository<T> repository) {
+		final Entity persistedEntity = repository.create(entity);
+		return (T) persistedEntity;
+	}
+
+	private void deleteEntityInRepository(String entityName, EntityRepository<?> repository) {
+		repository.findByName(entityName).forEach(e -> repository.delete(e.getId()));
 	}
 }
