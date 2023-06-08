@@ -57,16 +57,21 @@ public class SoapCalculatorServiceTest {
 		assertRecipeEntry(calculatedLyeRecipe.getNaOH(), 12.15, 0.09);
 		WeightAssert.assertThat(calculatedLyeRecipe.getKohTotal()).isEqualToWeightInGrams(0);
 		assertThat(calculatedLyeRecipe.getKOH()).isNull();
-		PriceAssert.assertThat(calculatedLyeRecipe.getLyeCosts()).isEqualToValue(0.09);
-		WeightAssert.assertThat(calculatedLyeRecipe.getLyeTotal()).isEqualToWeightInGrams(12.15);
+		PriceAssert.assertThat(calculatedLyeRecipe.getLyeCosts()).isEqualToValue(0.11);
+		WeightAssert.assertThat(calculatedLyeRecipe.getLyeTotal()).isEqualToWeightInGrams(45.15);
 
-		// Liquids
+		// Lye additives
+		Assertions.assertThat(calculatedLyeRecipe.getAdditives()).isNullOrEmpty();
+		WeightAssert.assertThat(calculatedLyeRecipe.getLyeAdditivesTotal()).isEqualToWeightInGrams(0);
+		PriceAssert.assertThat(calculatedLyeRecipe.getLyeAdditivesCosts()).isEqualToValue(0);
+
+		// Lye Liquids
 		Assertions.assertThat(calculatedLyeRecipe.getLiquids()).hasSize(1);
 		assertRecipeEntry(calculatedLyeRecipe.getLiquids().get(0), 33, 0.02);
 		WeightAssert.assertThat(calculatedLyeRecipe.getLiquidsTotal()).isEqualToWeightInGrams(33);
 		PriceAssert.assertThat(calculatedLyeRecipe.getLiquidsCosts()).isEqualToValue(0.02);
 
-		// Acids
+		// Lye Acids
 		Assertions.assertThat(calculatedLyeRecipe.getAcids()).isNullOrEmpty();
 		WeightAssert.assertThat(calculatedLyeRecipe.getAcidsTotal()).isEqualToWeightInGrams(0);
 		PriceAssert.assertThat(calculatedLyeRecipe.getAcidsCosts()).isEqualToValue(0);
@@ -100,24 +105,24 @@ public class SoapCalculatorServiceTest {
 		assertRecipeEntry(calculatedLyeRecipe.getNaOH(), 12.5074, 0.09);
 		WeightAssert.assertThat(calculatedLyeRecipe.getKohTotal()).isEqualToWeightInGrams(4.9015);
 		assertRecipeEntry(calculatedLyeRecipe.getKOH(), 4.9015, 0.04);
-		PriceAssert.assertThat(calculatedLyeRecipe.getLyeCosts()).isEqualToValue(0.13);
-		WeightAssert.assertThat(calculatedLyeRecipe.getLyeTotal()).isEqualToWeightInGrams(16.7574);
+		PriceAssert.assertThat(calculatedLyeRecipe.getLyeCosts()).isEqualToValue(0.23);
+		WeightAssert.assertThat(calculatedLyeRecipe.getLyeTotal()).isEqualToWeightInGrams(63.4089);
 
 		// Lye additives
 		Assertions.assertThat(calculatedLyeRecipe.getAdditives()).hasSize(2);
 		assertRecipeEntry(calculatedLyeRecipe.getAdditives().get(0), 3, 0);
-		assertRecipeEntry(calculatedLyeRecipe.getAdditives().get(1), 6, 0);
+		assertRecipeEntry(calculatedLyeRecipe.getAdditives().get(1), 6, 0.01);
 		WeightAssert.assertThat(calculatedLyeRecipe.getLyeAdditivesTotal()).isEqualToWeightInGrams(9);
-		PriceAssert.assertThat(calculatedLyeRecipe.getLyeCosts()).isEqualToValue(0.27);
+		PriceAssert.assertThat(calculatedLyeRecipe.getLyeAdditivesCosts()).isEqualToValue(0.01);
 
-		// Liquids
+		// Lye Liquids
 		Assertions.assertThat(calculatedLyeRecipe.getLiquids()).hasSize(2);
-		assertRecipeEntry(calculatedLyeRecipe.getLiquids().get(0), 16.5, 0.01);
-		assertRecipeEntry(calculatedLyeRecipe.getLiquids().get(1), 16.5, 0.03);
+		assertRecipeEntry(calculatedLyeRecipe.getLiquids().get(0), 9.9, 0.02);
+		assertRecipeEntry(calculatedLyeRecipe.getLiquids().get(1), 23.1, 0.01);
 		WeightAssert.assertThat(calculatedLyeRecipe.getLiquidsTotal()).isEqualToWeightInGrams(33);
-		PriceAssert.assertThat(calculatedLyeRecipe.getLiquidsCosts()).isEqualToValue(0.04);
+		PriceAssert.assertThat(calculatedLyeRecipe.getLiquidsCosts()).isEqualToValue(0.03);
 
-		// Acids
+		// Lye Acids
 		Assertions.assertThat(calculatedLyeRecipe.getAcids()).hasSize(1);
 		assertRecipeEntry(calculatedLyeRecipe.getAcids().get(0), 4, 0.06);
 		WeightAssert.assertThat(calculatedLyeRecipe.getAcidsTotal()).isEqualToWeightInGrams(4);
@@ -143,9 +148,9 @@ public class SoapCalculatorServiceTest {
 		PriceAssert.assertThat(calculatedSoapRecipeResult.getAdditivesCosts()).isEqualToValue(0.16);
 
 		// Soaprecipe Totals
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getWeightTotal()).isEqualToWeightInGrams(162.7574);
+		WeightAssert.assertThat(calculatedSoapRecipeResult.getWeightTotal()).isEqualToWeightInGrams(167.4089);
 		PriceAssert.assertThat(calculatedSoapRecipeResult.getCostsTotal()).isEqualToValue(1.99);
-		PriceAssert.assertThat(calculatedSoapRecipeResult.getCostsTotalPer100g()).isEqualToValue(1.22);
+		PriceAssert.assertThat(calculatedSoapRecipeResult.getCostsTotalPer100g()).isEqualToValue(1.19);
 	}
 
 	private <T extends Ingredient> void assertRecipeEntry(RecipeEntry<T> entry, double weightInGrams, double price) {
