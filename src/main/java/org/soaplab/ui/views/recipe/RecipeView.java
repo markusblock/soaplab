@@ -2,18 +2,15 @@ package org.soaplab.ui.views.recipe;
 
 import java.util.ArrayList;
 
-import org.soaplab.domain.Acid;
+import org.soaplab.domain.Additive;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
-import org.soaplab.domain.Liquid;
 import org.soaplab.domain.RecipeEntry;
 import org.soaplab.domain.SoapRecipe;
-import org.soaplab.repository.AcidRepository;
+import org.soaplab.repository.AdditiveRepository;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.FragranceRepository;
-import org.soaplab.repository.KOHRepository;
-import org.soaplab.repository.LiquidRepository;
-import org.soaplab.repository.NaOHRepository;
+import org.soaplab.repository.LyeRecipeRepository;
 import org.soaplab.repository.SoapRecipeRepository;
 import org.soaplab.service.SoapCalculatorService;
 import org.soaplab.ui.MainAppLayout;
@@ -31,24 +28,20 @@ public class RecipeView extends EntityView<SoapRecipe> {
 	private static final long serialVersionUID = 1L;
 
 	private final FatRepository fatRepository;
-	private final AcidRepository acidRepository;
-	private final LiquidRepository liquidRepository;
 	private final FragranceRepository fragranceRepository;
 	private final SoapCalculatorService soapCalculatorService;
-	private final NaOHRepository naOHRepository;
-	private final KOHRepository kOHRepository;
+	private final LyeRecipeRepository lyeRecipeRepository;
+	private final AdditiveRepository additiveRepository;
 
 	@Autowired
-	public RecipeView(SoapRecipeRepository repository, FatRepository fatRepository, AcidRepository acidRepository,
-			LiquidRepository liquidRepository, FragranceRepository fragranceRepository, NaOHRepository naOHRepository,
-			KOHRepository kOHRepository, SoapCalculatorService soapCalculatorService) {
+	public RecipeView(SoapRecipeRepository repository, LyeRecipeRepository lyeRecipeRepository,
+			FatRepository fatRepository, FragranceRepository fragranceRepository, AdditiveRepository additiveRepository,
+			SoapCalculatorService soapCalculatorService) {
 		super(repository);
+		this.lyeRecipeRepository = lyeRecipeRepository;
 		this.fatRepository = fatRepository;
-		this.acidRepository = acidRepository;
-		this.liquidRepository = liquidRepository;
 		this.fragranceRepository = fragranceRepository;
-		this.naOHRepository = naOHRepository;
-		this.kOHRepository = kOHRepository;
+		this.additiveRepository = additiveRepository;
 		this.soapCalculatorService = soapCalculatorService;
 	}
 
@@ -64,8 +57,8 @@ public class RecipeView extends EntityView<SoapRecipe> {
 
 	@Override
 	protected RecipeDetailsPanel createEntityDetails(EntityViewDetailsControllerCallback<SoapRecipe> callback) {
-		return new RecipeDetailsPanel(callback, fatRepository, acidRepository, liquidRepository, fragranceRepository,
-				naOHRepository, kOHRepository, soapCalculatorService);
+		return new RecipeDetailsPanel(callback, lyeRecipeRepository, fatRepository, fragranceRepository,
+				additiveRepository, soapCalculatorService);
 	}
 
 	@Override
@@ -74,8 +67,7 @@ public class RecipeView extends EntityView<SoapRecipe> {
 		final SoapRecipe soapRecipe = SoapRecipe.builder().build();
 		soapRecipe.setFats(new ArrayList<RecipeEntry<Fat>>());
 		soapRecipe.setFragrances(new ArrayList<RecipeEntry<Fragrance>>());
-		soapRecipe.getLyeRecipe().setAcids(new ArrayList<RecipeEntry<Acid>>());
-		soapRecipe.getLyeRecipe().setLiquids(new ArrayList<RecipeEntry<Liquid>>());
+		soapRecipe.setAdditives(new ArrayList<RecipeEntry<Additive>>());
 		return soapRecipe;
 	}
 }

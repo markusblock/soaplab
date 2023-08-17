@@ -18,6 +18,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
+@ExplicitEntity
 public class LyeRecipe extends NamedEntity {
 
 	private static final long serialVersionUID = 1L;

@@ -9,12 +9,14 @@ import org.soaplab.domain.NamedEntity;
 import org.soaplab.domain.Percentage;
 import org.soaplab.domain.Price;
 import org.soaplab.domain.Weight;
+import org.soaplab.repository.EntityRepository;
 import org.springframework.util.Assert;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep.LabelsPosition;
@@ -117,6 +119,7 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 	protected void addContent(Component component) {
 		content.add(component);
 	}
+
 	protected void addEntityDetail(Component component) {
 		commonEntityDetailsSection.add(component);
 	}
@@ -203,6 +206,17 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 		propertySection.addFormItem(propertyField, getTranslation(id));
 		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToWeightValueConverter())
 				.bindReadOnly(getter);
+	}
+
+	protected <ENTITY extends NamedEntity> void addEntitySelector(String id, ValueProvider<T, ENTITY> getter,
+			Setter<T, ENTITY> setter, EntityRepository<ENTITY> repository) {
+		final ComboBox<ENTITY> entitySelector = new ComboBox<ENTITY>();
+		entitySelector.setWidthFull();
+		entitySelector.setItems(repository.findAll());
+		entitySelector.setItemLabelGenerator(entity -> entity.getName());
+		editablePropertyFields.add(entitySelector);
+		commonEntityDetailsSection.addFormItem(entitySelector, getTranslation(id));
+		binder.forField(entitySelector).bind(getter, setter);
 	}
 
 	@Override

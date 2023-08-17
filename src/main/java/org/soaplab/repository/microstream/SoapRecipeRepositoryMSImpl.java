@@ -2,11 +2,14 @@ package org.soaplab.repository.microstream;
 
 import java.util.Set;
 
+import org.soaplab.domain.Additive;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
 import org.soaplab.domain.SoapRecipe;
+import org.soaplab.repository.AdditiveRepository;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.FragranceRepository;
+import org.soaplab.repository.LyeRecipeRepository;
 import org.soaplab.repository.SoapRecipeRepository;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +23,8 @@ public class SoapRecipeRepositoryMSImpl extends EntityRepositoryMSImpl<SoapRecip
 
 	private final FatRepository fatRepository;
 	private final FragranceRepository fragranceRepository;
+	private final LyeRecipeRepository lyeRecipeRepository;
+	private final AdditiveRepository additiveRepository;
 
 	@Override
 	protected void getAndReplaceCompositeEntitiesFromRepository(SoapRecipe entity) {
@@ -32,6 +37,11 @@ public class SoapRecipeRepositoryMSImpl extends EntityRepositoryMSImpl<SoapRecip
 			final Fragrance fragrance = fragranceRepository.get(entry.getIngredient().getId());
 			entry.setIngredient(fragrance);
 		});
+		entity.getAdditives().forEach(entry -> {
+			final Additive additive = additiveRepository.get(entry.getIngredient().getId());
+			entry.setIngredient(additive);
+		});
+		entity.setLyeRecipe(lyeRecipeRepository.get(entity.getLyeRecipe().getId()));
 	}
 
 	@Override

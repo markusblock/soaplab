@@ -3,9 +3,11 @@ package org.soaplab.repository.microstream;
 import java.util.Set;
 
 import org.soaplab.domain.Acid;
+import org.soaplab.domain.Additive;
 import org.soaplab.domain.Liquid;
 import org.soaplab.domain.LyeRecipe;
 import org.soaplab.repository.AcidRepository;
+import org.soaplab.repository.AdditiveRepository;
 import org.soaplab.repository.KOHRepository;
 import org.soaplab.repository.LiquidRepository;
 import org.soaplab.repository.LyeRecipeRepository;
@@ -24,7 +26,7 @@ public class LyeRecipeRepositoryMSImpl extends EntityRepositoryMSImpl<LyeRecipe>
 	private final LiquidRepository liquidRepository;
 	private final NaOHRepository naohRepository;
 	private final KOHRepository kohRepository;
-
+	private final AdditiveRepository additiveRepository;
 
 	@Override
 	protected void getAndReplaceCompositeEntitiesFromRepository(LyeRecipe entity) {
@@ -42,6 +44,10 @@ public class LyeRecipeRepositoryMSImpl extends EntityRepositoryMSImpl<LyeRecipe>
 		entity.getLiquids().forEach(entry -> {
 			final Liquid liquid = liquidRepository.get(entry.getIngredient().getId());
 			entry.setIngredient(liquid);
+		});
+		entity.getAdditives().forEach(entry -> {
+			final Additive additive = additiveRepository.get(entry.getIngredient().getId());
+			entry.setIngredient(additive);
 		});
 	}
 
