@@ -1,4 +1,4 @@
-package org.soaplab.ui.views.recipe;
+package org.soaplab.ui.views;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -102,22 +102,21 @@ public class RecipeEntryList<T extends Ingredient> extends Div {
 				GridVariant.LUMO_NO_BORDER);
 		selectedEntities.getStyle().set("font-size", "var(--lumo-font-size-s)").set("margin", "0");
 		selectedEntities.setSelectionMode(SelectionMode.SINGLE);
-		selectedEntities
-				.addSelectionListener(
-						event -> removeButton.setEnabled(editMode && event.getFirstSelectedItem().isPresent()));
-		Column<RecipeEntry<T>> fatNameColumn = selectedEntities.addColumn(new IngredientValueProvider())
+		selectedEntities.addSelectionListener(
+				event -> removeButton.setEnabled(editMode && event.getFirstSelectedItem().isPresent()));
+		final Column<RecipeEntry<T>> entityNameColumn = selectedEntities.addColumn(new IngredientValueProvider())
 				.setHeader(getTranslation("domain.entity.name")).setSortable(true);
-		NumberFormat formatter = NumberFormat.getInstance();
+		final NumberFormat formatter = NumberFormat.getInstance();
 		formatter.setMaximumFractionDigits(2);
-		Column<RecipeEntry<T>> percentageColumn = selectedEntities
+		final Column<RecipeEntry<T>> percentageColumn = selectedEntities
 				.addColumn(new NumberRenderer<RecipeEntry<T>>(new PercentageValueProvider(), formatter)).setHeader("%")
 				.setSortable(true);
 
-		HorizontalLayout toolbar = new HorizontalLayout();
+		final HorizontalLayout toolbar = new HorizontalLayout();
 		toolbar.setSizeFull();
 		toolbar.setAlignItems(Alignment.CENTER);
 		toolbar.setJustifyContentMode(JustifyContentMode.END);
-		H1 listHeader = new H1(getTranslation(headerTextId));
+		final H1 listHeader = new H1(getTranslation(headerTextId));
 		listHeader.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
 		listHeader.setSizeFull();
 		toolbar.add(listHeader);
@@ -137,26 +136,26 @@ public class RecipeEntryList<T extends Ingredient> extends Div {
 		removeButton.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_SMALL);
 		toolbar.add(removeButton);
 
-		HeaderRow headerRow = selectedEntities.prependHeaderRow();
-		headerRow.join(fatNameColumn, percentageColumn);
-		headerRow.getCell(fatNameColumn).setComponent(toolbar);
+		final HeaderRow headerRow = selectedEntities.prependHeaderRow();
+		headerRow.join(entityNameColumn, percentageColumn);
+		headerRow.getCell(entityNameColumn).setComponent(toolbar);
 
 		content.add(selectedEntities);
 
 		binder = new Binder<>();
 		selectedEntities.getEditor().setBinder(binder);
 
-		ComboBox<T> fatSelector = new ComboBox<T>();
-		fatSelector.setWidthFull();
-		fatSelector.setItems(repository.findAll());
-		fatSelector.setItemLabelGenerator(fat -> fat.getName());
-		addCloseHandler(fatSelector);
-		binder.forField(fatSelector).asRequired("Fat must not be empty")
+		final ComboBox<T> entitySelector = new ComboBox<T>();
+		entitySelector.setWidthFull();
+		entitySelector.setItems(repository.findAll());
+		entitySelector.setItemLabelGenerator(entity -> entity.getName());
+		addCloseHandler(entitySelector);
+		binder.forField(entitySelector).asRequired("Entity must not be empty")
 //        .withStatusLabel(firstNameValidationMessage)
 				.bind(RecipeEntry<T>::getIngredient, RecipeEntry<T>::setIngredient);
-		fatNameColumn.setEditorComponent(fatSelector);
+		entityNameColumn.setEditorComponent(entitySelector);
 
-		TextField percentageField = new TextField();
+		final TextField percentageField = new TextField();
 		percentageField.setWidthFull();
 		addCloseHandler(percentageField);
 		binder.forField(percentageField)
@@ -173,15 +172,15 @@ public class RecipeEntryList<T extends Ingredient> extends Div {
 	}
 
 	private void addRecipeEntry() {
-		RecipeEntry<T> recipeEntry = RecipeEntry.<T>builder().id(UUID.randomUUID()).build();
-		List<RecipeEntry<T>> newData = new ArrayList<>(this.data);
+		final RecipeEntry<T> recipeEntry = RecipeEntry.<T>builder().id(UUID.randomUUID()).build();
+		final List<RecipeEntry<T>> newData = new ArrayList<>(this.data);
 		newData.add(recipeEntry);
 		setData(newData);
 	}
 
 	private void removeRecipeEntry() {
-		RecipeEntry<T> recipeEntry = selectedEntities.asSingleSelect().getValue();
-		List<RecipeEntry<T>> newData = new ArrayList<>(this.data);
+		final RecipeEntry<T> recipeEntry = selectedEntities.asSingleSelect().getValue();
+		final List<RecipeEntry<T>> newData = new ArrayList<>(this.data);
 		newData.remove(recipeEntry);
 		setData(newData);
 	}
@@ -220,7 +219,7 @@ public class RecipeEntryList<T extends Ingredient> extends Div {
 				return;
 			}
 			selectedEntities.getEditor().editItem(e.getItem());
-			Component editorComponent = e.getColumn().getEditorComponent();
+			final Component editorComponent = e.getColumn().getEditorComponent();
 			if (editorComponent instanceof Focusable) {
 				((Focusable<?>) editorComponent).focus();
 			}

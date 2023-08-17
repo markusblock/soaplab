@@ -11,41 +11,19 @@ import org.soaplab.assertions.FatAssert;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.SoapRecipe;
 import org.soaplab.domain.exception.EntityNotFoundException;
-import org.soaplab.repository.AcidRepository;
 import org.soaplab.repository.FatRepository;
-import org.soaplab.repository.FragranceRepository;
-import org.soaplab.repository.KOHRepository;
-import org.soaplab.repository.LiquidRepository;
-import org.soaplab.repository.NaOHRepository;
-import org.soaplab.repository.SoapRecipeRepository;
 import org.soaplab.testdata.RandomIngredientsTestData;
 import org.soaplab.testdata.RandomSoapRecipeRepositoryTestData;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class RepositoryTestHelper {
 
-	@Autowired
-	private NaOHRepository naohRepository;
-
-	@Autowired
-	private KOHRepository kohRepository;
-
-	@Autowired
-	private FatRepository fatRepository;
-
-	@Autowired
-	private AcidRepository acidRepository;
-
-	@Autowired
-	private LiquidRepository liquidRepository;
-
-	@Autowired
-	private FragranceRepository fragranceRepository;
-
-	@Autowired
-	private SoapRecipeRepository soapRecipeRepository;
+	private final RandomSoapRecipeRepositoryTestData testData;
+	private final FatRepository fatRepository;
 
 	public void assertThatFatExists(String name, String inci) {
 		final List<Fat> foundFatsByName = fatRepository.findByName(name);
@@ -93,8 +71,6 @@ public class RepositoryTestHelper {
 	}
 
 	public SoapRecipe createSoapRecipeWithRandomData() {
-		final RandomSoapRecipeRepositoryTestData testData = new RandomSoapRecipeRepositoryTestData(soapRecipeRepository,
-				fatRepository, acidRepository, liquidRepository, fragranceRepository, naohRepository, kohRepository);
 		return testData.createSoapRecipe();
 	}
 

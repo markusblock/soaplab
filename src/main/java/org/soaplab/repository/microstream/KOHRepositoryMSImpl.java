@@ -20,8 +20,8 @@ public class KOHRepositoryMSImpl extends IngredientRepositoryMSImpl<KOH> impleme
 
 	@Override
 	protected void assertEntityIsNotReferencedByOtherEntities(KOH entity) {
-		if (getDataRoot().getAllSoapReceipts().stream().anyMatch(soapRecipe -> {
-			return soapRecipe.getKOH().getId().equals(entity.getId());
+		if (getDataRoot().getAllLyeRecipes().stream().anyMatch(lyeRecipe -> {
+			return lyeRecipe.getKOH().getId().equals(entity.getId());
 		})) {
 			throw new EntityDeletionFailedException(entity, REASON.ENTITY_STILL_REFERENCED);
 		}

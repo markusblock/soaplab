@@ -1,27 +1,30 @@
-package org.soaplab.testdata;
+package org.soaplab.domain.utils;
 
 import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntries;
 import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntry;
 
 import org.soaplab.domain.Acid;
+import org.soaplab.domain.Additive;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
 import org.soaplab.domain.KOH;
 import org.soaplab.domain.Liquid;
+import org.soaplab.domain.LyeRecipe.LyeRecipeBuilder;
 import org.soaplab.domain.SoapRecipe.SoapRecipeBuilder;
-import org.soaplab.domain.utils.IngredientsExampleData;
 
 import lombok.Getter;
 
 @Getter
 public class OliveOilSoapRecipeTestData extends OliveOilSoapBasicRecipeTestData {
 
-	private static final String OLIVE_SOAP_RECIPE_NAME = "Olive Soap";
 	private KOH kOH;
 	private Acid citricAcid;
 	private Liquid appleVinegar;
 	private Fat coconutOil;
 	private Fragrance lavendelFragrance;
+	private Additive mica;
+	private Additive salt;
+	private Additive sugar;
 
 	public OliveOilSoapRecipeTestData() {
 		super();
@@ -47,27 +50,50 @@ public class OliveOilSoapRecipeTestData extends OliveOilSoapBasicRecipeTestData 
 		return IngredientsExampleData.getKOHBuilder().build();
 	}
 
-	@Override
-	public SoapRecipeBuilder<?, ?> getSoapRecipeBuilder() {
+	protected Additive createMica() {
+		return IngredientsExampleData.getMicaBuilder().build();
+	}
+
+	protected Additive createSalt() {
+		return IngredientsExampleData.getSaltBuilder().build();
+	}
+
+	protected Additive createSugar() {
+		return IngredientsExampleData.getSugarBuilder().build();
+	}
+
+	protected LyeRecipeBuilder<?, ?> createLyeRecipeBuilder() {
 		kOH = createKOH();
-		coconutOil = createFatCoconutOil();
-		lavendelFragrance = createFragranceLavendel();
 		citricAcid = createAcidCitric();
 		appleVinegar = createAcidAppleVinegar();
-
-		return super.getSoapRecipeBuilder()//
-				.name(OLIVE_SOAP_RECIPE_NAME) //
-				.naOH(createRecipeEntry(getNaOH(), 90d)) //
-				.kOH(createRecipeEntry(kOH, 10d)) //
-				.fats(createRecipeEntries( //
-						createRecipeEntry(getOliveOil(), 80d), //
-						createRecipeEntry(coconutOil, 20d))) //
+		salt = createSalt();
+		sugar = createSugar();
+		return super.createLyeRecipeBuilder() //
+				.naOH(createRecipeEntry(getNaOH(), 80d)) //
+				.kOH(createRecipeEntry(kOH, 20d)) //
 				.acids(createRecipeEntries( //
 						createRecipeEntry(citricAcid, 4d))) //
 				.liquids(createRecipeEntries( //
-						createRecipeEntry(getWater(), 50d), //
-						createRecipeEntry(appleVinegar, 50d))) //
+						createRecipeEntry(appleVinegar, 30d), //
+						createRecipeEntry(getWater(), 70d))) //
+				.additives(createRecipeEntries( //
+						createRecipeEntry(salt, 3d), //
+						createRecipeEntry(sugar, 6d)));
+	}
+
+	@Override
+	public SoapRecipeBuilder<?, ?> getSoapRecipeBuilder() {
+		coconutOil = createFatCoconutOil();
+		lavendelFragrance = createFragranceLavendel();
+		mica = createMica();
+
+		return super.getSoapRecipeBuilder()//
+				.fats(createRecipeEntries( //
+						createRecipeEntry(getOliveOil(), 80d), //
+						createRecipeEntry(coconutOil, 20d))) //
 				.fragrances(createRecipeEntries( //
-						createRecipeEntry(lavendelFragrance, 100d)));
+						createRecipeEntry(lavendelFragrance, 100d))) //
+				.additives(createRecipeEntries(createRecipeEntry(mica, 1d))) //
+				.lyeRecipe(getLyeRecipe());
 	}
 }

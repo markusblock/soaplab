@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - master
-      - '**'        # matches every branch
   pull_request:
     types: [opened, synchronize, reopened]
 

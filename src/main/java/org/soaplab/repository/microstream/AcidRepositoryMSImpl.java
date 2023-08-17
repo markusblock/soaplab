@@ -20,8 +20,8 @@ public class AcidRepositoryMSImpl extends IngredientRepositoryMSImpl<Acid> imple
 
 	@Override
 	protected void assertEntityIsNotReferencedByOtherEntities(Acid entity) {
-		if (getDataRoot().getAllSoapReceipts().stream().anyMatch(soapRecipe -> {
-			return soapRecipe.getAcids().stream()
+		if (getDataRoot().getAllLyeRecipes().stream().anyMatch(lyeRecipe -> {
+			return lyeRecipe.getAcids().stream()
 					.anyMatch(referencedEntity -> referencedEntity.getId().equals(entity.getId()));
 		})) {
 			throw new EntityDeletionFailedException(entity, REASON.ENTITY_STILL_REFERENCED);

@@ -1,10 +1,9 @@
 
 package org.soaplab.domain;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
@@ -12,17 +11,15 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @ToString(callSuper = true)
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-public class NamedEntity extends Entity {
+public class Additive extends Ingredient {
 
 	private static final long serialVersionUID = 1L;
 
-	private String name;
-
 	@Override
-	public NamedEntityBuilder<?, ?> getCopyBuilder() {
+	public AdditiveBuilder<?, ?> getCopyBuilder() {
 		return this.toBuilder();
 	}
 }

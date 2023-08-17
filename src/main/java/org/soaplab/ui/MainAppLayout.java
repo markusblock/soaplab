@@ -12,6 +12,7 @@ import org.soaplab.ui.views.fat.FatsView;
 import org.soaplab.ui.views.fragrance.FragranceView;
 import org.soaplab.ui.views.koh.KOHView;
 import org.soaplab.ui.views.liquid.LiquidsView;
+import org.soaplab.ui.views.lyerecipe.LyeRecipeView;
 import org.soaplab.ui.views.naoh.NaOHView;
 import org.soaplab.ui.views.recipe.RecipeView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +88,7 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 		menuBar.addMenuItem(VaadinIcon.ALARM, getTranslation("domain.naoh"), NaOHView.class);
 		menuBar.addMenuItem(VaadinIcon.AMBULANCE, getTranslation("domain.koh"), KOHView.class);
 		menuBar.addMenuItem(VaadinIcon.ABACUS, getTranslation("domain.recipes"), RecipeView.class);
+		menuBar.addMenuItem(VaadinIcon.ADOBE_FLASH, getTranslation("domain.lyerecipes"), LyeRecipeView.class);
 
 		addToDrawer(menuBar.getMenuItemComponents());
 		final Label spacing = new Label();

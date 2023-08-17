@@ -20,8 +20,8 @@ public class NaOHRepositoryMSImpl extends IngredientRepositoryMSImpl<NaOH> imple
 
 	@Override
 	protected void assertEntityIsNotReferencedByOtherEntities(NaOH entity) {
-		if (getDataRoot().getAllSoapReceipts().stream().anyMatch(soapRecipe -> {
-			return soapRecipe.getNaOH().getId().equals(entity.getId());
+		if (getDataRoot().getAllLyeRecipes().stream().anyMatch(lyeRecipe -> {
+			return lyeRecipe.getNaOH().getId().equals(entity.getId());
 		})) {
 			throw new EntityDeletionFailedException(entity, REASON.ENTITY_STILL_REFERENCED);
 		}
