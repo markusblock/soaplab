@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.5</version>
+		<version>3.1.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.soaplab</groupId>
@@ -16,16 +16,15 @@
 	
 	<properties>
 		<java.version>17</java.version>
-		<vaadin.version>24.0.5</vaadin.version>
-		<microstream.version>08.00.00-MS-EA2</microstream.version>
+		<vaadin.version>24.1.5</vaadin.version>
+		<microstream.version>08.01.01-MS-GA</microstream.version>
 		<beantutils.version>1.9.4</beantutils.version>
 		<springdoc.version>2.0.4</springdoc.version>
 		<equalsverifier.version>3.13</equalsverifier.version>
-		<selenide.version>6.13.0</selenide.version>
+		<selenide.version>6.17.0</selenide.version>
 		<!-- Overriding to avoid ClassNotFound in WebDriverManager -->
 		<httpclient5.version>5.2.1</httpclient5.version>
-		<selenium.version>4.8.0</selenium.version>
-		<testcontainers.version>1.18.0</testcontainers.version>
+		<selenium.version>4.11.0</selenium.version>
 		<sonar.organization>markusblock</sonar.organization>
   		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
   		<jacoco.version>0.8.8</jacoco.version>
