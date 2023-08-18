@@ -10,7 +10,7 @@ import org.soaplab.repository.AdditiveRepository;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.FragranceRepository;
 import org.soaplab.repository.LyeRecipeRepository;
-import org.soaplab.service.SoapCalculatorService;
+import org.soaplab.service.soapcalc.SoapCalculatorService;
 import org.soaplab.ui.views.EntityDetails;
 import org.soaplab.ui.views.EntityViewDetailsControllerCallback;
 import org.soaplab.ui.views.RecipeEntryList;

@@ -1,9 +1,9 @@
-package org.soaplab.service;
+package org.soaplab.service.soapcalc;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.soaplab.service.SoapCalculatorService.CalculationIssue;
+import org.soaplab.service.soapcalc.SoapCalculatorService.CalculationIssue;
 
 import lombok.Getter;
 

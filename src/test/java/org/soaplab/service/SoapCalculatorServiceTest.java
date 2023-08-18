@@ -21,7 +21,9 @@ import org.soaplab.domain.SoapRecipe.SoapRecipeBuilder;
 import org.soaplab.domain.utils.IngredientsExampleData;
 import org.soaplab.domain.utils.OliveOilSoapBasicRecipeTestData;
 import org.soaplab.domain.utils.OliveOilSoapRecipeTestData;
-import org.soaplab.service.SoapCalculatorService.CalculationIssue;
+import org.soaplab.service.soapcalc.SoapCalculatorException;
+import org.soaplab.service.soapcalc.SoapCalculatorService;
+import org.soaplab.service.soapcalc.SoapCalculatorService.CalculationIssue;
 import org.springframework.core.env.Environment;
 
 @ExtendWith(MockitoExtension.class)

@@ -10,6 +10,7 @@ import org.soaplab.ui.views.MenuBar;
 import org.soaplab.ui.views.acid.AcidsView;
 import org.soaplab.ui.views.fat.FatsView;
 import org.soaplab.ui.views.fragrance.FragranceView;
+import org.soaplab.ui.views.ingredient.IngredientView;
 import org.soaplab.ui.views.koh.KOHView;
 import org.soaplab.ui.views.liquid.LiquidsView;
 import org.soaplab.ui.views.lyerecipe.LyeRecipeView;
@@ -89,6 +90,7 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 		menuBar.addMenuItem(VaadinIcon.AMBULANCE, getTranslation("domain.koh"), KOHView.class);
 		menuBar.addMenuItem(VaadinIcon.ABACUS, getTranslation("domain.recipes"), RecipeView.class);
 		menuBar.addMenuItem(VaadinIcon.ADOBE_FLASH, getTranslation("domain.lyerecipes"), LyeRecipeView.class);
+		menuBar.addMenuItem(VaadinIcon.DOLLAR, getTranslation("domain.ingredients"), IngredientView.class);
 
 		addToDrawer(menuBar.getMenuItemComponents());
 		final Label spacing = new Label();

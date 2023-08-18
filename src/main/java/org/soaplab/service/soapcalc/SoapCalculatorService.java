@@ -1,4 +1,4 @@
-package org.soaplab.service;
+package org.soaplab.service.soapcalc;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

@@ -1,10 +1,10 @@
-package org.soaplab.service;
+package org.soaplab.service.soapcalc;
 
 import java.util.List;
 
 import org.soaplab.domain.SoapRecipe;
 import org.soaplab.domain.exception.SoapLabRuntimeException;
-import org.soaplab.service.SoapCalculatorService.CalculationIssue;
+import org.soaplab.service.soapcalc.SoapCalculatorService.CalculationIssue;
 import org.springframework.core.env.Environment;
 
 public class SoapCalculatorException extends SoapLabRuntimeException {

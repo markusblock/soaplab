@@ -12,7 +12,7 @@ import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.FragranceRepository;
 import org.soaplab.repository.LyeRecipeRepository;
 import org.soaplab.repository.SoapRecipeRepository;
-import org.soaplab.service.SoapCalculatorService;
+import org.soaplab.service.soapcalc.SoapCalculatorService;
 import org.soaplab.ui.MainAppLayout;
 import org.soaplab.ui.views.EntityList;
 import org.soaplab.ui.views.EntityView;
