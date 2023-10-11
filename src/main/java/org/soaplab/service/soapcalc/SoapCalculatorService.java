@@ -5,19 +5,7 @@ import java.math.RoundingMode;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
-import org.soaplab.domain.Acid;
-import org.soaplab.domain.Additive;
-import org.soaplab.domain.Fat;
-import org.soaplab.domain.Fragrance;
-import org.soaplab.domain.Ingredient;
-import org.soaplab.domain.Liquid;
-import org.soaplab.domain.LyeRecipe;
-import org.soaplab.domain.Percentage;
-import org.soaplab.domain.Price;
-import org.soaplab.domain.RecipeEntry;
-import org.soaplab.domain.SoapRecipe;
-import org.soaplab.domain.Weight;
-import org.soaplab.domain.WeightUnit;
+import org.soaplab.domain.*;
 import org.soaplab.domain.utils.PercentageCalculator;
 import org.soaplab.domain.utils.PriceCalculator;
 import org.soaplab.domain.utils.WeightCalculator;
@@ -75,6 +63,7 @@ public class SoapCalculatorService {
 		validateSoapRecipeForErros(soapRecipe, issueCollector);
 
 		LyeRecipe lyeRecipe = soapRecipe.getLyeRecipe();
+		FragranceRecipe fragranceRecipe = soapRecipe.getFragranceRecipe();
 
 		/*
 		 * Fats
@@ -105,24 +94,26 @@ public class SoapCalculatorService {
 		/*
 		 * Fragrances
 		 */
-		final Percentage fragranceTotalPercentage = soapRecipe.getFragranceToFatRatio();
-		soapRecipe.setFragrancesTotal(Weight.of(0, WeightUnit.GRAMS));
-		soapRecipe.setFragrancesCosts(Price.of(0));
-		if (!CollectionUtils.isEmpty(soapRecipe.getFragrances())
-				&& Percentage.isGreaterThanZero(fragranceTotalPercentage)) {
-			for (final RecipeEntry<Fragrance> fragranceEntry : soapRecipe.getFragrances()) {
+		if(fragranceRecipe!=null){
+			final Percentage fragranceTotalPercentage = soapRecipe.getFragranceToFatRatio();
+			fragranceRecipe.setWeight(Weight.of(0, WeightUnit.GRAMS));
+			fragranceRecipe.setCosts(Price.of(0));
+			if (!CollectionUtils.isEmpty(fragranceRecipe.getFragrances())
+					&& Percentage.isGreaterThanZero(fragranceTotalPercentage)) {
+				for (final RecipeEntry<Fragrance> fragranceEntry : fragranceRecipe.getFragrances()) {
 
-				calculateIngredientWeight(fragranceEntry,
-						weightCalc.calculatePercentage(soapRecipe.getFatsTotal(), fragranceTotalPercentage))
-						.ifPresent(weight -> soapRecipe
-								.setFragrancesTotal(weightCalc.plus(soapRecipe.getFragrancesTotal(), weight)));
+					calculateIngredientWeight(fragranceEntry,
+							weightCalc.calculatePercentage(soapRecipe.getFatsTotal(), fragranceTotalPercentage))
+							.ifPresent(weight -> fragranceRecipe
+									.setWeight(weightCalc.plus(fragranceRecipe.getWeight(), weight)));
 
-				calculateIngredientPrice(fragranceEntry).ifPresent(
-						price -> soapRecipe.setFragrancesCosts(priceCalc.plus(soapRecipe.getFragrancesCosts(), price)));
+					calculateIngredientPrice(fragranceEntry).ifPresent(
+							price -> fragranceRecipe.setCosts(priceCalc.plus(fragranceRecipe.getCosts(), price)));
+				}
+				// TODO: validate percentage = 100%
+				soapRecipe.setWeightTotal(weightCalc.plus(soapRecipe.getWeightTotal(), fragranceRecipe.getWeight()));
+				soapRecipe.setCostsTotal(priceCalc.plus(soapRecipe.getCostsTotal(), fragranceRecipe.getCosts()));
 			}
-			// TODO: validate percentage = 100%
-			soapRecipe.setWeightTotal(weightCalc.plus(soapRecipe.getWeightTotal(), soapRecipe.getFragrancesTotal()));
-			soapRecipe.setCostsTotal(priceCalc.plus(soapRecipe.getCostsTotal(), soapRecipe.getFragrancesCosts()));
 		}
 
 		/*

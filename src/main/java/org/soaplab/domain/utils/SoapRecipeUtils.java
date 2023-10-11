@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Ingredient;
@@ -52,5 +53,10 @@ public class SoapRecipeUtils {
 
 	public static <T extends Ingredient> List<RecipeEntry<T>> createRecipeEntries(RecipeEntry<T>... recipeEntries) {
 		return List.of(recipeEntries);
+	}
+
+	public static <T extends Ingredient> List<RecipeEntry<T>> getRecipeEntryListDeepClone(
+			List<RecipeEntry<T>> recipeEntries) {
+		return recipeEntries.stream().map(entry -> entry.getCopyBuilder().build()).collect(Collectors.toList());
 	}
 }

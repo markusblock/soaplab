@@ -1,26 +1,7 @@
 package org.soaplab.domain.utils;
 
-import org.soaplab.domain.Acid;
-import org.soaplab.domain.Additive;
-import org.soaplab.domain.Entity;
-import org.soaplab.domain.Fat;
-import org.soaplab.domain.Fragrance;
-import org.soaplab.domain.KOH;
-import org.soaplab.domain.Liquid;
-import org.soaplab.domain.LyeRecipe;
-import org.soaplab.domain.NaOH;
-import org.soaplab.domain.NamedEntity;
-import org.soaplab.domain.SoapRecipe;
-import org.soaplab.repository.AcidRepository;
-import org.soaplab.repository.AdditiveRepository;
-import org.soaplab.repository.EntityRepository;
-import org.soaplab.repository.FatRepository;
-import org.soaplab.repository.FragranceRepository;
-import org.soaplab.repository.KOHRepository;
-import org.soaplab.repository.LiquidRepository;
-import org.soaplab.repository.LyeRecipeRepository;
-import org.soaplab.repository.NaOHRepository;
-import org.soaplab.repository.SoapRecipeRepository;
+import org.soaplab.domain.*;
+import org.soaplab.repository.*;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
@@ -40,6 +21,7 @@ public class OliveOilSoapRecipeRepositoryTestData extends OliveOilSoapRecipeTest
 	private final NaOHRepository naohRepository;
 	private final AdditiveRepository additiveRepository;
 	private final LyeRecipeRepository lyeRecipeRepository;
+	private final FragranceRecipeRepository fragranceRecipeRepository;
 
 	@Override
 	protected Liquid createAcidAppleVinegar() {
@@ -102,6 +84,11 @@ public class OliveOilSoapRecipeRepositoryTestData extends OliveOilSoapRecipeTest
 	}
 
 	@Override
+	protected FragranceRecipe createFragranceRecipe() {
+		return createEntityInRepo(super.createFragranceRecipe(), fragranceRecipeRepository);
+	}
+
+	@Override
 	public SoapRecipe createSoapRecipe() {
 		return createEntityInRepo(super.createSoapRecipe(), soapRecipeRepository);
 	}
@@ -110,6 +97,7 @@ public class OliveOilSoapRecipeRepositoryTestData extends OliveOilSoapRecipeTest
 		deleteEntityInRepository(IngredientsExampleData.SOAP_RECIPE_NAME, soapRecipeRepository);
 
 		deleteEntityInRepository(IngredientsExampleData.LYE_RECIPE_NAME, lyeRecipeRepository);
+		deleteEntityInRepository(IngredientsExampleData.FRAGRANCE_RECIPE_NAME, fragranceRecipeRepository);
 
 		deleteEntityInRepository(IngredientsExampleData.OLIVE_OIL_NAME, fatRepository);
 		deleteEntityInRepository(IngredientsExampleData.COCONUT_OIL_NAME, fatRepository);

@@ -13,10 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.soaplab.assertions.PriceAssert;
 import org.soaplab.assertions.WeightAssert;
-import org.soaplab.domain.Ingredient;
-import org.soaplab.domain.LyeRecipe;
-import org.soaplab.domain.RecipeEntry;
-import org.soaplab.domain.SoapRecipe;
+import org.soaplab.domain.*;
 import org.soaplab.domain.SoapRecipe.SoapRecipeBuilder;
 import org.soaplab.domain.utils.IngredientsExampleData;
 import org.soaplab.domain.utils.OliveOilSoapBasicRecipeTestData;
@@ -85,9 +82,7 @@ public class SoapCalculatorServiceTest {
 		PriceAssert.assertThat(calculatedSoapRecipeResult.getFatsCosts()).isEqualToValue(0.61);
 
 		// Fragrances
-		Assertions.assertThat(calculatedSoapRecipeResult.getFragrances()).isNullOrEmpty();
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getFragrancesTotal()).isEqualToWeightInGrams(0);
-		PriceAssert.assertThat(calculatedSoapRecipeResult.getFragrancesCosts()).isEqualToValue(0);
+		assertThat(calculatedSoapRecipeResult.getFragranceRecipe()).isNull();
 
 		// Soaprecipe Totals
 		WeightAssert.assertThat(calculatedSoapRecipeResult.getWeightTotal()).isEqualToWeightInGrams(145.15);
@@ -138,10 +133,11 @@ public class SoapCalculatorServiceTest {
 		PriceAssert.assertThat(calculatedSoapRecipeResult.getFatsCosts()).isEqualToValue(0.7);
 
 		// Fragrances
-		Assertions.assertThat(calculatedSoapRecipeResult.getFragrances()).hasSize(1);
-		assertRecipeEntry(calculatedSoapRecipeResult.getFragrances().get(0), 3, 0.9);
-		WeightAssert.assertThat(calculatedSoapRecipeResult.getFragrancesTotal()).isEqualToWeightInGrams(3);
-		PriceAssert.assertThat(calculatedSoapRecipeResult.getFragrancesCosts()).isEqualToValue(0.9);
+		FragranceRecipe calculatedFragranceRecipe = calculatedSoapRecipeResult.getFragranceRecipe();
+		Assertions.assertThat(calculatedFragranceRecipe.getFragrances()).hasSize(1);
+		assertRecipeEntry(calculatedFragranceRecipe.getFragrances().get(0), 3, 0.9);
+		WeightAssert.assertThat(calculatedFragranceRecipe.getWeight()).isEqualToWeightInGrams(3);
+		PriceAssert.assertThat(calculatedFragranceRecipe.getCosts()).isEqualToValue(0.9);
 
 		// Soap Batter Additives
 		Assertions.assertThat(calculatedSoapRecipeResult.getAdditives()).hasSize(1);

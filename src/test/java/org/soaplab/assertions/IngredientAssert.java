@@ -4,13 +4,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
-import org.soaplab.domain.Acid;
-import org.soaplab.domain.Fat;
-import org.soaplab.domain.Fragrance;
-import org.soaplab.domain.Ingredient;
-import org.soaplab.domain.KOH;
-import org.soaplab.domain.Liquid;
-import org.soaplab.domain.NaOH;
+import org.soaplab.domain.*;
 
 public class IngredientAssert extends AbstractAssert<IngredientAssert, Ingredient> {
 
@@ -31,7 +25,10 @@ public class IngredientAssert extends AbstractAssert<IngredientAssert, Ingredien
 			return new KOHAssert((KOH) actual);
 		} else if (actual instanceof NaOH) {
 			return new NaOHAssert((NaOH) actual);
+		} else if (actual instanceof Ingredient) {
+			return new IngredientAssert((Ingredient) actual, IngredientAssert.class);
 		}
+
 
 		fail("unsupported type of Ingredient " + actual.getClass().getName());
 		return null;

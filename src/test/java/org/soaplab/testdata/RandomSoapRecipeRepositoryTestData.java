@@ -1,26 +1,7 @@
 package org.soaplab.testdata;
 
-import org.soaplab.domain.Acid;
-import org.soaplab.domain.Additive;
-import org.soaplab.domain.Entity;
-import org.soaplab.domain.Fat;
-import org.soaplab.domain.Fragrance;
-import org.soaplab.domain.KOH;
-import org.soaplab.domain.Liquid;
-import org.soaplab.domain.LyeRecipe;
-import org.soaplab.domain.NaOH;
-import org.soaplab.domain.NamedEntity;
-import org.soaplab.domain.SoapRecipe;
-import org.soaplab.repository.AcidRepository;
-import org.soaplab.repository.AdditiveRepository;
-import org.soaplab.repository.EntityRepository;
-import org.soaplab.repository.FatRepository;
-import org.soaplab.repository.FragranceRepository;
-import org.soaplab.repository.KOHRepository;
-import org.soaplab.repository.LiquidRepository;
-import org.soaplab.repository.LyeRecipeRepository;
-import org.soaplab.repository.NaOHRepository;
-import org.soaplab.repository.SoapRecipeRepository;
+import org.soaplab.domain.*;
+import org.soaplab.repository.*;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
@@ -40,6 +21,7 @@ public class RandomSoapRecipeRepositoryTestData extends RandomSoapRecipeTestData
 	private final KOHRepository kohRepository;
 	private final AdditiveRepository additiveRepository;
 	private final LyeRecipeRepository lyeRecipeRepository;
+	private final FragranceRecipeRepository fragranceRecipeRepository;
 
 	private <T extends NamedEntity> T createEntityInRepo(T entity, EntityRepository<T> repository) {
 		final Entity persistedEntity = repository.create(entity);
@@ -90,5 +72,9 @@ public class RandomSoapRecipeRepositoryTestData extends RandomSoapRecipeTestData
 	@Override
 	protected LyeRecipe createLyeRecipe() {
 		return createEntityInRepo(super.createLyeRecipe(), lyeRecipeRepository);
+	}
+
+	protected FragranceRecipe createFragranceRecipe() {
+		return createEntityInRepo(super.createFragranceRecipe(), fragranceRecipeRepository);
 	}
 }

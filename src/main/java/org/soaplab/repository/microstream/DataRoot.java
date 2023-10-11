@@ -3,15 +3,7 @@ package org.soaplab.repository.microstream;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.soaplab.domain.Acid;
-import org.soaplab.domain.Additive;
-import org.soaplab.domain.Fat;
-import org.soaplab.domain.Fragrance;
-import org.soaplab.domain.KOH;
-import org.soaplab.domain.Liquid;
-import org.soaplab.domain.LyeRecipe;
-import org.soaplab.domain.NaOH;
-import org.soaplab.domain.SoapRecipe;
+import org.soaplab.domain.*;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,4 +24,5 @@ public class DataRoot {
 	private final Set<NaOH> allNaOH = new HashSet<>();
 	private final Set<Additive> allAdditives = new HashSet<>();
 	private final Set<LyeRecipe> allLyeRecipes = new HashSet<>();
+	private final Set<FragranceRecipe> allFragranceRecipes = new HashSet<>();
 }
