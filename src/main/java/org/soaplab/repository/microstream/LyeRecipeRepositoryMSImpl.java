@@ -2,10 +2,8 @@ package org.soaplab.repository.microstream;
 
 import java.util.Set;
 
-import org.soaplab.domain.Acid;
-import org.soaplab.domain.Additive;
-import org.soaplab.domain.Liquid;
-import org.soaplab.domain.LyeRecipe;
+import org.soaplab.domain.*;
+import org.soaplab.domain.exception.EntityDeletionFailedException;
 import org.soaplab.repository.AcidRepository;
 import org.soaplab.repository.AdditiveRepository;
 import org.soaplab.repository.KOHRepository;
@@ -27,6 +25,15 @@ public class LyeRecipeRepositoryMSImpl extends EntityRepositoryMSImpl<LyeRecipe>
 	private final NaOHRepository naohRepository;
 	private final KOHRepository kohRepository;
 	private final AdditiveRepository additiveRepository;
+
+	@Override
+	protected void assertEntityIsNotReferencedByOtherEntities(LyeRecipe entity) {
+		if (getDataRoot().getAllSoapRecipes().stream().anyMatch(soapRecipe -> {
+			return soapRecipe.getLyeRecipe().getId().equals(entity.getId());
+		})) {
+			throw new EntityDeletionFailedException(entity, EntityDeletionFailedException.REASON.ENTITY_STILL_REFERENCED);
+		}
+	}
 
 	@Override
 	protected void getAndReplaceCompositeEntitiesFromRepository(LyeRecipe entity) {

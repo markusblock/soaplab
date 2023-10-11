@@ -7,11 +7,7 @@ import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
 import org.soaplab.domain.RecipeEntry;
 import org.soaplab.domain.SoapRecipe;
-import org.soaplab.repository.AdditiveRepository;
-import org.soaplab.repository.FatRepository;
-import org.soaplab.repository.FragranceRepository;
-import org.soaplab.repository.LyeRecipeRepository;
-import org.soaplab.repository.SoapRecipeRepository;
+import org.soaplab.repository.*;
 import org.soaplab.service.soapcalc.SoapCalculatorService;
 import org.soaplab.ui.MainAppLayout;
 import org.soaplab.ui.views.EntityList;
@@ -28,19 +24,19 @@ public class RecipeView extends EntityView<SoapRecipe> {
 	private static final long serialVersionUID = 1L;
 
 	private final FatRepository fatRepository;
-	private final FragranceRepository fragranceRepository;
 	private final SoapCalculatorService soapCalculatorService;
 	private final LyeRecipeRepository lyeRecipeRepository;
+	private final FragranceRecipeRepository fragranceRecipeRepository;
 	private final AdditiveRepository additiveRepository;
 
 	@Autowired
-	public RecipeView(SoapRecipeRepository repository, LyeRecipeRepository lyeRecipeRepository,
-			FatRepository fatRepository, FragranceRepository fragranceRepository, AdditiveRepository additiveRepository,
+	public RecipeView(SoapRecipeRepository repository, LyeRecipeRepository lyeRecipeRepository, FragranceRecipeRepository fragranceRecipeRepository,
+			FatRepository fatRepository, AdditiveRepository additiveRepository,
 			SoapCalculatorService soapCalculatorService) {
 		super(repository);
 		this.lyeRecipeRepository = lyeRecipeRepository;
 		this.fatRepository = fatRepository;
-		this.fragranceRepository = fragranceRepository;
+		this.fragranceRecipeRepository = fragranceRecipeRepository;
 		this.additiveRepository = additiveRepository;
 		this.soapCalculatorService = soapCalculatorService;
 	}
@@ -57,7 +53,7 @@ public class RecipeView extends EntityView<SoapRecipe> {
 
 	@Override
 	protected RecipeDetailsPanel createEntityDetails(EntityViewDetailsControllerCallback<SoapRecipe> callback) {
-		return new RecipeDetailsPanel(callback, lyeRecipeRepository, fatRepository, fragranceRepository,
+		return new RecipeDetailsPanel(callback, lyeRecipeRepository, fragranceRecipeRepository, fatRepository,
 				additiveRepository, soapCalculatorService);
 	}
 
@@ -66,7 +62,6 @@ public class RecipeView extends EntityView<SoapRecipe> {
 		// TODO move to builder
 		final SoapRecipe soapRecipe = SoapRecipe.builder().build();
 		soapRecipe.setFats(new ArrayList<RecipeEntry<Fat>>());
-		soapRecipe.setFragrances(new ArrayList<RecipeEntry<Fragrance>>());
 		soapRecipe.setAdditives(new ArrayList<RecipeEntry<Additive>>());
 		return soapRecipe;
 	}

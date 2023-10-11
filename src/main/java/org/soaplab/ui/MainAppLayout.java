@@ -4,12 +4,15 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
 
+import com.vaadin.flow.component.html.Div;
 import org.apache.commons.lang3.StringUtils;
 import org.soaplab.ui.i18n.TranslationProvider;
 import org.soaplab.ui.views.MenuBar;
 import org.soaplab.ui.views.acid.AcidsView;
+import org.soaplab.ui.views.additives.AdditivesView;
 import org.soaplab.ui.views.fat.FatsView;
 import org.soaplab.ui.views.fragrance.FragranceView;
+import org.soaplab.ui.views.fragranceRecipe.FragranceRecipeView;
 import org.soaplab.ui.views.ingredient.IngredientView;
 import org.soaplab.ui.views.koh.KOHView;
 import org.soaplab.ui.views.liquid.LiquidsView;
@@ -88,12 +91,14 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 		menuBar.addMenuItem(VaadinIcon.ACADEMY_CAP, getTranslation("domain.fragrances"), FragranceView.class);
 		menuBar.addMenuItem(VaadinIcon.ALARM, getTranslation("domain.naoh"), NaOHView.class);
 		menuBar.addMenuItem(VaadinIcon.AMBULANCE, getTranslation("domain.koh"), KOHView.class);
+		menuBar.addMenuItem(VaadinIcon.CROSS_CUTLERY, getTranslation("domain.additives"), AdditivesView.class);
 		menuBar.addMenuItem(VaadinIcon.ABACUS, getTranslation("domain.recipes"), RecipeView.class);
 		menuBar.addMenuItem(VaadinIcon.ADOBE_FLASH, getTranslation("domain.lyerecipes"), LyeRecipeView.class);
+		menuBar.addMenuItem(VaadinIcon.SAFE_LOCK, getTranslation("domain.fragrancerecipes"), FragranceRecipeView.class);
 		menuBar.addMenuItem(VaadinIcon.DOLLAR, getTranslation("domain.ingredients"), IngredientView.class);
 
 		addToDrawer(menuBar.getMenuItemComponents());
-		final Label spacing = new Label();
+		final Div spacing = new Div();
 		spacing.setSizeFull();
 		addToNavbar(toggle, title, spacing, languageSelect);
 	}

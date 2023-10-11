@@ -1,7 +1,8 @@
 package org.soaplab.ui.views.additives;
 
+import org.soaplab.domain.Additive;
 import org.soaplab.domain.Liquid;
-import org.soaplab.repository.LiquidRepository;
+import org.soaplab.repository.AdditiveRepository;
 import org.soaplab.ui.MainAppLayout;
 import org.soaplab.ui.views.EntityView;
 import org.soaplab.ui.views.EntityViewDetailsControllerCallback;
@@ -12,32 +13,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.flow.router.Route;
 
 @Route(value = "additives", layout = MainAppLayout.class)
-public class AdditivesView extends EntityView<Liquid> {
+public class AdditivesView extends EntityView<Additive> {
 
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	public AdditivesView(LiquidRepository repository) {
+	public AdditivesView(AdditiveRepository repository) {
 		super(repository);
 	}
 
 	@Override
 	protected String getHeader() {
-		return getTranslation("domain.liquids");
+		return getTranslation("domain.additives");
 	}
 
 	@Override
-	protected IngredientList<Liquid> createEntityList(EntityViewListControllerCallback<Liquid> callback) {
-		return new IngredientList<Liquid>(callback);
+	protected IngredientList<Additive> createEntityList(EntityViewListControllerCallback<Additive> callback) {
+		return new IngredientList<Additive>(callback);
 	}
 
 	@Override
-	protected LiquidDetailsPanel createEntityDetails(EntityViewDetailsControllerCallback<Liquid> callback) {
-		return new LiquidDetailsPanel(callback);
+	protected AdditiveDetailsPanel createEntityDetails(EntityViewDetailsControllerCallback<Additive> callback) {
+		return new AdditiveDetailsPanel(callback);
 	}
 
 	@Override
-	protected Liquid createNewEmptyEntity() {
-		return Liquid.builder().build();
+	protected Additive createNewEmptyEntity() {
+		return Additive.builder().build();
 	}
 }

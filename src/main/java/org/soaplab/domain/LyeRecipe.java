@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.soaplab.domain.utils.SoapRecipeUtils;
 
 @Getter
 @Setter
@@ -89,15 +90,10 @@ public class LyeRecipe extends NamedEntity {
 	@Override
 	public LyeRecipeBuilder<?, ?> getCopyBuilder() {
 		return this.toBuilder() //
-				.acids(getRecipeEntryListDeepClone(acids)) //
-				.liquids(getRecipeEntryListDeepClone(liquids)) //
-				.additives(getRecipeEntryListDeepClone(additives)) //
+				.acids(SoapRecipeUtils.getRecipeEntryListDeepClone(acids)) //
+				.liquids(SoapRecipeUtils.getRecipeEntryListDeepClone(liquids)) //
+				.additives(SoapRecipeUtils.getRecipeEntryListDeepClone(additives)) //
 				.naOH(naOH == null ? null : naOH.getCopyBuilder().build()) //
 				.kOH(kOH == null ? null : kOH.getCopyBuilder().build());
-	}
-
-	private <T extends Ingredient> List<RecipeEntry<T>> getRecipeEntryListDeepClone(
-			List<RecipeEntry<T>> recipeEntries) {
-		return recipeEntries.stream().map(entry -> entry.getCopyBuilder().build()).collect(Collectors.toList());
 	}
 }
