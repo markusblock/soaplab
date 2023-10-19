@@ -11,6 +11,7 @@ import org.soaplab.ui.views.MenuBar;
 import org.soaplab.ui.views.acid.AcidsView;
 import org.soaplab.ui.views.additives.AdditivesView;
 import org.soaplab.ui.views.fat.FatsView;
+import org.soaplab.ui.views.fat.FatsView2;
 import org.soaplab.ui.views.fragrance.FragranceView;
 import org.soaplab.ui.views.fragranceRecipe.FragranceRecipeView;
 import org.soaplab.ui.views.ingredient.IngredientView;
@@ -84,7 +85,7 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 		});
 
 		final MenuBar menuBar = new MenuBar();
-		menuBar.addMenuItem(VaadinIcon.DASHBOARD, getTranslation("domain.fats"), FatsView.class);
+		menuBar.addMenuItem(VaadinIcon.DASHBOARD, getTranslation("domain.fats"), FatsView2.class);
 		menuBar.addMenuItem(VaadinIcon.CART, getTranslation("domain.acids"), AcidsView.class);
 		menuBar.addMenuItem(VaadinIcon.USER_HEART, getTranslation("domain.liquids"), LiquidsView.class);
 		menuBar.addMenuItem(VaadinIcon.ACADEMY_CAP, getTranslation("domain.fragrances"), FragranceView.class);

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 import lombok.experimental.SuperBuilder;
 import org.soaplab.domain.utils.SoapRecipeUtils;
 
@@ -14,6 +15,7 @@ import org.soaplab.domain.utils.SoapRecipeUtils;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
+@FieldNameConstants
 public class SoapRecipe extends NamedEntity {
 
     private static final long serialVersionUID = 1L;

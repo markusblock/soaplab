@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldNameConstants;
 import lombok.experimental.SuperBuilder;
 
 @Getter
@@ -16,6 +17,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @ImplicitEntity
+@FieldNameConstants
 public class RecipeEntry<T extends Ingredient> extends Entity {
 
 	private static final long serialVersionUID = 1L;

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 import lombok.experimental.SuperBuilder;
 import org.soaplab.domain.utils.SoapRecipeUtils;
 
@@ -18,6 +19,7 @@ import org.soaplab.domain.utils.SoapRecipeUtils;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @ExplicitEntity
+@FieldNameConstants
 public class FragranceRecipe extends NamedEntity{
     private static final long serialVersionUID = 1L;
 

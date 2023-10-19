@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldNameConstants;
 import lombok.experimental.SuperBuilder;
 import org.soaplab.domain.utils.SoapRecipeUtils;
 
@@ -20,6 +21,7 @@ import org.soaplab.domain.utils.SoapRecipeUtils;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @ExplicitEntity
+@FieldNameConstants
 public class LyeRecipe extends NamedEntity {
 
 	private static final long serialVersionUID = 1L;

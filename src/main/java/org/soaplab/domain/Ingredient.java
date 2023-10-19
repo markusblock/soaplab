@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldNameConstants;
 import lombok.experimental.SuperBuilder;
 
 @Getter
@@ -18,6 +19,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @ExplicitEntity
+@FieldNameConstants
 public abstract class Ingredient extends NamedEntity {
 
 	private static final long serialVersionUID = 1L;
