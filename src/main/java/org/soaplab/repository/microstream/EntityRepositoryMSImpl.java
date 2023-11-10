@@ -87,14 +87,14 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 
 	@Override
 	public List<T> findAll() {
-		return getEntitiesInternal().stream()
+		return getEntitiesInternal().stream().map(e -> get(e.getId()))
 				.sorted(Comparator.comparing(NamedEntity::getName, String.CASE_INSENSITIVE_ORDER))
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<T> findByName(String name) {
-		return getEntitiesInternal().stream()
+		return getEntitiesInternal().stream().map(e -> get(e.getId()))
 				.filter(entity -> entity.getName().toLowerCase().contains(name.toLowerCase()))
 				.collect(Collectors.toList());
 	}
