@@ -2,6 +2,7 @@ package org.soaplab.ui.views;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -35,12 +36,14 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public abstract class EntityTableView<T extends NamedEntity> extends VerticalLayout implements BeforeEnterObserver {
 
 	private static final long serialVersionUID = 1L;
 
-	private H1 title;
+	private final H1 title;
 
 	@Getter
 	private final EntityRepository<T> repository;
@@ -74,56 +77,63 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 		entityFilter = new EntityFilter<>();
 		binder = new BeanValidationBinder<T>(entityClass);
 
-		Editor<T> editor = grid.getEditor();
+		final Editor<T> editor = grid.getEditor();
 		editor.setBinder(binder);
 		editor.setBuffered(false);
 
 		editor.addCancelListener(l -> {
-			System.out.println("Cancel");
+			log.trace("Cancel");
 		});
 
 		editor.addCloseListener(l -> {
-			System.out.println("close");
+			log.trace("close editor");
 			if (entityChanged && !editorCanceled) {
-				System.out.println("save");
-				T entity = l.getItem();
+				log.trace("save");
+				final T entity = l.getItem();
 				repository.update(entity);
 			}
 			resetEditorState();
+			refreshTable();
 		});
 
 		editor.addOpenListener(l -> {
-			System.out.println("open");
+			log.trace("open editor");
 			resetEditorState();
 
 			l.getSource().getBinder().addValueChangeListener(e -> {
-				Object oldValue = e.getOldValue();
-				Object newValue = e.getValue();
+				final Object oldValue = e.getOldValue();
+				final Object newValue = e.getValue();
 				if (!ObjectUtils.nullSafeEquals(oldValue, newValue)) {
+					log.trace("value changed from %s to %s".formatted(Objects.toString(oldValue),
+							Objects.toString(newValue)));
 					entityChanged = true;
 				}
 			});
 		});
 
 		grid.addItemDoubleClickListener(e -> {
+			log.trace("double clicked");
 			grid.getEditor().editItem(e.getItem());
-			Component editorComponent = e.getColumn().getEditorComponent();
-			if (editorComponent instanceof Focusable<?> focusableComponent) {
+			final Component editorComponent = e.getColumn().getEditorComponent();
+			if (editorComponent instanceof final Focusable<?> focusableComponent) {
 				focusableComponent.focus();
 			}
 		});
 		addEnterHandler(grid);
 		addEscapeHandler(grid);
 		grid.addCellFocusListener(event -> {
-			System.out.println("cell focused (section: %s)".formatted(event.getSection()));
+			log.trace("cell focused (section: %s)".formatted(event.getSection()));
 			if (event.getSection() == GridSection.BODY) {
 				focusedEntity = event.getItem();
 			} else {
 				focusedEntity = Optional.empty();
+				if (grid.getEditor().isOpen()) {
+					grid.getEditor().closeEditor();
+				}
 			}
 		});
 
-		refreshTable();
+		// refreshTable();
 
 		// addTextColumn(Entity.Fields.id, "domain.entity.id");
 		addNameColumn(NamedEntity.Fields.name, "domain.entity.name");
@@ -137,7 +147,7 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 
 	private void addEscapeHandler(Component component) {
 		component.getElement().addEventListener("keydown", e -> {
-			System.out.println("Escape pressed");
+			log.trace("Escape pressed");
 			if (grid.getEditor().isOpen()) {
 				editorCanceled = true;
 				grid.getEditor().cancel();
@@ -148,7 +158,7 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 
 	private void addEnterHandler(Component component) {
 		component.getElement().addEventListener("keydown", e -> {
-			System.out.println("Enter pressed");
+			log.trace("Enter pressed");
 
 			if (grid.getEditor().isOpen()) {
 				grid.getEditor().closeEditor();
@@ -175,8 +185,8 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 	}
 
 	private void refreshTable() {
-		ListDataProvider<T> dataProvider = new ListDataProvider(repository.findAll());
-		GridListDataView<T> gridListDataView = grid.setItems(dataProvider);
+		final ListDataProvider<T> dataProvider = new ListDataProvider<T>(repository.findAll());
+		final GridListDataView<T> gridListDataView = grid.setItems(dataProvider);
 		entityFilter.setDataView(gridListDataView);
 	}
 
@@ -203,7 +213,7 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 		addEscapeHandler(entityField);
 		addEnterHandler(entityField);
 		binder.forField(entityField).withNullRepresentation("").withConverter(converter).bind(propertyName);
-		Grid.Column<T> column = grid.addColumn(propertyName).setHeader(getTranslation(id))
+		final Grid.Column<T> column = grid.addColumn(propertyName).setHeader(getTranslation(id))
 				.setEditorComponent(entityField);
 		searchHeaderRow.getCell(column)
 				.setComponent(createFilterHeader(propertyName, id, entityFilter::setFilterToProperty));
@@ -215,7 +225,7 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 		addEscapeHandler(entityField);
 		addEnterHandler(entityField);
 		binder.forField(entityField).withNullRepresentation("").bind(propertyName);
-		Grid.Column<T> column = grid.addColumn(propertyName).setHeader(getTranslation(id))
+		final Grid.Column<T> column = grid.addColumn(propertyName).setHeader(getTranslation(id))
 				.setEditorComponent(entityField);
 		searchHeaderRow.getCell(column)
 				.setComponent(createFilterHeader(propertyName, id, entityFilter::setFilterToProperty));
@@ -224,17 +234,17 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 
 	private Component createFilterHeader(String propertyName, String id,
 			BiConsumer<String, String> filterChangeConsumer) {
-		String headerValue = getTranslation(id);
-		NativeLabel label = new NativeLabel(headerValue);
+		final String headerValue = getTranslation(id);
+		final NativeLabel label = new NativeLabel(headerValue);
 		label.getStyle().set("padding-top", "var(--lumo-space-m)").set("font-size", "var(--lumo-font-size-xs)");
-		TextField textField = new TextField();
+		final TextField textField = new TextField();
 		textField.setValueChangeMode(ValueChangeMode.EAGER);
 		textField.setClearButtonVisible(true);
 		textField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
 		textField.setWidthFull();
 		textField.getStyle().set("max-width", "100%");
 		textField.addValueChangeListener(e -> filterChangeConsumer.accept(propertyName, e.getValue()));
-		VerticalLayout layout = new VerticalLayout(label, textField);
+		final VerticalLayout layout = new VerticalLayout(label, textField);
 		layout.setWidthFull();
 		layout.getThemeList().clear();
 		layout.getThemeList().add("spacing-xs");
@@ -245,7 +255,7 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 	private static class EntityFilter<T> {
 		private GridListDataView<T> dataView;
 
-		private Map<String, String> filterPropertyNameSearchTermPairs = new HashMap<>();
+		private final Map<String, String> filterPropertyNameSearchTermPairs = new HashMap<>();
 
 		public EntityFilter() {
 		}
@@ -261,9 +271,9 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 		}
 
 		public boolean test(T entity) {
-			Set<Map.Entry<String, String>> entries = filterPropertyNameSearchTermPairs.entrySet();
-			for (Map.Entry<String, String> entry : entries) {
-				String entityPropertyValue = extractPropertyValueFromEntity(entity, entry.getKey());
+			final Set<Map.Entry<String, String>> entries = filterPropertyNameSearchTermPairs.entrySet();
+			for (final Map.Entry<String, String> entry : entries) {
+				final String entityPropertyValue = extractPropertyValueFromEntity(entity, entry.getKey());
 				if (!matches(entityPropertyValue, entry.getValue())) {
 					return false;
 				}
