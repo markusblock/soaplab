@@ -3,19 +3,19 @@ package org.soaplab.ui.views.fat;
 import org.soaplab.domain.Fat;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.ui.MainAppLayout;
-import org.soaplab.ui.views.EntityTableView;
+import org.soaplab.ui.views.IngredientTableViewParent;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
 
-@Route(value = "fats", layout = MainAppLayout.class)
+@Route(value = "fat", layout = MainAppLayout.class)
 //@RouteAlias(value = "", layout = MainAppLayout.class) // registers on the root path of the server, but doesn'T work together with Swagger
-public class FatsView2 extends EntityTableView<Fat> {
+public class FatView extends IngredientTableViewParent<Fat> {
 
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	public FatsView2(FatRepository repository) {
+	public FatView(FatRepository repository) {
 		super(Fat.class, repository);
 
 		addIntegerColumn(Fat.Fields.ins, "domain.fat.ins");

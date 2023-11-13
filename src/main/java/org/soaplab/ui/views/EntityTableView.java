@@ -66,7 +66,7 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 
 	Map<String, SerializablePredicate<T>> searchFilter = new HashMap<>();
 
-	public EntityTableView(Class<T> entityClass, EntityRepository<T> repository) {
+	public EntityTableView(Class<T> entityClass, EntityRepository<T> repository, boolean createEntityFunction) {
 		super();
 		this.repository = repository;
 
@@ -95,6 +95,7 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 			grid.getListDataView().addItem(newEntity);
 			editEntity(newEntity);
 		});
+		addButton.setEnabled(createEntityFunction);
 		headerPanel.add(addButton);
 
 		removeButton = new Button();
@@ -131,6 +132,10 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 
 		// addTextColumn(Entity.Fields.id, "domain.entity.id");
 		addNameColumn(NamedEntity.Fields.name, "domain.entity.name");
+	}
+
+	public EntityTableView(Class<T> entityClass, EntityRepository<T> repository) {
+		this(entityClass, repository, true);
 	}
 
 	private void addGridSelectionListener() {
@@ -318,6 +323,25 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 
 	protected void addBigDecimalColumn(String propertyName, String id) {
 		addPropertyColumn(propertyName, id, new MyStringToBigDecConverter(""));
+	}
+
+	protected void addPercentageColumn(String propertyName, String id) {
+		addPropertyColumn(propertyName, id, new StringToPercentageConverter());
+		// TODO set suffix component
+//		final TextField propertyField = createPropertyTextField(id);
+//		propertyField.setSuffixComponent(new Div(new Text("%")));
+//		editablePropertyFields.add(propertyField);
+//		propertySection.addFormItem(propertyField, getTranslation(id));
+//		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToPercentageConverter())
+//				.bind(getter, setter);
+	}
+
+	protected void addPriceColumn(String propertyName, String id) {
+		addPropertyColumn(propertyName, id, new StringToPriceValueConverter());
+		// TODO set suffix component
+//		grid.addColumn(LitRenderer.<T>of("<b>${item.cost} €</b>").withProperty("cost",
+//				ingredient -> new StringToPriceValueConverter().convertToPresentation(ingredient.getCost(),
+//						new ValueContext())));
 	}
 
 	protected <PROPERTY_TYPE> Column<T> addPropertyColumn(String propertyName, String id,
