@@ -11,13 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
 
-@Route(value = "acids", layout = MainAppLayout.class)
-public class AcidsView extends EntityView<Acid> {
+@Route(value = "acids2", layout = MainAppLayout.class)
+public class AcidsViewOld extends EntityView<Acid> {
 
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	public AcidsView(AcidRepository repository) {
+	public AcidsViewOld(AcidRepository repository) {
 		super(repository);
 	}
 

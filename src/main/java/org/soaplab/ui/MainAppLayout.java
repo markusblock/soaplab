@@ -8,17 +8,17 @@ import com.vaadin.flow.component.html.Div;
 import org.apache.commons.lang3.StringUtils;
 import org.soaplab.ui.i18n.TranslationProvider;
 import org.soaplab.ui.views.MenuBar;
-import org.soaplab.ui.views.acid.AcidsView;
+import org.soaplab.ui.views.acid.AcidsViewOld;
 import org.soaplab.ui.views.additives.AdditivesView;
-import org.soaplab.ui.views.fat.FatsView;
+import org.soaplab.ui.views.fat.FatsViewOld;
 import org.soaplab.ui.views.fat.FatsView2;
-import org.soaplab.ui.views.fragrance.FragranceView;
+import org.soaplab.ui.views.fragrance.FragranceViewOld;
 import org.soaplab.ui.views.fragranceRecipe.FragranceRecipeView;
 import org.soaplab.ui.views.ingredient.IngredientView;
-import org.soaplab.ui.views.koh.KOHView;
-import org.soaplab.ui.views.liquid.LiquidsView;
+import org.soaplab.ui.views.koh.KOHViewOld;
+import org.soaplab.ui.views.liquid.LiquidsViewOld;
 import org.soaplab.ui.views.lyerecipe.LyeRecipeView;
-import org.soaplab.ui.views.naoh.NaOHView;
+import org.soaplab.ui.views.naoh.NaOHViewOld;
 import org.soaplab.ui.views.recipe.RecipeView;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -86,11 +86,11 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 
 		final MenuBar menuBar = new MenuBar();
 		menuBar.addMenuItem(VaadinIcon.DASHBOARD, getTranslation("domain.fats"), FatsView2.class);
-		menuBar.addMenuItem(VaadinIcon.CART, getTranslation("domain.acids"), AcidsView.class);
-		menuBar.addMenuItem(VaadinIcon.USER_HEART, getTranslation("domain.liquids"), LiquidsView.class);
-		menuBar.addMenuItem(VaadinIcon.ACADEMY_CAP, getTranslation("domain.fragrances"), FragranceView.class);
-		menuBar.addMenuItem(VaadinIcon.ALARM, getTranslation("domain.naoh"), NaOHView.class);
-		menuBar.addMenuItem(VaadinIcon.AMBULANCE, getTranslation("domain.koh"), KOHView.class);
+		menuBar.addMenuItem(VaadinIcon.CART, getTranslation("domain.acids"), AcidsViewOld.class);
+		menuBar.addMenuItem(VaadinIcon.USER_HEART, getTranslation("domain.liquids"), LiquidsViewOld.class);
+		menuBar.addMenuItem(VaadinIcon.ACADEMY_CAP, getTranslation("domain.fragrances"), FragranceViewOld.class);
+		menuBar.addMenuItem(VaadinIcon.ALARM, getTranslation("domain.naoh"), NaOHViewOld.class);
+		menuBar.addMenuItem(VaadinIcon.AMBULANCE, getTranslation("domain.koh"), KOHViewOld.class);
 		menuBar.addMenuItem(VaadinIcon.CROSS_CUTLERY, getTranslation("domain.additives"), AdditivesView.class);
 		menuBar.addMenuItem(VaadinIcon.ABACUS, getTranslation("domain.recipes"), RecipeView.class);
 		menuBar.addMenuItem(VaadinIcon.ADOBE_FLASH, getTranslation("domain.lyerecipes"), LyeRecipeView.class);
@@ -152,7 +152,7 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 	public void beforeEnter(BeforeEnterEvent event) {
 		// redirect to default page only when the main view is called
 		if (MainAppLayout.class.equals(event.getNavigationTarget())) {
-			event.forwardTo(FatsView.class);
+			event.forwardTo(FatsViewOld.class);
 		}
 	}
 }

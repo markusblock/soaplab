@@ -11,14 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
 
-@Route(value = "fats", layout = MainAppLayout.class)
+@Route(value = "fats2", layout = MainAppLayout.class)
 //@RouteAlias(value = "", layout = MainAppLayout.class) // registers on the root path of the server, but doesn'T work together with Swagger
-public class FatsView extends EntityView<Fat> {
+public class FatsViewOld extends EntityView<Fat> {
 
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	public FatsView(FatRepository repository) {
+	public FatsViewOld(FatRepository repository) {
 		super(repository);
 
 	}
