@@ -1,38 +1,43 @@
 package org.soaplab.ui.views.fat;
 
-import com.vaadin.flow.router.Route;
 import org.soaplab.domain.Fat;
-import org.soaplab.domain.NamedEntity;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.ui.MainAppLayout;
 import org.soaplab.ui.views.EntityTableView;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.vaadin.flow.router.Route;
+
 @Route(value = "fats2", layout = MainAppLayout.class)
 //@RouteAlias(value = "", layout = MainAppLayout.class) // registers on the root path of the server, but doesn'T work together with Swagger
 public class FatsView2 extends EntityTableView<Fat> {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Autowired
-    public FatsView2(FatRepository repository) {
-        super(Fat.class, repository);
+	@Autowired
+	public FatsView2(FatRepository repository) {
+		super(Fat.class, repository);
 
-        addIntegerColumn(Fat.Fields.ins,"domain.fat.ins");
-        addBigDecimalColumn(Fat.Fields.sapNaoh, "domain.ingredient.sapnaoh");
-        addIntegerColumn(Fat.Fields.iodine, "domain.fat.iodine");
-        addIntegerColumn(Fat.Fields.lauric,"domain.fat.lauric");
-        addIntegerColumn(Fat.Fields.myristic, "domain.fat.myristic");
-        addIntegerColumn(Fat.Fields.palmitic, "domain.fat.palmitic");
-        addIntegerColumn(Fat.Fields.stearic, "domain.fat.stearic");
-        addIntegerColumn(Fat.Fields.ricinoleic, "domain.fat.ricinoleic");
-        addIntegerColumn(Fat.Fields.oleic, "domain.fat.oleic");
-        addIntegerColumn(Fat.Fields.linoleic, "domain.fat.linoleic");
-        addIntegerColumn(Fat.Fields.linolenic, "domain.fat.linolenic");
-    }
+		addIntegerColumn(Fat.Fields.ins, "domain.fat.ins");
+		addBigDecimalColumn(Fat.Fields.sapNaoh, "domain.ingredient.sapnaoh");
+		addIntegerColumn(Fat.Fields.iodine, "domain.fat.iodine");
+		addIntegerColumn(Fat.Fields.lauric, "domain.fat.lauric");
+		addIntegerColumn(Fat.Fields.myristic, "domain.fat.myristic");
+		addIntegerColumn(Fat.Fields.palmitic, "domain.fat.palmitic");
+		addIntegerColumn(Fat.Fields.stearic, "domain.fat.stearic");
+		addIntegerColumn(Fat.Fields.ricinoleic, "domain.fat.ricinoleic");
+		addIntegerColumn(Fat.Fields.oleic, "domain.fat.oleic");
+		addIntegerColumn(Fat.Fields.linoleic, "domain.fat.linoleic");
+		addIntegerColumn(Fat.Fields.linolenic, "domain.fat.linolenic");
+	}
 
-    @Override
-    protected String getHeader() {
-        return getTranslation("domain.fats");
-    }
+	@Override
+	protected String getHeader() {
+		return getTranslation("domain.fats");
+	}
+
+	@Override
+	protected Fat createNewEmptyEntity() {
+		return Fat.builder().build();
+	}
 }

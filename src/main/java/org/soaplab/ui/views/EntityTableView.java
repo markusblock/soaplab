@@ -14,14 +14,18 @@ import org.springframework.util.ObjectUtils;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.CellFocusEvent.GridSection;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
+import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.NativeLabel;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
@@ -48,13 +52,17 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 	@Getter
 	private final EntityRepository<T> repository;
 
-	Grid<T> grid;
-	BeanValidationBinder<T> binder;
-	HeaderRow searchHeaderRow;
-	EntityFilter<T> entityFilter;
-	boolean entityChanged = false;
-	boolean editorCanceled = false;
-	Optional<T> focusedEntity = Optional.empty();
+	private final Button addButton;
+	private final Button removeButton;
+	private final Grid<T> grid;
+	private final BeanValidationBinder<T> binder;
+	private final HeaderRow searchHeaderRow;
+	private final EntityFilter<T> entityFilter;
+
+	private boolean entityChanged = false;
+	private boolean editorCanceled = false;
+	private Optional<T> focusedEntity = Optional.empty();
+	private Optional<Column<T>> focusedColumn = Optional.empty();
 
 	Map<String, SerializablePredicate<T>> searchFilter = new HashMap<>();
 
@@ -64,11 +72,40 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 
 		setSizeFull();
 
+		grid = new Grid<>(entityClass, false);
+
+		final HorizontalLayout headerPanel = new HorizontalLayout();
+		headerPanel.setWidthFull();
+		add(headerPanel);
+
 		title = new H1(getHeader());
 		title.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
-		add(title);
+		headerPanel.add(title);
 
-		grid = new Grid<>(entityClass, false);
+		addButton = new Button();
+		addButton.setId("entitylist.add");
+		addButton.setIcon(VaadinIcon.PLUS.create());
+		addButton.addClickListener(event -> {
+			log.trace("add button clicked");
+			if (grid.getEditor().isOpen()) {
+				grid.getEditor().closeEditor();
+			}
+			final T newEntity = createNewEmptyEntity();
+			focusedColumn = Optional.of(grid.getColumns().get(0));
+			grid.getListDataView().addItem(newEntity);
+			editEntity(newEntity);
+		});
+		headerPanel.add(addButton);
+
+		removeButton = new Button();
+		removeButton.setId("entitylist.remove");
+		removeButton.setIcon(VaadinIcon.MINUS.create());
+		removeButton.addClickListener(event -> {
+			grid.getSelectionModel().getFirstSelectedItem().ifPresent(entity -> deleteEntity(entity));
+		});
+		removeButton.setEnabled(false);
+		headerPanel.add(removeButton);
+
 		grid.setColumnReorderingAllowed(true);
 		add(grid);
 
@@ -81,24 +118,70 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 		editor.setBinder(binder);
 		editor.setBuffered(false);
 
+		addEditorCancelListener(editor);
+		addEditorCloseListener(repository, editor);
+		addEditorOpenListener(editor);
+		addGridClickListener();
+		addGridDoubleClickListener();
+		addEnterHandler(grid);
+		addEscapeHandler(grid);
+		addGridCellFocusListener();
+		grid.setSelectionMode(SelectionMode.SINGLE);
+		addGridSelectionListener();
+
+		// addTextColumn(Entity.Fields.id, "domain.entity.id");
+		addNameColumn(NamedEntity.Fields.name, "domain.entity.name");
+	}
+
+	private void addGridSelectionListener() {
+		grid.addSelectionListener(event -> {
+			log.trace("selected %s".formatted(event.getFirstSelectedItem()));
+			event.getFirstSelectedItem().ifPresentOrElse(selection -> {
+				focusedEntity = Optional.of(selection);
+				removeButton.setEnabled(true);
+			}, () -> removeButton.setEnabled(false));
+		});
+	}
+
+	private void addGridClickListener() {
+		grid.addItemClickListener(event -> {
+			log.trace("clicked %s".formatted(event.getItem()));
+		});
+	}
+
+	private void addEditorCancelListener(final Editor<T> editor) {
 		editor.addCancelListener(l -> {
 			log.trace("Cancel");
 		});
+	}
 
+	private void addEditorCloseListener(EntityRepository<T> repository, final Editor<T> editor) {
 		editor.addCloseListener(l -> {
 			log.trace("close editor");
 			if (entityChanged && !editorCanceled) {
-				log.trace("save");
 				final T entity = l.getItem();
-				repository.update(entity);
+				if (entity.getId() == null) {
+					log.trace("create");
+					repository.create(entity);
+				} else {
+					log.trace("update");
+					repository.update(entity);
+				}
+				grid.getDataProvider().refreshItem(entity);
 			}
 			resetEditorState();
 			refreshTable();
 		});
+	}
 
+	private void addEditorOpenListener(final Editor<T> editor) {
 		editor.addOpenListener(l -> {
 			log.trace("open editor");
 			resetEditorState();
+			removeButton.setEnabled(false);
+
+			focusedColumn.ifPresentOrElse(column -> focusComponent(column.getEditorComponent()),
+					() -> focusComponent(grid.getColumns().get(0)));
 
 			l.getSource().getBinder().addValueChangeListener(e -> {
 				final Object oldValue = e.getOldValue();
@@ -110,7 +193,9 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 				}
 			});
 		});
+	}
 
+	private void addGridDoubleClickListener() {
 		grid.addItemDoubleClickListener(e -> {
 			log.trace("double clicked");
 			grid.getEditor().editItem(e.getItem());
@@ -119,30 +204,53 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 				focusableComponent.focus();
 			}
 		});
-		addEnterHandler(grid);
-		addEscapeHandler(grid);
+	}
+
+	private void addGridCellFocusListener() {
 		grid.addCellFocusListener(event -> {
 			log.trace("cell focused (section: %s)".formatted(event.getSection()));
 			if (event.getSection() == GridSection.BODY) {
-				focusedEntity = event.getItem();
+				if (grid.getEditor().isOpen()) {
+					log.trace("column %s".formatted(event.getColumn().get().getHeaderText()));
+					focusedColumn = event.getColumn();
+				} else {
+					log.trace("cell focused (old: %s)".formatted(focusedEntity));
+					log.trace("cell focused (new: %s)".formatted(event.getItem()));
+					event.getItem().ifPresent(item -> {
+						focusedEntity = event.getItem();
+						focusedColumn = event.getColumn();
+						log.trace("select %s".formatted(item));
+						grid.getSelectionModel().select(item);
+					});
+				}
 			} else {
+				log.trace("reset focus");
 				focusedEntity = Optional.empty();
+				focusedColumn = Optional.empty();
 				if (grid.getEditor().isOpen()) {
 					grid.getEditor().closeEditor();
 				}
 			}
 		});
+	}
 
-		// refreshTable();
+	private void focusComponent(final Component component) {
+		if (component instanceof final Focusable<?> focusableComponent) {
+			focusableComponent.focus();
+		}
+	}
 
-		// addTextColumn(Entity.Fields.id, "domain.entity.id");
-		addNameColumn(NamedEntity.Fields.name, "domain.entity.name");
+	protected abstract T createNewEmptyEntity();
+
+	private void deleteEntity(T entity) {
+		log.trace("delete button pressed");
+		repository.delete(entity.getId());
+		refreshTable();
 	}
 
 	private void resetEditorState() {
 		editorCanceled = false;
 		entityChanged = false;
-		focusedEntity = Optional.empty();
 	}
 
 	private void addEscapeHandler(Component component) {
@@ -163,11 +271,19 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 			if (grid.getEditor().isOpen()) {
 				grid.getEditor().closeEditor();
 			} else {
-				focusedEntity.ifPresentOrElse(selectedEntity -> grid.getEditor().editItem(selectedEntity),
-						() -> grid.getSelectionModel().getFirstSelectedItem()
-								.ifPresent(selectedEntity -> grid.getEditor().editItem(selectedEntity)));
+				editEntity();
 			}
 		}).setFilter("event.key === 'Enter'");
+	}
+
+	private void editEntity(T entity) {
+		log.trace("Edit entity %s".formatted(entity));
+		grid.getEditor().editItem(entity);
+	}
+
+	private void editEntity() {
+		focusedEntity.ifPresentOrElse(focusedEntity -> editEntity(focusedEntity), () -> grid.getSelectionModel()
+				.getFirstSelectedItem().ifPresent(selectedEntity -> editEntity(selectedEntity)));
 	}
 
 	private TextField createTextField(String id) {
@@ -181,10 +297,12 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 
 	@Override
 	public void beforeEnter(BeforeEnterEvent event) {
+		log.trace("beforeEnter");
 		refreshTable();
 	}
 
 	private void refreshTable() {
+		log.trace("refreshTable");
 		final ListDataProvider<T> dataProvider = new ListDataProvider<T>(repository.findAll());
 		final GridListDataView<T> gridListDataView = grid.setItems(dataProvider);
 		entityFilter.setDataView(gridListDataView);
@@ -210,8 +328,6 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 	protected <PROPERTY_TYPE> Column<T> addColumn(String propertyName, String id,
 			Converter<String, PROPERTY_TYPE> converter) {
 		final TextField entityField = createTextField(id);
-		addEscapeHandler(entityField);
-		addEnterHandler(entityField);
 		binder.forField(entityField).withNullRepresentation("").withConverter(converter).bind(propertyName);
 		final Grid.Column<T> column = grid.addColumn(propertyName).setHeader(getTranslation(id))
 				.setEditorComponent(entityField);
@@ -222,8 +338,6 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 
 	protected Column<T> addColumn(String propertyName, String id) {
 		final TextField entityField = createTextField(id);
-		addEscapeHandler(entityField);
-		addEnterHandler(entityField);
 		binder.forField(entityField).withNullRepresentation("").bind(propertyName);
 		final Grid.Column<T> column = grid.addColumn(propertyName).setHeader(getTranslation(id))
 				.setEditorComponent(entityField);
