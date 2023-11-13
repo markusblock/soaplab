@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
 
-@Route(value = "fats2", layout = MainAppLayout.class)
+@Route(value = "fats", layout = MainAppLayout.class)
 //@RouteAlias(value = "", layout = MainAppLayout.class) // registers on the root path of the server, but doesn'T work together with Swagger
 public class FatsView2 extends EntityTableView<Fat> {
 

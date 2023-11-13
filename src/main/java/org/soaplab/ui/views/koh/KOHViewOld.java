@@ -11,13 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
 
-@Route(value = "koh", layout = MainAppLayout.class)
-public class KOHView extends EntityView<KOH> {
+@Route(value = "koh2", layout = MainAppLayout.class)
+public class KOHViewOld extends EntityView<KOH> {
 
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	public KOHView(KOHRepository repository) {
+	public KOHViewOld(KOHRepository repository) {
 		super(repository);
 	}
 
