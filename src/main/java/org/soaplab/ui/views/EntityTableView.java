@@ -15,6 +15,7 @@ import org.springframework.util.ObjectUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.grid.CellFocusEvent.GridSection;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
@@ -43,6 +44,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@JsModule("@vaadin/vaadin-lumo-styles/presets/compact.js")
 public abstract class EntityTableView<T extends NamedEntity> extends VerticalLayout implements BeforeEnterObserver {
 
 	private static final long serialVersionUID = 1L;
@@ -151,6 +153,8 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 	private void addGridClickListener() {
 		grid.addItemClickListener(event -> {
 			log.trace("clicked %s".formatted(event.getItem()));
+			focusedEntity = Optional.ofNullable(event.getItem());
+			focusedColumn = Optional.ofNullable(event.getColumn());
 		});
 	}
 
@@ -204,10 +208,7 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 		grid.addItemDoubleClickListener(e -> {
 			log.trace("double clicked");
 			grid.getEditor().editItem(e.getItem());
-			final Component editorComponent = e.getColumn().getEditorComponent();
-			if (editorComponent instanceof final Focusable<?> focusableComponent) {
-				focusableComponent.focus();
-			}
+			focusComponent(e.getColumn().getEditorComponent());
 		});
 	}
 
@@ -222,10 +223,9 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 					log.trace("cell focused (old: %s)".formatted(focusedEntity));
 					log.trace("cell focused (new: %s)".formatted(event.getItem()));
 					event.getItem().ifPresent(item -> {
+						grid.getSelectionModel().deselectAll();
 						focusedEntity = event.getItem();
 						focusedColumn = event.getColumn();
-						log.trace("select %s".formatted(item));
-						grid.getSelectionModel().select(item);
 					});
 				}
 			} else {
