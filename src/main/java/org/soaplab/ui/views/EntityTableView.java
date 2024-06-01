@@ -366,10 +366,10 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 	}
 
 	protected Column<T> addColumn(String propertyName, String id) {
-		final TextField entityField = createTextField(id);
-		entityField.setWidthFull();
-		binder.forField(entityField).withNullRepresentation("").bind(propertyName);
-		final Grid.Column<T> column = grid.addColumn(propertyName).setEditorComponent(entityField);
+		final TextField propertyEditor = createTextField(id);
+		propertyEditor.setWidthFull();
+		binder.forField(propertyEditor).withNullRepresentation("").bind(propertyName);
+		final Grid.Column<T> column = grid.addColumn(propertyName).setEditorComponent(propertyEditor);
 		column.setResizable(true);
 		searchHeaderRow.getCell(column)
 				.setComponent(createFilterHeader(propertyName, id, entityFilter::setFilterToProperty));
