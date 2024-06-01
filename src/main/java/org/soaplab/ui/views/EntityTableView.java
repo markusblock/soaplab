@@ -20,6 +20,7 @@ import com.vaadin.flow.component.grid.CellFocusEvent.GridSection;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.grid.editor.Editor;
@@ -75,6 +76,9 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 		setSizeFull();
 
 		grid = new Grid<>(entityClass, false);
+		// <theme-editor-local-classname>
+		grid.addClassName("entity-table-view-grid-1");
+		grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
 
 		final HorizontalLayout headerPanel = new HorizontalLayout();
 		headerPanel.setWidthFull();
@@ -311,10 +315,11 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 		final ListDataProvider<T> dataProvider = new ListDataProvider<T>(repository.findAll());
 		final GridListDataView<T> gridListDataView = grid.setItems(dataProvider);
 		entityFilter.setDataView(gridListDataView);
+		grid.recalculateColumnWidths();
 	}
 
 	protected void addNameColumn(String propertyName, String id) {
-		addColumn(propertyName, id).setResizable(true).setAutoWidth(true).setFlexGrow(1);
+		addColumn(propertyName, id).setAutoWidth(true).setFlexGrow(1);
 	}
 
 	protected void addIntegerColumn(String propertyName, String id) {
@@ -346,15 +351,15 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 
 	protected <PROPERTY_TYPE> Column<T> addPropertyColumn(String propertyName, String id,
 			Converter<String, PROPERTY_TYPE> converter) {
-		return addColumn(propertyName, id, converter).setAutoWidth(false).setFlexGrow(0).setWidth("7em");
+		return addColumn(propertyName, id, converter);
 	}
 
 	protected <PROPERTY_TYPE> Column<T> addColumn(String propertyName, String id,
 			Converter<String, PROPERTY_TYPE> converter) {
 		final TextField entityField = createTextField(id);
 		binder.forField(entityField).withNullRepresentation("").withConverter(converter).bind(propertyName);
-		final Grid.Column<T> column = grid.addColumn(propertyName).setHeader(getTranslation(id))
-				.setEditorComponent(entityField);
+		final Grid.Column<T> column = grid.addColumn(propertyName).setEditorComponent(entityField);
+		column.setResizable(true);
 		searchHeaderRow.getCell(column)
 				.setComponent(createFilterHeader(propertyName, id, entityFilter::setFilterToProperty));
 		return column;
@@ -362,9 +367,10 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 
 	protected Column<T> addColumn(String propertyName, String id) {
 		final TextField entityField = createTextField(id);
+		entityField.setWidthFull();
 		binder.forField(entityField).withNullRepresentation("").bind(propertyName);
-		final Grid.Column<T> column = grid.addColumn(propertyName).setHeader(getTranslation(id))
-				.setEditorComponent(entityField);
+		final Grid.Column<T> column = grid.addColumn(propertyName).setEditorComponent(entityField);
+		column.setResizable(true);
 		searchHeaderRow.getCell(column)
 				.setComponent(createFilterHeader(propertyName, id, entityFilter::setFilterToProperty));
 		return column;
@@ -375,15 +381,14 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 		final String headerValue = getTranslation(id);
 		final NativeLabel label = new NativeLabel(headerValue);
 		label.getStyle().set("padding-top", "var(--lumo-space-m)").set("font-size", "var(--lumo-font-size-xs)");
+
 		final TextField textField = new TextField();
 		textField.setValueChangeMode(ValueChangeMode.EAGER);
 		textField.setClearButtonVisible(true);
 		textField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
-		textField.setWidthFull();
-		textField.getStyle().set("max-width", "100%");
 		textField.addValueChangeListener(e -> filterChangeConsumer.accept(propertyName, e.getValue()));
+
 		final VerticalLayout layout = new VerticalLayout(label, textField);
-		layout.setWidthFull();
 		layout.getThemeList().clear();
 		layout.getThemeList().add("spacing-xs");
 
