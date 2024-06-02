@@ -18,6 +18,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.WebElementCondition;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,10 +27,11 @@ import lombok.Getter;
 @Getter
 public class VaadinGrid {
 
-	private By locator;
+	private final By locator;
 
 	public Optional<SelenideElement> getTdElementByValueOfFirstColumn(String value) {
-		List<SelenideElement> vaadinGridCellContents = getVaadinGridCellContentByNameInFirstColumn(List.of(value));
+		final List<SelenideElement> vaadinGridCellContents = getVaadinGridCellContentByNameInFirstColumn(
+				List.of(value));
 		if (CollectionUtils.isEmpty(vaadinGridCellContents)) {
 			return Optional.empty();
 		}
@@ -69,28 +71,29 @@ public class VaadinGrid {
 
 	public List<SelenideElement> getVaadinGridCellContentByNameInFirstColumn(List<String> values) {
 
-		Condition condition;
+		WebElementCondition condition;
 
 		if (values.size() == 1) {
 			condition = Condition.text(values.get(0));
 		} else if (values.size() == 2) {
 			condition = Condition.or("", Condition.text(values.get(0)), Condition.text(values.get(1)));
 		} else {
-			Condition[] conditions = new Condition[values.size() - 2];
+			final WebElementCondition[] conditions = new WebElementCondition[values.size() - 2];
 			for (int i = 0; i < values.size(); i++) {
 				conditions[i] = Condition.text(values.get(i + 2));
 			}
 			condition = Condition.or("", Condition.text(values.get(0)), Condition.text(values.get(1)), conditions);
 		}
 
-		return Selenide.$(locator).$$("vaadin-grid-cell-content").filterBy(condition).stream()
+		return Selenide.$(locator).$$("vaadin-grid-cell-content").filterBy(condition).asDynamicIterable().stream()
 				.map(gridCellContent -> getTdElement(gridCellContent))
 				.filter(tdElement -> tdElement.has(Condition.attribute("first-column")))
 				.filter(tdElement -> tdElement.is(Condition.visible)).collect(Collectors.toList());
 	}
 
 	private List<SelenideElement> getVaadinGridCellContentsOfFirstColumn() {
-		return getFirstColumnTds().stream().map(td -> getVaadinGridCellContentElement(td)).collect(Collectors.toList());
+		return getFirstColumnTds().asDynamicIterable().stream().map(td -> getVaadinGridCellContentElement(td))
+				.collect(Collectors.toList());
 	}
 
 	private ElementsCollection getFirstColumnTds() {
@@ -99,8 +102,8 @@ public class VaadinGrid {
 	}
 
 	private SelenideElement getTdElement(SelenideElement vaadinGridCellContent) {
-		String slotName = vaadinGridCellContent.getAttribute("slot");
-		SelenideElement tdElement = Selenide
+		final String slotName = vaadinGridCellContent.getAttribute("slot");
+		final SelenideElement tdElement = Selenide
 				.$$(Selectors.shadowCss("tbody td slot", "vaadin-grid[id='entitylist.grid']"))
 				.filterBy(Condition.attribute("name", slotName)).shouldHave(CollectionCondition.size(1)).get(0)
 				.parent();
@@ -108,7 +111,7 @@ public class VaadinGrid {
 	}
 
 	private SelenideElement getVaadinGridCellContentElement(SelenideElement tdElement) {
-		String slotName = tdElement.$(Selectors.byTagName("slot")).getAttribute("name");
+		final String slotName = tdElement.$(Selectors.byTagName("slot")).getAttribute("name");
 		return $(Selectors.byCssSelector("vaadin-grid-cell-content[slot='" + slotName + "']"));
 	}
 

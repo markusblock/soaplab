@@ -9,17 +9,18 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.WebElementCondition;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class VaadinUtils {
 
-	public static Condition disabled() {
+	public static WebElementCondition disabled() {
 		return Condition.attribute("disabled");
 	}
 
-	public static Condition selected() {
+	public static WebElementCondition selected() {
 		return Condition.attribute("selected");
 	}
 

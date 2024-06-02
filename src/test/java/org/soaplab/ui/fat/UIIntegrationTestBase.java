@@ -200,7 +200,7 @@ public class UIIntegrationTestBase {
 	}
 
 	private static void configureDatabaseFolder(Environment environment) {
-		final String databaseFolderProperty = environment.getProperty("one.microstream.storage-directory");
+		final String databaseFolderProperty = environment.getProperty("org.eclipse.store.storage-directory");
 		if (databaseFolder == null) {
 			databaseFolder = new File(databaseFolderProperty);
 			log.info("Setting database folder to " + databaseFolder);
