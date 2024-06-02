@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.eclipse.serializer.concurrency.XThreads;
+import org.eclipse.store.storage.embedded.types.EmbeddedStorageManager;
 import org.soaplab.SoaplabProperties;
 import org.soaplab.domain.NamedEntity;
 import org.soaplab.domain.exception.DuplicateNameException;
@@ -20,8 +22,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import lombok.extern.slf4j.Slf4j;
-import one.microstream.concurrency.XThreads;
-import one.microstream.storage.types.StorageManager;
 
 @Component
 @Slf4j
@@ -34,7 +34,7 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 	@Autowired
 	private SoaplabProperties properties;
 	@Autowired
-	protected StorageManager repository;
+	protected EmbeddedStorageManager repository;
 
 	@Override
 	public T create(T entity) {
@@ -44,9 +44,10 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 
 		final UUID uuid = UUID.randomUUID();
 		final T entityCopy = (T) entity.toBuilder().id(uuid).build();
-		log.info("Adding new entity " + entityCopy);
+		log.info("Creating entity " + entityCopy);
 
 		XThreads.executeSynchronized(() -> {
+			storeEntityInRepository(entityCopy);
 			getEntitiesInternal().add(entityCopy);
 			storeEntitiesInRepository();
 		});

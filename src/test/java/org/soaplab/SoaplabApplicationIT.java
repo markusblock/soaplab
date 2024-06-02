@@ -74,7 +74,7 @@ class SoaplabApplicationIT {
 		configureSelenideBaseSetup();
 
 		registerShutdownHook();
-		Integer port = environment.getProperty("local.server.port", Integer.class);
+		final Integer port = environment.getProperty("local.server.port", Integer.class);
 		Configuration.baseUrl = "http://127.0.0.1:" + port;
 		log.info("Setting up Selenide to use app at {}", Configuration.baseUrl);
 
@@ -90,19 +90,19 @@ class SoaplabApplicationIT {
 
 		assertThat(context).isNotNull();
 
-		Fat fat = repoHelper.createFat();
+		final Fat fat = repoHelper.createFat();
 
-		ResponseEntity<String> response = restTemplate
+		final ResponseEntity<String> response = restTemplate
 				.getForEntity(createURLWithPort("/soaplab/rest/fats/" + fat.getId()), String.class);
 		System.out.println("RESPONSE\n" + response.getBody());
 
-		ResponseEntity<String> response2 = restTemplate.getForEntity(createURLWithPort("/soaplab/ui/fats/"),
+		final ResponseEntity<String> response2 = restTemplate.getForEntity(createURLWithPort("/soaplab/ui/fats/"),
 				String.class);
 		System.out.println("RESPONSE\n" + response2.getBody());
 
-		ObjectMapper mapper = new ObjectMapper();
+		final ObjectMapper mapper = new ObjectMapper();
 
-		String expected = mapper.writeValueAsString(fat);
+		final String expected = mapper.writeValueAsString(fat);
 		System.out.println("EXPECTED\n" + expected);
 		JSONAssert.assertEquals(expected, response.getBody(), false);
 
@@ -120,10 +120,11 @@ class SoaplabApplicationIT {
 
 	private static void configureSelenideBaseSetup() {
 		Configuration.browser = Browsers.FIREFOX;
-		FirefoxProfile profile = new FirefoxProfile();
+		final FirefoxProfile profile = new FirefoxProfile();
 		profile.setPreference("intl.accept_languages", Locale.getDefault().getLanguage());
-		FirefoxOptions browserOptions = new FirefoxOptions().setProfile(profile).setHeadless(true)
-				.addArguments("--no-sandbox").addArguments("--disable-dev-shm-usage");
+		final FirefoxOptions browserOptions = new FirefoxOptions().setProfile(profile).addArguments("--no-sandbox")
+				.addArguments("--disable-dev-shm-usage").addArguments("--headless=new");
+		;
 		Configuration.headless = true;
 		Configuration.browserCapabilities = browserOptions;
 		Configuration.reportsFolder = "target/failsafe-reports";
@@ -133,7 +134,7 @@ class SoaplabApplicationIT {
 	}
 
 	private static void configureDatabaseFolder(Environment environment) {
-		String databaseFolderProperty = environment.getProperty("microstream.store.location");
+		final String databaseFolderProperty = environment.getProperty("microstream.store.location");
 		if (databaseFolder == null) {
 			databaseFolder = new File(databaseFolderProperty);
 			log.info("Setting database folder to " + databaseFolder);
@@ -141,7 +142,7 @@ class SoaplabApplicationIT {
 	}
 
 	private static void configureDefaultLocale() {
-		TestLocale locale = TestSystemPropertyHelper.getTestLocale();
+		final TestLocale locale = TestSystemPropertyHelper.getTestLocale();
 		log.info("Setting locale to {}", locale);
 		switch (locale) {
 		case DE:
@@ -165,31 +166,31 @@ class SoaplabApplicationIT {
 		try {
 			if (databaseFolder != null) {
 				// also remove old testdatabase files&folders
-				String[] testDatabasesFolders = databaseFolder.getParentFile()
+				final String[] testDatabasesFolders = databaseFolder.getParentFile()
 						.list((dir, name) -> name.startsWith("test-"));
 				for (int i = 0; i < testDatabasesFolders.length; i++) {
 					try {
-						File fileToDelete = new File(databaseFolder.getParentFile(), testDatabasesFolders[i]);
+						final File fileToDelete = new File(databaseFolder.getParentFile(), testDatabasesFolders[i]);
 						FileUtils.forceDelete(fileToDelete);
 						log.info("[DONE] Removing testdatabase: " + fileToDelete);
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						log.error("[ERROR] Error occured while removing testdatabase: " + databaseFolder, e);
 					}
 				}
 				databaseFolder = null;
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			log.error("[ERROR] Error occured while removing testdatabase: " + databaseFolder, e);
 		}
 	}
 
 	private static void registerShutdownHook() {
-		Runnable shutdownTask = () -> {
+		final Runnable shutdownTask = () -> {
 			WebDriverRunner.closeWebDriver();
 			removeDatabaseFolder();
 		};
 
-		Thread shutdownThread = new Thread(shutdownTask, "Database Shutdown Thread");
+		final Thread shutdownThread = new Thread(shutdownTask, "Database Shutdown Thread");
 		Runtime.getRuntime().addShutdownHook(shutdownThread);
 	}
 

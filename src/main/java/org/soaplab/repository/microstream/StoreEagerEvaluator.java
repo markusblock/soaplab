@@ -6,7 +6,7 @@ import java.lang.reflect.ParameterizedType;
 import org.soaplab.domain.ExplicitEntity;
 import org.soaplab.domain.ImplicitEntity;
 
-import one.microstream.persistence.types.PersistenceEagerStoringFieldEvaluator;
+import org.eclipse.serializer.persistence.types.PersistenceEagerStoringFieldEvaluator;
 
 /**
  * Custom field evaluator which looks for the {@link ImplicitEntity} annotation

@@ -4,19 +4,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import lombok.extern.slf4j.Slf4j;
-import one.microstream.X;
-import one.microstream.afs.nio.types.NioFileSystem;
-import one.microstream.afs.types.ADirectory;
-import one.microstream.afs.types.AReadableFile;
-import one.microstream.collections.types.XSequence;
-import one.microstream.storage.types.StorageConnection;
-import one.microstream.storage.types.StorageDataConverterCsvConfiguration;
-import one.microstream.storage.types.StorageDataConverterTypeBinaryToCsv;
-import one.microstream.storage.types.StorageEntityTypeConversionFileProvider;
-import one.microstream.storage.types.StorageEntityTypeExportFileProvider;
-import one.microstream.storage.types.StorageEntityTypeExportStatistics;
-import one.microstream.storage.types.StorageManager;
-import one.microstream.util.cql.CQL;
+import org.eclipse.store.afs.nio.types.NioFileSystem;
+import org.eclipse.serializer.afs.types.ADirectory;
+import org.eclipse.serializer.afs.types.AReadableFile;
+import org.eclipse.serializer.collections.types.XSequence;
+import org.eclipse.serializer.util.X;
+import org.eclipse.store.storage.types.StorageConnection;
+import org.eclipse.store.storage.types.StorageDataConverterCsvConfiguration;
+import org.eclipse.store.storage.types.StorageDataConverterTypeBinaryToCsv;
+import org.eclipse.store.storage.types.StorageEntityTypeConversionFileProvider;
+import org.eclipse.store.storage.types.StorageEntityTypeExportFileProvider;
+import org.eclipse.store.storage.types.StorageEntityTypeExportStatistics;
+import org.eclipse.store.storage.types.StorageManager;
+import org.eclipse.serializer.util.cql.CQL;
 
 @Slf4j
 public class MicrostreamDatabaseImportExport {
