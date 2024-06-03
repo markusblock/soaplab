@@ -357,6 +357,7 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 	protected <PROPERTY_TYPE> Column<T> addColumn(String propertyName, String id,
 			Converter<String, PROPERTY_TYPE> converter) {
 		final TextField entityField = createTextField(id);
+
 		binder.forField(entityField).withNullRepresentation("").withConverter(converter).bind(propertyName);
 		final Grid.Column<T> column = grid.addColumn(propertyName).setEditorComponent(entityField);
 		column.setResizable(true);

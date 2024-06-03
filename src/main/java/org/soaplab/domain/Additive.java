@@ -1,6 +1,8 @@
 
 package org.soaplab.domain;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -19,6 +21,8 @@ import lombok.experimental.SuperBuilder;
 public class Additive extends Ingredient {
 
 	private static final long serialVersionUID = 1L;
+
+	private BigDecimal sapNaoh;
 
 	@Override
 	public AdditiveBuilder<?, ?> getCopyBuilder() {

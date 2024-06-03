@@ -1,7 +1,6 @@
 package org.soaplab.ui.views.additives;
 
 import org.soaplab.domain.Additive;
-import org.soaplab.domain.Fat;
 import org.soaplab.repository.AdditiveRepository;
 import org.soaplab.ui.MainAppLayout;
 import org.soaplab.ui.views.IngredientTableViewParent;
@@ -18,7 +17,7 @@ public class AdditiveView extends IngredientTableViewParent<Additive> {
 	public AdditiveView(AdditiveRepository repository) {
 		super(Additive.class, repository);
 
-		addBigDecimalColumn(Fat.Fields.sapNaoh, "domain.ingredient.sapnaoh");
+		addBigDecimalColumn(Additive.Fields.sapNaoh, "domain.ingredient.sapnaoh");
 	}
 
 	@Override
