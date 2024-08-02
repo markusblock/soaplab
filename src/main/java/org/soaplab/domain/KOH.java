@@ -23,6 +23,6 @@ public class KOH extends Lye {
 	/**
 	 * The purity of the KOH
 	 */
-	private Percentage kOHPurity;
+	private Percentage kohPurity;
 
 }

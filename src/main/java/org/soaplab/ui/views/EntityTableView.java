@@ -14,6 +14,7 @@ import org.springframework.util.ObjectUtils;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.grid.CellFocusEvent.GridSection;
@@ -24,6 +25,7 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.grid.editor.Editor;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -331,7 +333,7 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 	}
 
 	protected void addPercentageColumn(String propertyName, String id) {
-		addPropertyColumn(propertyName, id, new StringToPercentageConverter());
+		addPropertyColumn(propertyName, id, new StringToPercentageConverter(), new Div(new Text("%")));
 		// TODO set suffix component
 //		final TextField propertyField = createPropertyTextField(id);
 //		propertyField.setSuffixComponent(new Div(new Text("%")));
@@ -342,7 +344,7 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 	}
 
 	protected void addPriceColumn(String propertyName, String id) {
-		addPropertyColumn(propertyName, id, new StringToPriceValueConverter());
+		addPropertyColumn(propertyName, id, new StringToPriceValueConverter(), new Div(new Text("€")));
 		// TODO set suffix component
 //		grid.addColumn(LitRenderer.<T>of("<b>${item.cost} €</b>").withProperty("cost",
 //				ingredient -> new StringToPriceValueConverter().convertToPresentation(ingredient.getCost(),
@@ -351,12 +353,18 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 
 	protected <PROPERTY_TYPE> Column<T> addPropertyColumn(String propertyName, String id,
 			Converter<String, PROPERTY_TYPE> converter) {
-		return addColumn(propertyName, id, converter);
+		return addColumn(propertyName, id, converter, null);
+	}
+
+	protected <PROPERTY_TYPE> Column<T> addPropertyColumn(String propertyName, String id,
+			Converter<String, PROPERTY_TYPE> converter, Component suffixComponent) {
+		return addColumn(propertyName, id, converter, suffixComponent);
 	}
 
 	protected <PROPERTY_TYPE> Column<T> addColumn(String propertyName, String id,
-			Converter<String, PROPERTY_TYPE> converter) {
+			Converter<String, PROPERTY_TYPE> converter, Component suffixComponent) {
 		final TextField entityField = createTextField(id);
+		entityField.setSuffixComponent(suffixComponent);
 
 		binder.forField(entityField).withNullRepresentation("").withConverter(converter).bind(propertyName);
 		final Grid.Column<T> column = grid.addColumn(propertyName).setEditorComponent(entityField);

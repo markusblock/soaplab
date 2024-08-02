@@ -5,7 +5,20 @@ import java.math.RoundingMode;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
-import org.soaplab.domain.*;
+import org.soaplab.domain.Acid;
+import org.soaplab.domain.Additive;
+import org.soaplab.domain.Fat;
+import org.soaplab.domain.Fragrance;
+import org.soaplab.domain.FragranceRecipe;
+import org.soaplab.domain.Ingredient;
+import org.soaplab.domain.Liquid;
+import org.soaplab.domain.LyeRecipe;
+import org.soaplab.domain.Percentage;
+import org.soaplab.domain.Price;
+import org.soaplab.domain.RecipeEntry;
+import org.soaplab.domain.SoapRecipe;
+import org.soaplab.domain.Weight;
+import org.soaplab.domain.WeightUnit;
 import org.soaplab.domain.utils.PercentageCalculator;
 import org.soaplab.domain.utils.PriceCalculator;
 import org.soaplab.domain.utils.WeightCalculator;
@@ -62,8 +75,8 @@ public class SoapCalculatorService {
 
 		validateSoapRecipeForErros(soapRecipe, issueCollector);
 
-		LyeRecipe lyeRecipe = soapRecipe.getLyeRecipe();
-		FragranceRecipe fragranceRecipe = soapRecipe.getFragranceRecipe();
+		final LyeRecipe lyeRecipe = soapRecipe.getLyeRecipe();
+		final FragranceRecipe fragranceRecipe = soapRecipe.getFragranceRecipe();
 
 		/*
 		 * Fats
@@ -94,7 +107,7 @@ public class SoapCalculatorService {
 		/*
 		 * Fragrances
 		 */
-		if(fragranceRecipe!=null){
+		if (fragranceRecipe != null) {
 			final Percentage fragranceTotalPercentage = soapRecipe.getFragranceToFatRatio();
 			fragranceRecipe.setWeight(Weight.of(0, WeightUnit.GRAMS));
 			fragranceRecipe.setCosts(Price.of(0));
@@ -232,7 +245,7 @@ public class SoapCalculatorService {
 		}
 		lyeRecipe.setKohTotal(Weight.of(0, WeightUnit.GRAMS));
 		if (Percentage.isGreaterThanZero(kohPercentage)) {
-			final Percentage kohPurity = lyeRecipe.getKOH().getIngredient().getKOHPurity();
+			final Percentage kohPurity = lyeRecipe.getKOH().getIngredient().getKohPurity();
 			final BigDecimal naohToKohConversion = BigDecimal.valueOf(1.40272);
 			lyeRecipe.setKohTotal(weightCalc.multiply(naohForFatsAndAcidsAndLiquids, naohToKohConversion,
 					percentageCalc.divide(kohPercentage, kohPurity)));
@@ -260,7 +273,7 @@ public class SoapCalculatorService {
 	 * Calculates the weight of the {@link Ingredient} based on the percentage
 	 * defined in the {@link RecipeEntry} and sets it to the {@link RecipeEntry} and
 	 * also returns it.
-	 * 
+	 *
 	 * @param ingredientEntry defines the percentage
 	 * @param weightTotal     defines the 100% according to that the weight is
 	 *                        calculated
@@ -268,15 +281,15 @@ public class SoapCalculatorService {
 	 */
 	private Optional<Weight> calculateIngredientWeight(RecipeEntry<? extends Ingredient> ingredientEntry,
 			Weight weightTotal) {
-		Percentage percentage = ingredientEntry.getPercentage();
+		final Percentage percentage = ingredientEntry.getPercentage();
 		final Weight ingredientWeight = weightCalc.calculatePercentage(weightTotal, percentage);
 		ingredientEntry.setWeight(ingredientWeight);
 		return Optional.of(ingredientWeight);
 	}
 
 	private Optional<Price> calculateIngredientPrice(RecipeEntry<? extends Ingredient> ingredientEntry) {
-		Ingredient ingredient = ingredientEntry.getIngredient();
-		Weight ingredientWeight = ingredientEntry.getWeight();
+		final Ingredient ingredient = ingredientEntry.getIngredient();
+		final Weight ingredientWeight = ingredientEntry.getWeight();
 
 		if (ingredient.getCost() == null) {
 			log.warning("Ignoring price of ingredient " + ingredient + " because price per 100g not set");

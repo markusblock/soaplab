@@ -17,7 +17,7 @@ public class KOHView extends IngredientTableViewParent<KOH> {
 	public KOHView(KOHRepository repository) {
 		super(KOH.class, repository);
 
-		// addPercentageColumn(KOH.Fields.kOHPurity, "domain.koh.kohpurity");
+		addPercentageColumn(KOH.Fields.kohPurity, "domain.koh.kohpurity");
 	}
 
 	@Override

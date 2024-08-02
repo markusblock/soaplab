@@ -11,7 +11,7 @@ public class KOHDetailsPanel extends IngredientDetails<KOH> {
 	public KOHDetailsPanel(EntityViewDetailsControllerCallback<KOH> callback) {
 		super(callback);
 
-		addPropertyPercentageField("domain.koh.kohpurity", KOH::getKOHPurity, KOH::setKOHPurity);
+		addPropertyPercentageField("domain.koh.kohpurity", KOH::getKohPurity, KOH::setKohPurity);
 	}
 
 }
