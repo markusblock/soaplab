@@ -6,15 +6,26 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.soaplab.domain.*;
+import org.soaplab.domain.Acid;
 import org.soaplab.domain.Acid.AcidBuilder;
+import org.soaplab.domain.Additive;
 import org.soaplab.domain.Additive.AdditiveBuilder;
+import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fat.FatBuilder;
+import org.soaplab.domain.Fragrance;
 import org.soaplab.domain.Fragrance.FragranceBuilder;
+import org.soaplab.domain.FragranceRecipe;
+import org.soaplab.domain.FragranceType;
+import org.soaplab.domain.KOH;
 import org.soaplab.domain.KOH.KOHBuilder;
+import org.soaplab.domain.Liquid;
 import org.soaplab.domain.Liquid.LiquidBuilder;
+import org.soaplab.domain.LyeRecipe;
 import org.soaplab.domain.LyeRecipe.LyeRecipeBuilder;
+import org.soaplab.domain.NaOH;
 import org.soaplab.domain.NaOH.NaOHBuilder;
+import org.soaplab.domain.Percentage;
+import org.soaplab.domain.Price;
 
 import lombok.Getter;
 
@@ -45,7 +56,7 @@ public class RandomIngredientsTestData {
 
 	public static KOHBuilder<?, ?> getKOHBuilder() {
 		return KOH.builder().id(getRandomUUID()).name(getRandomString()).inci(getRandomString())
-				.kOHPurity(getRandomPercentage()).cost(getRandomPrice());
+				.kohPurity(getRandomPercentage()).cost(getRandomPrice());
 	}
 
 	public static FatBuilder<?, ?> getFatBuilder() {

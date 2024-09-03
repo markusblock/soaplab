@@ -21,7 +21,7 @@ public class KOHAssert extends IngredientAssert {
 		super.isDeepEqualTo(expected);
 
 		final KOH expectedKOH = (KOH) expected;
-		PercentageAssert.assertThat(getActual().getKOHPurity()).isDeepEqualTo(expectedKOH.getKOHPurity());
+		PercentageAssert.assertThat(getActual().getKohPurity()).isDeepEqualTo(expectedKOH.getKohPurity());
 
 		return this;
 	}
