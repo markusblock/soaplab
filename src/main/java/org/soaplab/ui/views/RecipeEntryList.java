@@ -105,11 +105,11 @@ public class RecipeEntryList<T extends Ingredient> extends Div {
 		selectedEntities.addSelectionListener(
 				event -> removeButton.setEnabled(editMode && event.getFirstSelectedItem().isPresent()));
 		final Column<RecipeEntry<T>> entityNameColumn = selectedEntities.addColumn(new IngredientValueProvider())
-				.setHeader(getTranslation("domain.entity.name")).setSortable(true);
+				.setSortable(true);
 		final NumberFormat formatter = NumberFormat.getInstance();
 		formatter.setMaximumFractionDigits(2);
 		final Column<RecipeEntry<T>> percentageColumn = selectedEntities
-				.addColumn(new NumberRenderer<RecipeEntry<T>>(new PercentageValueProvider(), formatter)).setHeader("%")
+				.addColumn(new NumberRenderer<RecipeEntry<T>>(new PercentageValueProvider(), formatter))
 				.setSortable(true);
 
 		final HorizontalLayout toolbar = new HorizontalLayout();
@@ -137,7 +137,7 @@ public class RecipeEntryList<T extends Ingredient> extends Div {
 		toolbar.add(removeButton);
 
 		final HeaderRow headerRow = selectedEntities.prependHeaderRow();
-		headerRow.join(entityNameColumn, percentageColumn);
+		// headerRow.join(entityNameColumn, percentageColumn);
 		headerRow.getCell(entityNameColumn).setComponent(toolbar);
 
 		content.add(selectedEntities);

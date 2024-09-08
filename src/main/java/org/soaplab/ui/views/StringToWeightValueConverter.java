@@ -16,7 +16,7 @@ public final class StringToWeightValueConverter implements Converter<String, Wei
 	private MyStringToBigDecConverter stringToBigDecConverter;
 
 	public StringToWeightValueConverter() {
-		stringToBigDecConverter = new MyStringToBigDecConverter("");
+		stringToBigDecConverter = new MyStringToBigDecConverter();
 	}
 
 	public Result<Weight> convertToModel(String value, ValueContext context) {

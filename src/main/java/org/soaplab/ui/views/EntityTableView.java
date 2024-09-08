@@ -329,26 +329,15 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 	}
 
 	protected void addBigDecimalColumn(String propertyName, String id) {
-		addPropertyColumn(propertyName, id, new MyStringToBigDecConverter(""));
+		addPropertyColumn(propertyName, id, new MyStringToBigDecConverter());
 	}
 
-	protected void addPercentageColumn(String propertyName, String id) {
-		addPropertyColumn(propertyName, id, new StringToPercentageConverter(), new Div(new Text("%")));
-		// TODO set suffix component
-//		final TextField propertyField = createPropertyTextField(id);
-//		propertyField.setSuffixComponent(new Div(new Text("%")));
-//		editablePropertyFields.add(propertyField);
-//		propertySection.addFormItem(propertyField, getTranslation(id));
-//		binder.forField(propertyField).withNullRepresentation("").withConverter(new StringToPercentageConverter())
-//				.bind(getter, setter);
+	protected Column<T> addPercentageColumn(String propertyName, String id) {
+		return addPropertyColumn(propertyName, id, new StringToPercentageConverter(), new Div(new Text("%")));
 	}
 
-	protected void addPriceColumn(String propertyName, String id) {
-		addPropertyColumn(propertyName, id, new StringToPriceValueConverter(), new Div(new Text("€")));
-		// TODO set suffix component
-//		grid.addColumn(LitRenderer.<T>of("<b>${item.cost} €</b>").withProperty("cost",
-//				ingredient -> new StringToPriceValueConverter().convertToPresentation(ingredient.getCost(),
-//						new ValueContext())));
+	protected Column<T> addPriceColumn(String propertyName, String id) {
+		return addPropertyColumn(propertyName, id, new StringToPriceValueConverter(), new Div(new Text("€")));
 	}
 
 	protected <PROPERTY_TYPE> Column<T> addPropertyColumn(String propertyName, String id,

@@ -133,7 +133,7 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 		final TextField propertyField = createPropertyTextField(id);
 		editablePropertyFields.add(propertyField);
 		propertySection.addFormItem(propertyField, getTranslation(id));
-		binder.forField(propertyField).withNullRepresentation("").withConverter(new MyStringToBigDecConverter(""))
+		binder.forField(propertyField).withNullRepresentation("").withConverter(new MyStringToBigDecConverter())
 				.bind(getter, setter);
 	}
 

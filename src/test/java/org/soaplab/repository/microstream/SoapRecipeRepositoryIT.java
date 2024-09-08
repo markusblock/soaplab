@@ -2,6 +2,7 @@ package org.soaplab.repository.microstream;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.soaplab.assertions.FatAssert.assertThat;
 
 import java.math.BigDecimal;
 
@@ -9,7 +10,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.soaplab.assertions.FatAssert;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.SoapRecipe;
 import org.soaplab.domain.exception.EntityDeletionFailedException;
@@ -53,10 +53,10 @@ class SoapRecipeRepositoryIT {
 		fatRepository.update(fat);
 
 		final Fat loadedUpdatedFat = fatRepository.get(fat.getId());
-		FatAssert.assertThat(loadedUpdatedFat).isDeepEqualTo(fat);
+		assertThat(loadedUpdatedFat).isDeepEqualTo(fat);
 
 		final SoapRecipe loadedSoapRecipe = soapRecipeRepository.get(soapRecipe.getId());
-		FatAssert.assertThat(SoapRecipeUtils.getFat(loadedSoapRecipe, fat.getId()).get()).isDeepEqualTo(fat);
+		assertThat(SoapRecipeUtils.getFat(loadedSoapRecipe, fat.getId()).get()).isDeepEqualTo(fat);
 	}
 
 	@Test
@@ -88,7 +88,7 @@ class SoapRecipeRepositoryIT {
 		soapRecipeRepository.update(updatedSoapRecipe);
 
 		final SoapRecipe loadedSoapRecipe = soapRecipeRepository.get(soapRecipe.getId());
-		FatAssert.assertThat(SoapRecipeUtils.getFat(loadedSoapRecipe, newFat.getId()).get()).isDeepEqualTo(newFat);
+		assertThat(SoapRecipeUtils.getFat(loadedSoapRecipe, newFat.getId()).get()).isDeepEqualTo(newFat);
 	}
 
 	@Test
