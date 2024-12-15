@@ -3,29 +3,34 @@ package org.soaplab.ui.views.koh;
 import org.soaplab.domain.KOH;
 import org.soaplab.repository.KOHRepository;
 import org.soaplab.ui.MainAppLayout;
-import org.soaplab.ui.views.IngredientTableViewParent;
-import org.soaplab.ui.views.PercentageRenderer;
+import org.soaplab.ui.views.EntityDetailsListener;
+import org.soaplab.ui.views.EntityTableListener;
+import org.soaplab.ui.views.EntityView;
+import org.soaplab.ui.views.IngredientTablePanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.router.Route;
 
 @Route(value = "koh", layout = MainAppLayout.class)
-public class KOHView extends IngredientTableViewParent<KOH> {
+public class KOHView extends EntityView<KOH> {
 
 	private static final long serialVersionUID = 1L;
+	private KOHRepository repository;
 
 	@Autowired
 	public KOHView(KOHRepository repository) {
-		super(KOH.class, repository);
-		
-		Column<KOH> kohPurityColumn = addPercentageColumn(KOH.Fields.kohPurity, "domain.koh.kohpurity");
-		kohPurityColumn.setRenderer(new PercentageRenderer<KOH>(KOH::getKohPurity));
+		super(repository, "domain.koh");
+		this.repository = repository;
 	}
 
 	@Override
-	protected String getHeader() {
-		return getTranslation("domain.koh");
+	protected IngredientTablePanel<KOH> createEntityTable(EntityTableListener<KOH> listener) {
+		return new KOHTablePanel(repository, listener);
+	}
+
+	@Override
+	protected KOHDetailsPanel createEntityDetails(EntityDetailsListener<KOH> callback) {
+		return new KOHDetailsPanel(callback);
 	}
 
 	@Override

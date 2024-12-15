@@ -1,11 +1,13 @@
 package org.soaplab.ui.views;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.soaplab.domain.NamedEntity;
@@ -15,7 +17,6 @@ import org.springframework.util.ObjectUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.Text;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.grid.CellFocusEvent.GridSection;
 import com.vaadin.flow.component.grid.Grid;
@@ -26,10 +27,7 @@ import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.NativeLabel;
-import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
@@ -39,8 +37,6 @@ import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.function.SerializablePredicate;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -48,17 +44,14 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @JsModule("@vaadin/vaadin-lumo-styles/presets/compact.js")
-public abstract class EntityTableView<T extends NamedEntity> extends VerticalLayout implements BeforeEnterObserver {
+public class EntityTablePanel<T extends NamedEntity> extends VerticalLayout {
 
 	private static final long serialVersionUID = 1L;
 
-	private final H1 title;
-
 	@Getter
 	private final EntityRepository<T> repository;
+	private final EntityTableListener<T> tableListener;
 
-	private final Button addButton;
-	private final Button removeButton;
 	private final Grid<T> grid;
 	private final BeanValidationBinder<T> binder;
 	private final HeaderRow searchHeaderRow;
@@ -71,9 +64,11 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 
 	Map<String, SerializablePredicate<T>> searchFilter = new HashMap<>();
 
-	public EntityTableView(Class<T> entityClass, EntityRepository<T> repository, boolean createEntityFunction) {
+	public EntityTablePanel(Class<T> entityClass, EntityRepository<T> repository,
+			EntityTableListener<T> tableListener) {
 		super();
 		this.repository = repository;
+		this.tableListener = tableListener;
 
 		setSizeFull();
 
@@ -81,39 +76,6 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 		// <theme-editor-local-classname>
 		grid.addClassName("entity-table-view-grid-1");
 		grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
-
-		final HorizontalLayout headerPanel = new HorizontalLayout();
-		headerPanel.setWidthFull();
-		add(headerPanel);
-
-		title = new H1(getHeader());
-		title.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
-		headerPanel.add(title);
-
-		addButton = new Button();
-		addButton.setId("entitylist.add");
-		addButton.setIcon(VaadinIcon.PLUS.create());
-		addButton.addClickListener(event -> {
-			log.trace("add button clicked");
-			if (grid.getEditor().isOpen()) {
-				grid.getEditor().closeEditor();
-			}
-			final T newEntity = createNewEmptyEntity();
-			focusedColumn = Optional.of(grid.getColumns().get(0));
-			grid.getListDataView().addItem(newEntity);
-			editEntity(newEntity);
-		});
-		addButton.setEnabled(createEntityFunction);
-		headerPanel.add(addButton);
-
-		removeButton = new Button();
-		removeButton.setId("entitylist.remove");
-		removeButton.setIcon(VaadinIcon.MINUS.create());
-		removeButton.addClickListener(event -> {
-			grid.getSelectionModel().getFirstSelectedItem().ifPresent(entity -> deleteEntity(entity));
-		});
-		removeButton.setEnabled(false);
-		headerPanel.add(removeButton);
 
 		grid.setColumnReorderingAllowed(true);
 		add(grid);
@@ -142,17 +104,33 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 		addNameColumn(NamedEntity.Fields.name, "domain.entity.name");
 	}
 
-	public EntityTableView(Class<T> entityClass, EntityRepository<T> repository) {
-		this(entityClass, repository, true);
+	public void selectFirstEntity() {
+		List<T> entities = grid.getListDataView().getItems().collect(Collectors.toList());
+		if (entities.size() > 0) {
+			select(entities.get(0));
+		} else {
+			select(null);
+		}
+	}
+
+	public void select(T selectEntity) {
+		if (selectEntity == null) {
+			return;
+		}
+		grid.select(selectEntity);
 	}
 
 	private void addGridSelectionListener() {
 		grid.addSelectionListener(event -> {
 			log.trace("selected %s".formatted(event.getFirstSelectedItem()));
+//			event.getFirstSelectedItem().ifPresentOrElse(selection -> {
+//				focusedEntity = Optional.of(selection);
+//				removeButton.setEnabled(true);
+//			}, () -> removeButton.setEnabled(false));
 			event.getFirstSelectedItem().ifPresentOrElse(selection -> {
 				focusedEntity = Optional.of(selection);
-				removeButton.setEnabled(true);
-			}, () -> removeButton.setEnabled(false));
+				tableListener.selectionChanged(Optional.of(selection));
+			}, () -> tableListener.selectionChanged(Optional.empty()));
 		});
 	}
 
@@ -185,7 +163,8 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 				grid.getDataProvider().refreshItem(entity);
 			}
 			resetEditorState();
-			refreshTable();
+//			refreshTable();
+			tableListener.leaveEditMode();
 		});
 	}
 
@@ -193,7 +172,8 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 		editor.addOpenListener(l -> {
 			log.trace("open editor");
 			resetEditorState();
-			removeButton.setEnabled(false);
+			tableListener.enterEditMode();
+//			removeButton.setEnabled(false);
 
 			focusedColumn.ifPresentOrElse(column -> focusComponent(column.getEditorComponent()),
 					() -> focusComponent(grid.getColumns().get(0)));
@@ -251,14 +231,6 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 		}
 	}
 
-	protected abstract T createNewEmptyEntity();
-
-	private void deleteEntity(T entity) {
-		log.trace("delete button pressed");
-		repository.delete(entity.getId());
-		refreshTable();
-	}
-
 	private void resetEditorState() {
 		editorCanceled = false;
 		entityChanged = false;
@@ -304,21 +276,27 @@ public abstract class EntityTableView<T extends NamedEntity> extends VerticalLay
 		return propertyField;
 	}
 
-	protected abstract String getHeader();
+//	@Override
+//	public void beforeEnter(BeforeEnterEvent event) {
+//		log.trace("beforeEnter");
+//		refreshTable();
+//	}
 
-	@Override
-	public void beforeEnter(BeforeEnterEvent event) {
-		log.trace("beforeEnter");
-		refreshTable();
-	}
-
-	private void refreshTable() {
+	public void setEntities(List<T> entities) {
 		log.trace("refreshTable");
-		final ListDataProvider<T> dataProvider = new ListDataProvider<T>(repository.findAll());
+		final ListDataProvider<T> dataProvider = new ListDataProvider<T>(entities);
 		final GridListDataView<T> gridListDataView = grid.setItems(dataProvider);
 		entityFilter.setDataView(gridListDataView);
 		grid.recalculateColumnWidths();
 	}
+
+//	private void refreshTable() {
+//		log.trace("refreshTable");
+//		final ListDataProvider<T> dataProvider = new ListDataProvider<T>(repository.findAll());
+//		final GridListDataView<T> gridListDataView = grid.setItems(dataProvider);
+//		entityFilter.setDataView(gridListDataView);
+//		grid.recalculateColumnWidths();
+//	}
 
 	protected void addNameColumn(String propertyName, String id) {
 		addColumn(propertyName, id).setAutoWidth(true).setFlexGrow(1);

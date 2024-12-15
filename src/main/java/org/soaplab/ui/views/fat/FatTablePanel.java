@@ -2,21 +2,19 @@ package org.soaplab.ui.views.fat;
 
 import org.soaplab.domain.Fat;
 import org.soaplab.repository.FatRepository;
-import org.soaplab.ui.MainAppLayout;
-import org.soaplab.ui.views.IngredientTableViewParent;
+import org.soaplab.ui.views.EntityTableListener;
+import org.soaplab.ui.views.IngredientTablePanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.vaadin.flow.router.Route;
-
-@Route(value = "fat", layout = MainAppLayout.class)
+//@Route(value = "fat", layout = MainAppLayout.class)
 //@RouteAlias(value = "", layout = MainAppLayout.class) // registers on the root path of the server, but doesn'T work together with Swagger
-public class FatView extends IngredientTableViewParent<Fat> {
+public class FatTablePanel extends IngredientTablePanel<Fat> {
 
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	public FatView(FatRepository repository) {
-		super(Fat.class, repository);
+	public FatTablePanel(FatRepository repository, EntityTableListener<Fat> listener) {
+		super(Fat.class, repository, listener);
 
 		addIntegerColumn(Fat.Fields.ins, "domain.fat.ins");
 		addBigDecimalColumn(Fat.Fields.sapNaoh, "domain.ingredient.sapnaoh");
@@ -31,13 +29,4 @@ public class FatView extends IngredientTableViewParent<Fat> {
 		addIntegerColumn(Fat.Fields.linolenic, "domain.fat.linolenic");
 	}
 
-	@Override
-	protected String getHeader() {
-		return getTranslation("domain.fats");
-	}
-
-	@Override
-	protected Fat createNewEmptyEntity() {
-		return Fat.builder().build();
-	}
 }

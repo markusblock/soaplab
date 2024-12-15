@@ -3,24 +3,34 @@ package org.soaplab.ui.views.naoh;
 import org.soaplab.domain.NaOH;
 import org.soaplab.repository.NaOHRepository;
 import org.soaplab.ui.MainAppLayout;
-import org.soaplab.ui.views.IngredientTableViewParent;
+import org.soaplab.ui.views.EntityDetailsListener;
+import org.soaplab.ui.views.EntityTableListener;
+import org.soaplab.ui.views.EntityView;
+import org.soaplab.ui.views.IngredientTablePanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
 
 @Route(value = "naoh", layout = MainAppLayout.class)
-public class NaOHView extends IngredientTableViewParent<NaOH> {
+public class NaOHView extends EntityView<NaOH> {
 
 	private static final long serialVersionUID = 1L;
+	private NaOHRepository repository;
 
 	@Autowired
 	public NaOHView(NaOHRepository repository) {
-		super(NaOH.class, repository);
+		super(repository, "domain.naoh");
+		this.repository = repository;
 	}
 
 	@Override
-	protected String getHeader() {
-		return getTranslation("domain.naoh");
+	protected IngredientTablePanel<NaOH> createEntityTable(EntityTableListener<NaOH> listener) {
+		return new NaOHTablePanel(repository, listener);
+	}
+
+	@Override
+	protected NaOHDetailsPanel createEntityDetails(EntityDetailsListener<NaOH> listener) {
+		return new NaOHDetailsPanel(listener);
 	}
 
 	@Override

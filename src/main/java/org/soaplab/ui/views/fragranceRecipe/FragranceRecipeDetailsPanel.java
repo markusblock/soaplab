@@ -2,22 +2,23 @@ package org.soaplab.ui.views.fragranceRecipe;
 
 import java.util.List;
 
-import org.soaplab.domain.*;
-import org.soaplab.repository.*;
-import org.soaplab.ui.views.EntityDetails;
-import org.soaplab.ui.views.EntityViewDetailsControllerCallback;
+import org.soaplab.domain.Fragrance;
+import org.soaplab.domain.FragranceRecipe;
+import org.soaplab.repository.FragranceRepository;
+import org.soaplab.ui.views.EntityDetailsListener;
+import org.soaplab.ui.views.EntityDetailsPanel;
 import org.soaplab.ui.views.RecipeEntryList;
-import org.springframework.util.CollectionUtils;
 
-public class FragranceRecipeDetailsPanel extends EntityDetails<FragranceRecipe> {
+public class FragranceRecipeDetailsPanel extends EntityDetailsPanel<FragranceRecipe> {
 
 	private static final long serialVersionUID = 1L;
 	private final RecipeEntryList<Fragrance> fragrances;
 
 	private FragranceRecipe recipe;
 
-	public FragranceRecipeDetailsPanel(EntityViewDetailsControllerCallback<FragranceRecipe> callback, FragranceRepository fragranceRepository) {
-		super(callback);
+	public FragranceRecipeDetailsPanel(EntityDetailsListener<FragranceRecipe> listener,
+			FragranceRepository fragranceRepository) {
+		super(listener);
 
 		addPropertyTextArea("domain.recipe.notes", FragranceRecipe::getNotes, FragranceRecipe::setNotes);
 

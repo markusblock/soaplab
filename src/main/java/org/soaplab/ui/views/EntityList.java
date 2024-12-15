@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.soaplab.domain.NamedEntity;
-import org.springframework.util.CollectionUtils;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
@@ -34,13 +32,13 @@ public class EntityList<T extends NamedEntity> extends Div {
 	private Grid<T> entityGrid;
 
 	@Getter(value = AccessLevel.PROTECTED)
-	private EntityViewListControllerCallback<T> callback;
+	private EntityTableListener<T> callback;
 
 	private TextField searchField;
 	private final Button addButton;
 	private final Button removeButton;
 
-	public EntityList(EntityViewListControllerCallback<T> callback) {
+	public EntityList(EntityTableListener<T> callback) {
 		super();
 		this.callback = callback;
 
@@ -66,7 +64,7 @@ public class EntityList<T extends NamedEntity> extends Div {
 		addButton.setId("entitylist.add");
 		addButton.setIcon(VaadinIcon.PLUS.create());
 		addButton.addClickListener(event -> {
-			callback.createNewEntity();
+//			callback.createNewEntity();
 		});
 		toolPanel.add(addButton);
 
@@ -74,7 +72,7 @@ public class EntityList<T extends NamedEntity> extends Div {
 		removeButton.setId("entitylist.remove");
 		removeButton.setIcon(VaadinIcon.MINUS.create());
 		removeButton.addClickListener(event -> {
-			callback.deleteEntity(CollectionUtils.firstElement(entityGrid.getSelectedItems()));
+//			callback.deleteEntity(CollectionUtils.firstElement(entityGrid.getSelectedItems()));
 		});
 		toolPanel.add(removeButton);
 
@@ -92,15 +90,16 @@ public class EntityList<T extends NamedEntity> extends Div {
 	}
 
 	private void filterEntityList(String searchString) {
-		if (StringUtils.isEmpty(searchString)) {
-			entityGrid.setItems(callback.getRepository().findAll());
-		} else {
-			entityGrid.setItems(getFilteredEntities(searchString));
-		}
+//		if (StringUtils.isEmpty(searchString)) {
+//			entityGrid.setItems(callback.getRepository().findAll());
+//		} else {
+//			entityGrid.setItems(getFilteredEntities(searchString));
+//		}
 	}
 
 	protected List<T> getFilteredEntities(String searchString) {
-		return callback.getRepository().findByName(searchString);
+//		return callback.getRepository().findByName(searchString);
+		return null;
 	}
 
 	private void setItems() {
@@ -129,7 +128,7 @@ public class EntityList<T extends NamedEntity> extends Div {
 	void addSelectionListener() {
 		SingleSelect<Grid<T>, T> entitySelect = entityGrid.asSingleSelect();
 		entitySelect.addValueChangeListener(e -> {
-			callback.entitySelected(e.getValue());
+//			callback.entitySelected(e.getValue());
 			removeButton.setEnabled(e.getValue() != null);
 		});
 	}

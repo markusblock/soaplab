@@ -14,15 +14,13 @@ import org.springframework.util.Assert;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Text;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep.LabelsPosition;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
@@ -36,7 +34,14 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveObserver;
 
-public abstract class EntityDetails<T extends NamedEntity> extends Div
+import lombok.extern.slf4j.Slf4j;
+
+//if entity is null -> fields enabled false
+//if table is in editMode details should leave editMode
+//esc reset field to old value
+//table for fields (key - value+unit)
+@Slf4j
+public abstract class EntityDetailsPanel<T extends NamedEntity> extends Div
 		implements BeforeEnterObserver, BeforeLeaveObserver {
 
 	private static final long serialVersionUID = 1L;
@@ -48,15 +53,14 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 	private final Binder<T> binder;
 	private final List<HasEnabled> editablePropertyFields;
 
-	private final Button editButton;
-
-	private final Button saveButton;
-	private final Button cancelButton;
-
 	private T entity;
+	private boolean escapePressed;
 
-	protected EntityDetails(EntityViewDetailsControllerCallback<T> callback) {
+	private EntityDetailsListener<T> listener;
+
+	protected EntityDetailsPanel(EntityDetailsListener<T> listener) {
 		super();
+		this.listener = listener;
 
 		editablePropertyFields = new ArrayList<>();
 
@@ -64,34 +68,6 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 
 		content = new VerticalLayout();
 		add(content);
-
-		final HorizontalLayout buttonPanel = new HorizontalLayout();
-
-		editButton = new Button();
-		editButton.setId("entitydetails.edit");
-		editButton.setIcon(VaadinIcon.PENCIL.create());
-		editButton.addClickListener(event -> {
-			callback.editEntity(entity);
-		});
-		buttonPanel.add(editButton);
-
-		saveButton = new Button();
-		saveButton.setId("entitydetails.save");
-		saveButton.setIcon(VaadinIcon.CHECK.create());
-		saveButton.addClickListener(event -> {
-			saveInternal(callback);
-		});
-		buttonPanel.add(saveButton);
-
-		cancelButton = new Button();
-		cancelButton.setId("entitydetails.cancel");
-		cancelButton.setIcon(VaadinIcon.CLOSE.create());
-		cancelButton.addClickListener(event -> {
-			callback.cancelEditMode();
-		});
-		buttonPanel.add(cancelButton);
-
-		content.add(buttonPanel);
 
 		commonEntityDetailsSection = new FormLayout();
 		commonEntityDetailsSection.setId("entitydetails.section.common");
@@ -112,8 +88,6 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 				// Use two columns by default
 				new ResponsiveStep("0", 3, LabelsPosition.TOP));
 		content.add(propertySection);
-
-		setActionButtonVisibility(false);
 	}
 
 	protected void addContent(Component component) {
@@ -241,6 +215,27 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 		final TextField propertyField = new TextField();
 		propertyField.setId(id);
 		propertyField.setWidthFull();
+		propertyField.addValueChangeListener(event -> {
+			if (!event.isFromClient()) {
+				return;
+			}
+
+			if (escapePressed) {
+				escapePressed = false;
+			} else if (binder.hasChanges()) {
+				log.debug("value changed on %s from %s to %s".formatted(event.getSource().getId(), event.getOldValue(),
+						event.getValue()));
+				binder.writeBeanIfValid(entity);
+				listener.entityChanged(entity);
+			}
+		});
+		propertyField.addKeyDownListener(Key.ESCAPE, event -> {
+			log.debug("ESC pressed, resetting field to old value");
+			// propertyField.clear();
+			escapePressed = true;
+			// binder.readBean(entity);
+			binder.refreshFields();
+		});
 		propertyField.setEnabled(false);
 		return propertyField;
 	}
@@ -258,10 +253,8 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 	}
 
 	private void enterEditModeInternal() {
-		editablePropertyFields.forEach(tf -> tf.setEnabled(true));
-		setActionButtonVisibility(true);
-
-		enterEditMode();
+//		editablePropertyFields.forEach(tf -> tf.setEnabled(true));
+//		enterEditMode();
 	}
 
 	/**
@@ -271,9 +264,8 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 	}
 
 	private void leaveEditModeInternal() {
-		editablePropertyFields.forEach(tf -> tf.setEnabled(false));
-		editButton.setEnabled(entity != null);
-		setActionButtonVisibility(false);
+//		editablePropertyFields.forEach(tf -> tf.setEnabled(false));
+//		editButton.setEnabled(entity != null);
 
 		leaveEditMode();
 	}
@@ -284,18 +276,12 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 	protected void preSave() {
 	}
 
-	private void saveInternal(EntityViewDetailsControllerCallback<T> callback) {
+	private void saveInternal(EntityDetailsListener<T> callback) {
 
 		preSave();
 
 		binder.writeBeanIfValid(entity);
-		callback.saveEntity(entity);
-	}
-
-	private void setActionButtonVisibility(boolean editMode) {
-		editButton.setVisible(!editMode);
-		saveButton.setVisible(editMode);
-		cancelButton.setVisible(editMode);
+//		callback.saveEntity(entity);
 	}
 
 	/**
@@ -309,14 +295,25 @@ public abstract class EntityDetails<T extends NamedEntity> extends Div
 	private void setEntityInternal(T entity) {
 		this.entity = entity;
 
-		if (entity != null) {
+		if (entity == null) {
+			disableEditableFields();
+		} else {
+			enableEditableFields();
 			processEntity(entity);
 		}
 
 		binder.readBean(entity);
-		editButton.setEnabled(entity != null);
+//		editButton.setEnabled(entity != null);
 
 		setEntity(entity);
+	}
+
+	private void enableEditableFields() {
+		editablePropertyFields.forEach(tf -> tf.setEnabled(true));
+	}
+
+	private void disableEditableFields() {
+		editablePropertyFields.forEach(tf -> tf.setEnabled(false));
 	}
 
 	/**

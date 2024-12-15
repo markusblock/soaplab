@@ -13,12 +13,12 @@ import org.soaplab.repository.AdditiveRepository;
 import org.soaplab.repository.KOHRepository;
 import org.soaplab.repository.LiquidRepository;
 import org.soaplab.repository.NaOHRepository;
-import org.soaplab.ui.views.EntityDetails;
-import org.soaplab.ui.views.EntityViewDetailsControllerCallback;
+import org.soaplab.ui.views.EntityDetailsPanel;
+import org.soaplab.ui.views.EntityDetailsListener;
 import org.soaplab.ui.views.RecipeEntryList;
 import org.springframework.util.CollectionUtils;
 
-public class LyeRecipeDetailsPanel extends EntityDetails<LyeRecipe> {
+public class LyeRecipeDetailsPanel extends EntityDetailsPanel<LyeRecipe> {
 
 	private static final long serialVersionUID = 1L;
 	private final RecipeEntryList<Acid> acids;
@@ -29,7 +29,7 @@ public class LyeRecipeDetailsPanel extends EntityDetails<LyeRecipe> {
 
 	private LyeRecipe lyeRecipe;
 
-	public LyeRecipeDetailsPanel(EntityViewDetailsControllerCallback<LyeRecipe> callback, AcidRepository acidRepository,
+	public LyeRecipeDetailsPanel(EntityDetailsListener<LyeRecipe> callback, AcidRepository acidRepository,
 			LiquidRepository liquidRepository, NaOHRepository naOHRepository, KOHRepository kOHRepository,
 			AdditiveRepository additiveRepository) {
 		super(callback);

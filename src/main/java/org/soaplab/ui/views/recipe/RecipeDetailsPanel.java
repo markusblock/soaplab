@@ -11,11 +11,11 @@ import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.FragranceRecipeRepository;
 import org.soaplab.repository.LyeRecipeRepository;
 import org.soaplab.service.soapcalc.SoapCalculatorService;
-import org.soaplab.ui.views.EntityDetails;
-import org.soaplab.ui.views.EntityViewDetailsControllerCallback;
+import org.soaplab.ui.views.EntityDetailsPanel;
+import org.soaplab.ui.views.EntityDetailsListener;
 import org.soaplab.ui.views.RecipeEntryList;
 
-public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
+public class RecipeDetailsPanel extends EntityDetailsPanel<SoapRecipe> {
 
     private static final long serialVersionUID = 1L;
     private final RecipeEntryList<Fat> fats;
@@ -23,7 +23,7 @@ public class RecipeDetailsPanel extends EntityDetails<SoapRecipe> {
     private SoapRecipe soapRecipe;
     private final SoapCalculatorService soapCalculatorService;
 
-    public RecipeDetailsPanel(EntityViewDetailsControllerCallback<SoapRecipe> callback,
+    public RecipeDetailsPanel(EntityDetailsListener<SoapRecipe> callback,
             LyeRecipeRepository lyeRecipeRepository, FragranceRecipeRepository fragranceRecipeRepository,
             FatRepository fatRepository, AdditiveRepository additiveRepository,
             SoapCalculatorService soapCalculatorService) {
