@@ -9,6 +9,7 @@ import org.soaplab.ui.i18n.TranslationProvider;
 import org.soaplab.ui.views.MenuBar;
 import org.soaplab.ui.views.acid.AcidsView;
 import org.soaplab.ui.views.additives.AdditivesView;
+import org.soaplab.ui.views.development.DevelopmentView;
 import org.soaplab.ui.views.fat.FatsView;
 import org.soaplab.ui.views.fragrance.FragrancesView;
 import org.soaplab.ui.views.fragranceRecipe.FragranceRecipeView;
@@ -95,6 +96,7 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 		menuBar.addMenuItem(VaadinIcon.ADOBE_FLASH, getTranslation("domain.lyerecipes"), LyeRecipeView.class);
 		menuBar.addMenuItem(VaadinIcon.SAFE_LOCK, getTranslation("domain.fragrancerecipes"), FragranceRecipeView.class);
 		menuBar.addMenuItem(VaadinIcon.DOLLAR, getTranslation("domain.ingredients"), IngredientsView.class);
+		menuBar.addMenuItem(VaadinIcon.OPTIONS, getTranslation("dev.developmentview"), DevelopmentView.class);
 
 		addToDrawer(menuBar.getMenuItemComponents());
 		final Div spacing = new Div();
