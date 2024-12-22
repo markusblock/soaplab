@@ -15,17 +15,15 @@ import com.vaadin.flow.router.Route;
 public class AcidsView extends EntityView<Acid> {
 
 	private static final long serialVersionUID = 1L;
-	private AcidRepository repository;
 
 	@Autowired
 	public AcidsView(AcidRepository repository) {
 		super(repository, "domain.acids");
-		this.repository = repository;
 	}
 
 	@Override
 	protected IngredientTablePanel<Acid> createEntityTable(EntityTableListener<Acid> listener) {
-		return new AcidTablePanel(repository, listener);
+		return new AcidTablePanel(listener);
 	}
 
 	@Override

@@ -13,7 +13,7 @@ import org.soaplab.ui.views.development.DevelopmentView;
 import org.soaplab.ui.views.fat.FatsView;
 import org.soaplab.ui.views.fragrance.FragrancesView;
 import org.soaplab.ui.views.fragranceRecipe.FragranceRecipeView;
-import org.soaplab.ui.views.ingredient.IngredientsView;
+import org.soaplab.ui.views.ingredient.AllIngredientsView;
 import org.soaplab.ui.views.koh.KOHView;
 import org.soaplab.ui.views.liquid.LiquidsView;
 import org.soaplab.ui.views.lyerecipe.LyeRecipeView;
@@ -95,7 +95,7 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 		menuBar.addMenuItem(VaadinIcon.ABACUS, getTranslation("domain.recipes"), RecipeView.class);
 		menuBar.addMenuItem(VaadinIcon.ADOBE_FLASH, getTranslation("domain.lyerecipes"), LyeRecipeView.class);
 		menuBar.addMenuItem(VaadinIcon.SAFE_LOCK, getTranslation("domain.fragrancerecipes"), FragranceRecipeView.class);
-		menuBar.addMenuItem(VaadinIcon.DOLLAR, getTranslation("domain.ingredients"), IngredientsView.class);
+		menuBar.addMenuItem(VaadinIcon.DOLLAR, getTranslation("domain.ingredients"), AllIngredientsView.class);
 		menuBar.addMenuItem(VaadinIcon.OPTIONS, getTranslation("dev.developmentview"), DevelopmentView.class);
 
 		addToDrawer(menuBar.getMenuItemComponents());

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.soaplab.domain.NamedEntity;
 import org.soaplab.domain.Percentage;
@@ -28,6 +29,7 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.Setter;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -36,13 +38,10 @@ import com.vaadin.flow.router.BeforeLeaveObserver;
 
 import lombok.extern.slf4j.Slf4j;
 
-//if entity is null -> fields enabled false
-//if table is in editMode details should leave editMode
-//esc reset field to old value
+//TODO
 //table for fields (key - value+unit)
 @Slf4j
-public abstract class EntityDetailsPanel<T extends NamedEntity> extends Div
-		implements BeforeEnterObserver, BeforeLeaveObserver {
+public class EntityDetailsPanel<T extends NamedEntity> extends Div implements BeforeEnterObserver, BeforeLeaveObserver {
 
 	private static final long serialVersionUID = 1L;
 
@@ -53,10 +52,10 @@ public abstract class EntityDetailsPanel<T extends NamedEntity> extends Div
 	private final Binder<T> binder;
 	private final List<HasEnabled> editablePropertyFields;
 
-	private T entity;
-	private boolean escapePressed;
+	private Optional<T> entity;
+	private boolean inEditMode;
 
-	private EntityDetailsListener<T> listener;
+	private final EntityDetailsListener<T> listener;
 
 	protected EntityDetailsPanel(EntityDetailsListener<T> listener) {
 		super();
@@ -88,6 +87,11 @@ public abstract class EntityDetailsPanel<T extends NamedEntity> extends Div
 				// Use two columns by default
 				new ResponsiveStep("0", 3, LabelsPosition.TOP));
 		content.add(propertySection);
+
+		content.addDoubleClickListener(event -> {
+			log.trace("received double click event");
+			enterEditMode();
+		});
 	}
 
 	protected void addContent(Component component) {
@@ -195,12 +199,12 @@ public abstract class EntityDetailsPanel<T extends NamedEntity> extends Div
 
 	@Override
 	public void beforeEnter(BeforeEnterEvent event) {
-		leaveEditModeInternal();
+		leaveEditMode();
 	}
 
 	@Override
 	public void beforeLeave(BeforeLeaveEvent event) {
-		leaveEditModeInternal();
+		leaveEditMode();
 	}
 
 	private TextArea createPropertyTextArea(String id) {
@@ -215,73 +219,100 @@ public abstract class EntityDetailsPanel<T extends NamedEntity> extends Div
 		final TextField propertyField = new TextField();
 		propertyField.setId(id);
 		propertyField.setWidthFull();
+		propertyField.setValueChangeMode(ValueChangeMode.EAGER);
 		propertyField.addValueChangeListener(event -> {
 			if (!event.isFromClient()) {
 				return;
 			}
 
-			if (escapePressed) {
-				escapePressed = false;
-			} else if (binder.hasChanges()) {
-				log.debug("value changed on %s from %s to %s".formatted(event.getSource().getId(), event.getOldValue(),
-						event.getValue()));
-				binder.writeBeanIfValid(entity);
-				listener.entityChanged(entity);
+			final String oldValue = event.getOldValue();
+			final String newValue = event.getValue();
+			log.debug("received valueChangedEvent on %s from %s to %s".formatted(event.getSource().getId(), oldValue,
+					newValue));
+			if (!inEditMode) {
+				log.trace("ignoring event because panel is not in edit mode");
+			} else if (!Objects.equals(oldValue, newValue)) {
+				log.trace("value changed from %s to %s".formatted(oldValue, newValue));
 			}
 		});
 		propertyField.addKeyDownListener(Key.ESCAPE, event -> {
 			log.debug("ESC pressed, resetting field to old value");
-			// propertyField.clear();
-			escapePressed = true;
-			// binder.readBean(entity);
-			binder.refreshFields();
+			setEntityInternal(entity);
+		});
+		propertyField.addKeyDownListener(Key.ENTER, event -> {
+			log.debug("ENTER pressed");
+			if (binder.hasChanges()) {
+				log.debug("binder has changes");
+				updateEntityWithChangesFromUI();
+				fireEntityChanged();
+			}
+			leaveEditMode();
+			// binder.refreshFields();
+		});
+		propertyField.addFocusListener(event -> {
+			if (!event.isFromClient()) {
+				return;
+			}
+			log.debug("received focus event on " + event.getSource().getId());
+			enterEditMode();
+		});
+		propertyField.addInputListener(event -> {
+			if (!event.isFromClient()) {
+				return;
+			}
+			log.debug("received input event on " + event.getSource().getId());
+		});
+		propertyField.addBlurListener(event -> {
+			if (!event.isFromClient()) {
+				return;
+			}
+			log.debug("received blur event on " + event.getSource().getId());
 		});
 		propertyField.setEnabled(false);
 		return propertyField;
 	}
 
 	public void editEntity(T newEntity) {
+		log.trace("editEntity " + newEntity);
 		Assert.notNull(newEntity, "Empty entity not editable");
-		setEntityInternal(newEntity);
-		enterEditModeInternal();
+		setEntityInternal(Optional.of(newEntity));
+		enterEditMode();
 	}
 
 	/**
 	 * Override in subclasses to implement behaviour of special fields.
 	 */
 	protected void enterEditMode() {
-	}
-
-	private void enterEditModeInternal() {
-//		editablePropertyFields.forEach(tf -> tf.setEnabled(true));
-//		enterEditMode();
+		if (!inEditMode && entity.isPresent()) {
+			log.trace("enterEditMode");
+			enableEditableFields();
+			inEditMode = true;
+			listener.entityDetailsPanelEntersEditMode();
+		}
 	}
 
 	/**
 	 * Override in subclasses to implement behaviour of special fields.
 	 */
 	protected void leaveEditMode() {
-	}
-
-	private void leaveEditModeInternal() {
-//		editablePropertyFields.forEach(tf -> tf.setEnabled(false));
-//		editButton.setEnabled(entity != null);
-
-		leaveEditMode();
+		if (inEditMode) {
+			log.trace("leaveEditMode");
+			inEditMode = false;
+			disableEditableFields();
+			listener.entityDetailsPanelLeavesEditMode();
+		}
 	}
 
 	/**
-	 * Override in subclasses to implement behaviour of special fields.
+	 * Override in subclasses to implement behaviour of special fields, e.g. update
+	 * references of implicit entities
 	 */
-	protected void preSave() {
+	protected void updateEntityWithChangesFromUI() {
+		binder.writeBeanIfValid(entity.orElse(null));
 	}
 
-	private void saveInternal(EntityDetailsListener<T> callback) {
-
-		preSave();
-
-		binder.writeBeanIfValid(entity);
-//		callback.saveEntity(entity);
+	private void fireEntityChanged() {
+		listener.entityChangedInEntityDetails(entity.orElse(null));
 	}
 
 	/**
@@ -289,30 +320,27 @@ public abstract class EntityDetailsPanel<T extends NamedEntity> extends Div
 	 *
 	 * @param entity the entity to set, or <code>null</code> to clear the fields
 	 */
-	protected void setEntity(T entity) {
+	protected void setEntity(Optional<T> entity) {
 	}
 
-	private void setEntityInternal(T entity) {
+	private void setEntityInternal(Optional<T> entity) {
 		this.entity = entity;
 
-		if (entity == null) {
-			disableEditableFields();
-		} else {
-			enableEditableFields();
-			processEntity(entity);
-		}
+		entity.ifPresent(t -> processEntity(t));
 
-		binder.readBean(entity);
-//		editButton.setEnabled(entity != null);
-
+		binder.readBean(entity.orElse(null));
 		setEntity(entity);
+
+		leaveEditMode();
 	}
 
 	private void enableEditableFields() {
+		log.trace("enableEditableFields");
 		editablePropertyFields.forEach(tf -> tf.setEnabled(true));
 	}
 
 	private void disableEditableFields() {
+		log.trace("disableEditableFields");
 		editablePropertyFields.forEach(tf -> tf.setEnabled(false));
 	}
 
@@ -323,11 +351,17 @@ public abstract class EntityDetailsPanel<T extends NamedEntity> extends Div
 	 * @param entity the entity to be processed, not <code>null</code>
 	 */
 	protected void processEntity(T entity) {
+		log.trace("processEntity " + entity);
 	}
 
-	public void showEntity(T entity) {
+	public void showEntity(Optional<T> entity) {
+		log.trace("showEntity " + entity);
 		setEntityInternal(entity);
-		leaveEditModeInternal();
+		leaveEditMode();
+	}
+
+	public void cancelEditMode() {
+		leaveEditMode();
 	}
 
 }

@@ -1,7 +1,6 @@
 package org.soaplab.ui.views.fat;
 
 import org.soaplab.domain.Fat;
-import org.soaplab.repository.FatRepository;
 import org.soaplab.ui.views.EntityTableListener;
 import org.soaplab.ui.views.IngredientTablePanel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,8 @@ public class FatTablePanel extends IngredientTablePanel<Fat> {
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	public FatTablePanel(FatRepository repository, EntityTableListener<Fat> listener) {
-		super(Fat.class, repository, listener);
+	public FatTablePanel(EntityTableListener<Fat> listener) {
+		super(Fat.class, listener);
 
 		addIntegerColumn(Fat.Fields.ins, "domain.fat.ins");
 		addBigDecimalColumn(Fat.Fields.sapNaoh, "domain.ingredient.sapnaoh");

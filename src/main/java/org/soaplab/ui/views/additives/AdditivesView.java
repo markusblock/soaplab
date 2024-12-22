@@ -15,17 +15,15 @@ import com.vaadin.flow.router.Route;
 public class AdditivesView extends EntityView<Additive> {
 
 	private static final long serialVersionUID = 1L;
-	private AdditiveRepository repository;
 
 	@Autowired
 	public AdditivesView(AdditiveRepository repository) {
 		super(repository, "domain.additives");
-		this.repository = repository;
 	}
 
 	@Override
 	protected IngredientTablePanel<Additive> createEntityTable(EntityTableListener<Additive> listener) {
-		return new AdditiveTablePanel(repository, listener);
+		return new AdditiveTablePanel(listener);
 	}
 
 	@Override

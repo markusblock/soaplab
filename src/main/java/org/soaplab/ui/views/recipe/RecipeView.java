@@ -48,7 +48,7 @@ public class RecipeView extends EntityView<SoapRecipe> {
 
 	@Override
 	protected EntityTablePanel<SoapRecipe> createEntityTable(EntityTableListener<SoapRecipe> listener) {
-		return new EntityTablePanel<SoapRecipe>(SoapRecipe.class, repository, listener);
+		return new EntityTablePanel<SoapRecipe>(SoapRecipe.class, listener);
 	}
 
 	@Override

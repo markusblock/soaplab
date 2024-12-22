@@ -15,17 +15,15 @@ import com.vaadin.flow.router.Route;
 public class KOHView extends EntityView<KOH> {
 
 	private static final long serialVersionUID = 1L;
-	private KOHRepository repository;
 
 	@Autowired
 	public KOHView(KOHRepository repository) {
 		super(repository, "domain.koh");
-		this.repository = repository;
 	}
 
 	@Override
 	protected IngredientTablePanel<KOH> createEntityTable(EntityTableListener<KOH> listener) {
-		return new KOHTablePanel(repository, listener);
+		return new KOHTablePanel(listener);
 	}
 
 	@Override

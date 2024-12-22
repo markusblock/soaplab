@@ -34,7 +34,7 @@ public class FragranceRecipeView extends EntityView<FragranceRecipe> {
 
 	@Override
 	protected EntityTablePanel<FragranceRecipe> createEntityTable(EntityTableListener<FragranceRecipe> listener) {
-		return new EntityTablePanel<FragranceRecipe>(FragranceRecipe.class, fragranceRecipeRepository, listener);
+		return new EntityTablePanel<FragranceRecipe>(FragranceRecipe.class, listener);
 	}
 
 	@Override

@@ -15,17 +15,15 @@ import com.vaadin.flow.router.Route;
 public class NaOHView extends EntityView<NaOH> {
 
 	private static final long serialVersionUID = 1L;
-	private NaOHRepository repository;
 
 	@Autowired
 	public NaOHView(NaOHRepository repository) {
 		super(repository, "domain.naoh");
-		this.repository = repository;
 	}
 
 	@Override
 	protected IngredientTablePanel<NaOH> createEntityTable(EntityTableListener<NaOH> listener) {
-		return new NaOHTablePanel(repository, listener);
+		return new NaOHTablePanel(listener);
 	}
 
 	@Override

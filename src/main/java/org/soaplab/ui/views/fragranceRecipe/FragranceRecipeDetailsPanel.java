@@ -1,6 +1,7 @@
 package org.soaplab.ui.views.fragranceRecipe;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.soaplab.domain.Fragrance;
 import org.soaplab.domain.FragranceRecipe;
@@ -14,7 +15,7 @@ public class FragranceRecipeDetailsPanel extends EntityDetailsPanel<FragranceRec
 	private static final long serialVersionUID = 1L;
 	private final RecipeEntryList<Fragrance> fragrances;
 
-	private FragranceRecipe recipe;
+	private Optional<FragranceRecipe> recipe;
 
 	public FragranceRecipeDetailsPanel(EntityDetailsListener<FragranceRecipe> listener,
 			FragranceRepository fragranceRepository) {
@@ -40,19 +41,15 @@ public class FragranceRecipeDetailsPanel extends EntityDetailsPanel<FragranceRec
 	}
 
 	@Override
-	protected void preSave() {
-		super.preSave();
-		recipe.setFragrances(List.copyOf(fragrances.getData()));
+	protected void updateEntityWithChangesFromUI() {
+		super.updateEntityWithChangesFromUI();
+		recipe.orElseThrow().setFragrances(List.copyOf(fragrances.getData()));
 	}
 
 	@Override
-	protected void setEntity(FragranceRecipe entity) {
+	protected void setEntity(Optional<FragranceRecipe> entity) {
 		this.recipe = entity;
 
-		if (recipe == null) {
-			fragrances.setData();
-		} else {
-			fragrances.setData(recipe.getFragrances());
-		}
+		entity.ifPresentOrElse(t -> fragrances.setData(t.getFragrances()), () -> fragrances.setData());
 	}
 }

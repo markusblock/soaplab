@@ -36,8 +36,6 @@ public abstract class EntityView<T extends NamedEntity> extends VerticalLayout
 	private final EntityRepository<T> repository;
 	private final String headerKey;
 
-	private Optional<T> selectedEntity = Optional.empty();
-
 	private boolean editNewEntityMode;
 
 	public EntityView(EntityRepository<T> repository, String headerKey) {
@@ -51,6 +49,10 @@ public abstract class EntityView<T extends NamedEntity> extends VerticalLayout
 	protected abstract EntityTablePanel<T> createEntityTable(EntityTableListener<T> callback);
 
 	protected abstract EntityDetailsPanel<T> createEntityDetails(EntityDetailsListener<T> callback);
+
+	protected boolean isCreateNewEntityAllowed() {
+		return true;
+	}
 
 	@Override
 	public void beforeEnter(BeforeEnterEvent event) {
@@ -67,31 +69,37 @@ public abstract class EntityView<T extends NamedEntity> extends VerticalLayout
 		addButton = new Button();
 		addButton.setId("entitylist.add");
 		addButton.setIcon(VaadinIcon.PLUS.create());
-//		addButton.addClickListener(event -> {
-//			log.trace("add button clicked");
-//			if (grid.getEditor().isOpen()) {
-//				grid.getEditor().closeEditor();
-//			}
-//			final T newEntity = createNewEmptyEntity();
-//			focusedColumn = Optional.of(grid.getColumns().get(0));
-//			grid.getListDataView().addItem(newEntity);
-//			editEntity(newEntity);
-//		});
-//		addButton.setEnabled(createEntityFunction);
+		addButton.addClickListener(clickEvent -> {
+			log.trace("add button clicked");
+			editNewEntityMode = true;
+			removeButton.setEnabled(false);
+			addButton.setEnabled(false);
+			entityTablePanel.cancelEditMode();
+			entityTablePanel.removeSelection();
+			entityDetails.leaveEditMode();
+			final T newEntity = createNewEmptyEntity();
+			entityDetails.showEntity(Optional.of(newEntity));
+			entityDetails.enterEditMode();
+		});
+		addButton.setEnabled(isCreateNewEntityAllowed());
 		headerPanel.add(addButton);
 
 		removeButton = new Button();
 		removeButton.setId("entitylist.remove");
 		removeButton.setIcon(VaadinIcon.MINUS.create());
-//		removeButton.addClickListener(event -> {
-//			grid.getSelectionModel().getFirstSelectedItem().ifPresent(entity -> deleteEntity(entity));
-//		});
-		removeButton.setEnabled(false);
+		removeButton.addClickListener(clickEvent -> {
+			log.trace("remove button clicked");
+			entityTablePanel.cancelEditMode();
+			entityDetails.leaveEditMode();
+			final Optional<T> selectedEntity = entityTablePanel.getSelectedEntity();
+			selectedEntity.ifPresent(t -> deleteEntity(t));
+		});
+		removeButton.setEnabled(true);
 		headerPanel.add(removeButton);
 
 		entityTablePanel = createEntityTable(this);
 		entityDetails = createEntityDetails(this);
-		SplitLayout splitLayout = new SplitLayout(entityTablePanel, entityDetails);
+		final SplitLayout splitLayout = new SplitLayout(entityTablePanel, entityDetails);
 		splitLayout.setOrientation(SplitLayout.Orientation.VERTICAL);
 		splitLayout.setSizeFull();
 		splitLayout.setSplitterPosition(50);
@@ -100,112 +108,86 @@ public abstract class EntityView<T extends NamedEntity> extends VerticalLayout
 		final HorizontalLayout masterDetail = new HorizontalLayout();
 		masterDetail.setSizeFull();
 
-//		entityList = createEntityTable(this);
-//		entityList.setMinWidth(50, Unit.PERCENTAGE);
-//		masterDetail.add(entityList);
-//		entityDetails = createEntityDetails(this);
-//		masterDetail.add(entityDetails);
-//
-//		masterDetail.setFlexGrow(0.8, entityList);
-//		add(masterDetail);
-
-		List<T> allEntities = repository.findAll();
+		final List<T> allEntities = repository.findAll();
 		entityTablePanel.setEntities(allEntities);
 
 		entityTablePanel.selectFirstEntity();
 	}
 
 	@Override
-	public void entityChanged(T entity) {
+	public void entityChangedInEntityDetails(T entity) {
+		log.trace("entityChangedInEntityDetails" + entity);
+		final T savedEntity = saveEntity(entity);
+		if (editNewEntityMode) {
+			// refresh full table
+			entityTablePanel.setEntities(repository.findAll());
+		} else {
+			// refresh only table row
+			entityTablePanel.refreshEntity(savedEntity);
+		}
+		entityTablePanel.select(savedEntity);
+	}
+
+	@Override
+	public void entityDetailsPanelEntersEditMode() {
+		entityTablePanel.cancelEditMode();
+		addButton.setEnabled(false);
+		removeButton.setEnabled(false);
+	}
+
+	@Override
+	public void entityDetailsPanelLeavesEditMode() {
+		editNewEntityMode = false;
+		addButton.setEnabled(isCreateNewEntityAllowed());
+		removeButton.setEnabled(true);
+		entityTablePanel.select(entityTablePanel.getSelectedEntity().orElse(null));
+	}
+
+	@Override
+	public void entityChangedInEntityTable(T entity) {
+		log.trace("entityChangedInEntityTable" + entity);
 		saveEntity(entity);
+		entityDetails.showEntity(Optional.of(entity));
 	}
 
 	@Override
-	public void selectionChanged(Optional<T> entity) {
-		entityDetails.showEntity(entity.orElse(null));
+	public void selectionChangedInEntityTable(Optional<T> entity) {
+		log.trace("selectionChangedInEntityTable " + entity);
+		entityDetails.showEntity(entity);
 	}
 
 	@Override
-	public void enterEditMode() {
-		// TODO Auto-generated method stub
-
+	public void entityTableEntersEditMode() {
+		addButton.setEnabled(false);
+		removeButton.setEnabled(false);
+		entityDetails.cancelEditMode();
 	}
 
 	@Override
-	public void leaveEditMode() {
-		// TODO Auto-generated method stub
-
+	public void entityTableLeavesEditMode() {
+		addButton.setEnabled(isCreateNewEntityAllowed());
+		removeButton.setEnabled(true);
 	}
 
-//	private void deleteEntity(T entity) {
-//		log.trace("delete button pressed");
-//		repository.delete(entity.getId());
-//		refreshTable();
-//	}
-
-	public void saveEntity(T entity) {
+	public T saveEntity(T entity) {
+		log.trace("saveEntity " + entity);
 		if (editNewEntityMode) {
 			entity = repository.create(entity);
 			// refresh full table
 		} else {
-			repository.update(entity);
+			entity = repository.update(entity);
 			// refresh only table row
 		}
-		entityTablePanel.setEntities(repository.findAll());
-		entityDetails.setEntity(entity);
 
-//		editNewEntityMode = false;
-//		entityList.listenToSelectionChanges();
-//		entityList.select(entity);
-//		entityDetails.showEntity(entity);
+		return entity;
 	}
 
 	private void deleteEntity(T entity) {
+		log.trace("deleteEntity " + entity);
 		repository.delete(entity.getId());
 		entityTablePanel.setEntities(repository.findAll());
-//		entityList.refreshAll();
-//		entityList.selectFirstEntity();
+		entityTablePanel.selectFirstEntity();
 	}
-//
-//	@Override
-//	public void editEntity(T entity) {
-//		entityList.ignoreSelectionChanges();
-//		entityDetails.editEntity(entity);
-//	}
-//
-//	@Override
-//	public void cancelEditMode() {
-//		editNewEntityMode = false;
-//		entityList.listenToSelectionChanges();
-//		if (selectedEntity.isPresent()) {
-//			entityList.select(selectedEntity.get());
-//			entityDetails.showEntity(selectedEntity.get());
-//		} else {
-//			entityList.selectFirstEntity();
-//		}
-//	}
-//
-//	@Override
-//	public void createNewEntity() {
-//		editNewEntityMode = true;
-//		entityList.ignoreSelectionChanges();
-//		final Optional<T> selectedEntity = entityList.getSelectedEntity();
-//		final T newEntity = createNewEmptyEntity();
-//		entityList.deselectAll();
-//		entityDetails.editEntity(newEntity);
-//		this.selectedEntity = selectedEntity;
-//	}
-//
-//	@Override
-//	public void entitySelected(T entity) {
-//		T refreshedEntity = null;
-//		if (entity != null) {
-//			// reload entity on selection
-//			refreshedEntity = repository.get(entity.getId());
-//		}
-//		selectedEntity = Optional.ofNullable(refreshedEntity);
-//		entityDetails.showEntity(refreshedEntity);
-//	}
 
 	protected abstract T createNewEmptyEntity();
 }

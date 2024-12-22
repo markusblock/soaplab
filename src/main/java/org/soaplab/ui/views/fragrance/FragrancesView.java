@@ -15,17 +15,15 @@ import com.vaadin.flow.router.Route;
 public class FragrancesView extends EntityView<Fragrance> {
 
 	private static final long serialVersionUID = 1L;
-	private FragranceRepository repository;
 
 	@Autowired
 	public FragrancesView(FragranceRepository repository) {
 		super(repository, "domain.fragrances");
-		this.repository = repository;
 	}
 
 	@Override
 	protected IngredientTablePanel<Fragrance> createEntityTable(EntityTableListener<Fragrance> listener) {
-		return new FragranceTablePanel(repository, listener);
+		return new FragranceTablePanel(listener);
 	}
 
 	@Override

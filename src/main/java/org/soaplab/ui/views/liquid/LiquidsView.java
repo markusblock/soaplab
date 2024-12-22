@@ -15,17 +15,15 @@ import com.vaadin.flow.router.Route;
 public class LiquidsView extends EntityView<Liquid> {
 
 	private static final long serialVersionUID = 1L;
-	private LiquidRepository repository;
 
 	@Autowired
 	public LiquidsView(LiquidRepository repository) {
 		super(repository, "domain.liquids");
-		this.repository = repository;
 	}
 
 	@Override
 	protected IngredientTablePanel<Liquid> createEntityTable(EntityTableListener<Liquid> listener) {
-		return new LiquidTablePanel(repository, listener);
+		return new LiquidTablePanel(listener);
 	}
 
 	@Override

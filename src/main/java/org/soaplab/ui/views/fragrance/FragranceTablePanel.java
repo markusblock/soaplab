@@ -1,7 +1,6 @@
 package org.soaplab.ui.views.fragrance;
 
 import org.soaplab.domain.Fragrance;
-import org.soaplab.repository.FragranceRepository;
 import org.soaplab.ui.views.EntityTableListener;
 import org.soaplab.ui.views.IngredientTablePanel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,7 @@ public class FragranceTablePanel extends IngredientTablePanel<Fragrance> {
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	public FragranceTablePanel(FragranceRepository repository, EntityTableListener<Fragrance> listener) {
-		super(Fragrance.class, repository, listener);
+	public FragranceTablePanel(EntityTableListener<Fragrance> listener) {
+		super(Fragrance.class, listener);
 	}
 }

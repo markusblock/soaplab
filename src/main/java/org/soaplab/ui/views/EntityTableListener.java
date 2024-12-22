@@ -6,11 +6,23 @@ import org.soaplab.domain.NamedEntity;
 
 public interface EntityTableListener<T extends NamedEntity> {
 
-	void selectionChanged(Optional<T> entity);
+	/**
+	 * The selection in table has changed.
+	 */
+	void selectionChangedInEntityTable(Optional<T> entity);
 
-	void entityChanged(T entity);
+	/**
+	 * The entity selected in the table has changed at least one of its properties.
+	 */
+	void entityChangedInEntityTable(T entity);
 
-	void enterEditMode();
+	/**
+	 * The entity table enters the edit mode.
+	 */
+	void entityTableEntersEditMode();
 
-	void leaveEditMode();
+	/**
+	 * The entity table leaves the edit mode.
+	 */
+	void entityTableLeavesEditMode();
 }

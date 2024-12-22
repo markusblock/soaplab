@@ -17,18 +17,15 @@ import com.vaadin.flow.router.Route;
 public class FatsView extends EntityView<Fat> {
 
 	private static final long serialVersionUID = 1L;
-	private FatRepository repository;
 
 	@Autowired
 	public FatsView(FatRepository repository) {
 		super(repository, "domain.fats");
-		this.repository = repository;
-
 	}
 
 	@Override
 	protected IngredientTablePanel<Fat> createEntityTable(EntityTableListener<Fat> listener) {
-		return new FatTablePanel(repository, listener);
+		return new FatTablePanel(listener);
 	}
 
 	@Override

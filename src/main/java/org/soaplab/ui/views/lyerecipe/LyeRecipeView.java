@@ -49,7 +49,7 @@ public class LyeRecipeView extends EntityView<LyeRecipe> {
 
 	@Override
 	protected EntityTablePanel<LyeRecipe> createEntityTable(EntityTableListener<LyeRecipe> listener) {
-		return new EntityTablePanel<LyeRecipe>(LyeRecipe.class, repository, listener);
+		return new EntityTablePanel<LyeRecipe>(LyeRecipe.class, listener);
 	}
 
 	@Override

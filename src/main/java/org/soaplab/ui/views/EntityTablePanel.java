@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.soaplab.domain.NamedEntity;
-import org.soaplab.repository.EntityRepository;
 import org.springframework.util.ObjectUtils;
 
 import com.vaadin.flow.component.Component;
@@ -38,7 +37,6 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.function.SerializablePredicate;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,8 +46,6 @@ public class EntityTablePanel<T extends NamedEntity> extends VerticalLayout {
 
 	private static final long serialVersionUID = 1L;
 
-	@Getter
-	private final EntityRepository<T> repository;
 	private final EntityTableListener<T> tableListener;
 
 	private final Grid<T> grid;
@@ -64,10 +60,8 @@ public class EntityTablePanel<T extends NamedEntity> extends VerticalLayout {
 
 	Map<String, SerializablePredicate<T>> searchFilter = new HashMap<>();
 
-	public EntityTablePanel(Class<T> entityClass, EntityRepository<T> repository,
-			EntityTableListener<T> tableListener) {
+	public EntityTablePanel(Class<T> entityClass, EntityTableListener<T> tableListener) {
 		super();
-		this.repository = repository;
 		this.tableListener = tableListener;
 
 		setSizeFull();
@@ -90,7 +84,7 @@ public class EntityTablePanel<T extends NamedEntity> extends VerticalLayout {
 		editor.setBuffered(false);
 
 		addEditorCancelListener(editor);
-		addEditorCloseListener(repository, editor);
+		addEditorCloseListener(editor);
 		addEditorOpenListener(editor);
 		addGridClickListener();
 		addGridDoubleClickListener();
@@ -105,7 +99,7 @@ public class EntityTablePanel<T extends NamedEntity> extends VerticalLayout {
 	}
 
 	public void selectFirstEntity() {
-		List<T> entities = grid.getListDataView().getItems().collect(Collectors.toList());
+		final List<T> entities = grid.getListDataView().getItems().collect(Collectors.toList());
 		if (entities.size() > 0) {
 			select(entities.get(0));
 		} else {
@@ -129,8 +123,8 @@ public class EntityTablePanel<T extends NamedEntity> extends VerticalLayout {
 //			}, () -> removeButton.setEnabled(false));
 			event.getFirstSelectedItem().ifPresentOrElse(selection -> {
 				focusedEntity = Optional.of(selection);
-				tableListener.selectionChanged(Optional.of(selection));
-			}, () -> tableListener.selectionChanged(Optional.empty()));
+				tableListener.selectionChangedInEntityTable(Optional.of(selection));
+			}, () -> select(focusedEntity.orElse(null)));
 		});
 	}
 
@@ -148,23 +142,16 @@ public class EntityTablePanel<T extends NamedEntity> extends VerticalLayout {
 		});
 	}
 
-	private void addEditorCloseListener(EntityRepository<T> repository, final Editor<T> editor) {
+	private void addEditorCloseListener(final Editor<T> editor) {
 		editor.addCloseListener(l -> {
 			log.trace("close editor");
 			if (entityChanged && !editorCanceled) {
 				final T entity = l.getItem();
-				if (entity.getId() == null) {
-					log.trace("create");
-					repository.create(entity);
-				} else {
-					log.trace("update");
-					repository.update(entity);
-				}
+				tableListener.entityChangedInEntityTable(entity);
 				grid.getDataProvider().refreshItem(entity);
 			}
 			resetEditorState();
-//			refreshTable();
-			tableListener.leaveEditMode();
+			tableListener.entityTableLeavesEditMode();
 		});
 	}
 
@@ -172,8 +159,7 @@ public class EntityTablePanel<T extends NamedEntity> extends VerticalLayout {
 		editor.addOpenListener(l -> {
 			log.trace("open editor");
 			resetEditorState();
-			tableListener.enterEditMode();
-//			removeButton.setEnabled(false);
+			tableListener.entityTableEntersEditMode();
 
 			focusedColumn.ifPresentOrElse(column -> focusComponent(column.getEditorComponent()),
 					() -> focusComponent(grid.getColumns().get(0)));
@@ -276,27 +262,26 @@ public class EntityTablePanel<T extends NamedEntity> extends VerticalLayout {
 		return propertyField;
 	}
 
-//	@Override
-//	public void beforeEnter(BeforeEnterEvent event) {
-//		log.trace("beforeEnter");
-//		refreshTable();
-//	}
-
 	public void setEntities(List<T> entities) {
-		log.trace("refreshTable");
+		log.trace("setEntities");
 		final ListDataProvider<T> dataProvider = new ListDataProvider<T>(entities);
 		final GridListDataView<T> gridListDataView = grid.setItems(dataProvider);
 		entityFilter.setDataView(gridListDataView);
 		grid.recalculateColumnWidths();
 	}
 
-//	private void refreshTable() {
-//		log.trace("refreshTable");
-//		final ListDataProvider<T> dataProvider = new ListDataProvider<T>(repository.findAll());
-//		final GridListDataView<T> gridListDataView = grid.setItems(dataProvider);
-//		entityFilter.setDataView(gridListDataView);
-//		grid.recalculateColumnWidths();
-//	}
+	public void entityDeleted(T entity) {
+		log.trace("entityDeleted " + entity);
+		grid.getListDataView().removeItem(entity);
+		selectFirstEntity();
+	}
+
+	public void refreshEntity(T entity) {
+		log.trace("refreshEntity " + entity);
+		grid.getListDataView().refreshItem(entity);
+		grid.recalculateColumnWidths();
+		select(entity);
+	}
 
 	protected void addNameColumn(String propertyName, String id) {
 		addColumn(propertyName, id).setAutoWidth(true).setFlexGrow(1);
@@ -371,6 +356,7 @@ public class EntityTablePanel<T extends NamedEntity> extends VerticalLayout {
 		return layout;
 	}
 
+	// TODO filter price i18n 0,17 instead of 0.17
 	private static class EntityFilter<T> {
 		private GridListDataView<T> dataView;
 
@@ -409,5 +395,23 @@ public class EntityTablePanel<T extends NamedEntity> extends VerticalLayout {
 			return ObjectUtils.isEmpty(searchTerm)
 					|| entityPropertyValue.toLowerCase().contains(searchTerm.toLowerCase());
 		}
+	}
+
+	public void cancelEditMode() {
+		log.trace("cancelEditMode");
+		if (grid.getEditor().isOpen()) {
+			grid.getEditor().cancel();
+		}
+	}
+
+	public void removeSelection() {
+		log.trace("removeSelection");
+		grid.deselectAll();
+
+	}
+
+	public Optional<T> getSelectedEntity() {
+		return grid.getSelectionModel().getFirstSelectedItem();
+
 	}
 }
