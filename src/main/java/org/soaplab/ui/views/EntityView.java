@@ -67,7 +67,7 @@ public abstract class EntityView<T extends NamedEntity> extends VerticalLayout
 		headerPanel.add(title);
 
 		addButton = new Button();
-		addButton.setId("entitylist.add");
+		addButton.setId("entity.add");
 		addButton.setIcon(VaadinIcon.PLUS.create());
 		addButton.addClickListener(clickEvent -> {
 			log.trace("add button clicked");
@@ -75,7 +75,7 @@ public abstract class EntityView<T extends NamedEntity> extends VerticalLayout
 			removeButton.setEnabled(false);
 			addButton.setEnabled(false);
 			entityTablePanel.cancelEditMode();
-			entityTablePanel.removeSelection();
+			entityTablePanel.clearSelection();
 			entityDetails.leaveEditMode();
 			final T newEntity = createNewEmptyEntity();
 			entityDetails.showEntity(Optional.of(newEntity));
@@ -85,7 +85,7 @@ public abstract class EntityView<T extends NamedEntity> extends VerticalLayout
 		headerPanel.add(addButton);
 
 		removeButton = new Button();
-		removeButton.setId("entitylist.remove");
+		removeButton.setId("entity.remove");
 		removeButton.setIcon(VaadinIcon.MINUS.create());
 		removeButton.addClickListener(clickEvent -> {
 			log.trace("remove button clicked");
@@ -125,7 +125,7 @@ public abstract class EntityView<T extends NamedEntity> extends VerticalLayout
 			// refresh only table row
 			entityTablePanel.refreshEntity(savedEntity);
 		}
-		entityTablePanel.select(savedEntity);
+		entityTablePanel.selectEntity(savedEntity);
 	}
 
 	@Override
@@ -140,7 +140,7 @@ public abstract class EntityView<T extends NamedEntity> extends VerticalLayout
 		editNewEntityMode = false;
 		addButton.setEnabled(isCreateNewEntityAllowed());
 		removeButton.setEnabled(true);
-		entityTablePanel.select(entityTablePanel.getSelectedEntity().orElse(null));
+		entityTablePanel.selectEntity(entityTablePanel.getSelectedEntity().orElse(null));
 	}
 
 	@Override

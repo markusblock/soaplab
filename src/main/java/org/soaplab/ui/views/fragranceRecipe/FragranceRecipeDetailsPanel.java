@@ -8,12 +8,16 @@ import org.soaplab.domain.FragranceRecipe;
 import org.soaplab.repository.FragranceRepository;
 import org.soaplab.ui.views.EntityDetailsListener;
 import org.soaplab.ui.views.EntityDetailsPanel;
-import org.soaplab.ui.views.RecipeEntryList;
+import org.soaplab.ui.views.RecipeEntryTable;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class FragranceRecipeDetailsPanel extends EntityDetailsPanel<FragranceRecipe> {
 
 	private static final long serialVersionUID = 1L;
-	private final RecipeEntryList<Fragrance> fragrances;
+
+	private final RecipeEntryTable<Fragrance> fragrances;
 
 	private Optional<FragranceRecipe> recipe;
 
@@ -23,13 +27,14 @@ public class FragranceRecipeDetailsPanel extends EntityDetailsPanel<FragranceRec
 
 		addPropertyTextArea("domain.recipe.notes", FragranceRecipe::getNotes, FragranceRecipe::setNotes);
 
-		fragrances = new RecipeEntryList<>(fragranceRepository, "domain.fragrances");
+		fragrances = new RecipeEntryTable<Fragrance>(fragranceRepository, "domain.fragrances");
 		fragrances.setWidthFull();
-		addContent(fragrances);
+		addRecipeEntryTable(fragrances);
 	}
 
 	@Override
 	protected void enterEditMode() {
+
 		super.enterEditMode();
 		fragrances.enterEditMode();
 	}
@@ -43,13 +48,18 @@ public class FragranceRecipeDetailsPanel extends EntityDetailsPanel<FragranceRec
 	@Override
 	protected void updateEntityWithChangesFromUI() {
 		super.updateEntityWithChangesFromUI();
-		recipe.orElseThrow().setFragrances(List.copyOf(fragrances.getData()));
+		recipe.orElseThrow().setFragrances(List.copyOf(fragrances.getEntities()));
 	}
 
 	@Override
 	protected void setEntity(Optional<FragranceRecipe> entity) {
 		this.recipe = entity;
 
-		entity.ifPresentOrElse(t -> fragrances.setData(t.getFragrances()), () -> fragrances.setData());
+		entity.ifPresentOrElse(t -> fragrances.setEntities(t.getFragrances()), () -> fragrances.setEntities());
+	}
+
+	@Override
+	protected boolean subPanelHasChanges() {
+		return fragrances.hasChanges();
 	}
 }

@@ -16,17 +16,17 @@ import org.soaplab.repository.LiquidRepository;
 import org.soaplab.repository.NaOHRepository;
 import org.soaplab.ui.views.EntityDetailsListener;
 import org.soaplab.ui.views.EntityDetailsPanel;
-import org.soaplab.ui.views.RecipeEntryList;
+import org.soaplab.ui.views.RecipeEntryTable;
 import org.springframework.util.CollectionUtils;
 
 public class LyeRecipeDetailsPanel extends EntityDetailsPanel<LyeRecipe> {
 
 	private static final long serialVersionUID = 1L;
-	private final RecipeEntryList<Acid> acids;
-	private final RecipeEntryList<Additive> additives;
-	private final RecipeEntryList<Liquid> liquids;
-	private final RecipeEntryList<NaOH> naOH;
-	private final RecipeEntryList<KOH> kOH;
+	private final RecipeEntryTable<Acid> acids;
+	private final RecipeEntryTable<Additive> additives;
+	private final RecipeEntryTable<Liquid> liquids;
+	private final RecipeEntryTable<NaOH> naOH;
+	private final RecipeEntryTable<KOH> kOH;
 
 	private Optional<LyeRecipe> lyeRecipe;
 
@@ -37,25 +37,25 @@ public class LyeRecipeDetailsPanel extends EntityDetailsPanel<LyeRecipe> {
 
 		addPropertyTextArea("domain.recipe.notes", LyeRecipe::getNotes, LyeRecipe::setNotes);
 
-		naOH = new RecipeEntryList<NaOH>(naOHRepository, "domain.naoh");
+		naOH = new RecipeEntryTable<NaOH>(naOHRepository, "domain.naoh");
 		naOH.setWidthFull();
-		addContent(naOH);
+		addRecipeEntryTable(naOH);
 
-		kOH = new RecipeEntryList<KOH>(kOHRepository, "domain.koh");
+		kOH = new RecipeEntryTable<KOH>(kOHRepository, "domain.koh");
 		kOH.setWidthFull();
-		addContent(kOH);
+		addRecipeEntryTable(kOH);
 
-		acids = new RecipeEntryList<>(acidRepository, "domain.acids");
+		acids = new RecipeEntryTable<>(acidRepository, "domain.acids");
 		acids.setWidthFull();
-		addContent(acids);
+		addRecipeEntryTable(acids);
 
-		liquids = new RecipeEntryList<>(liquidRepository, "domain.liquids");
+		liquids = new RecipeEntryTable<>(liquidRepository, "domain.liquids");
 		liquids.setWidthFull();
-		addContent(liquids);
+		addRecipeEntryTable(liquids);
 
-		additives = new RecipeEntryList<>(additiveRepository, "domain.additives");
+		additives = new RecipeEntryTable<>(additiveRepository, "domain.additives");
 		additives.setWidthFull();
-		addContent(additives);
+		addRecipeEntryTable(additives);
 
 	}
 
@@ -82,11 +82,11 @@ public class LyeRecipeDetailsPanel extends EntityDetailsPanel<LyeRecipe> {
 	@Override
 	protected void updateEntityWithChangesFromUI() {
 		super.updateEntityWithChangesFromUI();
-		lyeRecipe.orElseThrow().setAcids(List.copyOf(acids.getData()));
-		lyeRecipe.orElseThrow().setLiquids(List.copyOf(liquids.getData()));
-		lyeRecipe.orElseThrow().setAdditives(List.copyOf(additives.getData()));
-		lyeRecipe.orElseThrow().setNaOH(CollectionUtils.firstElement(naOH.getData()));
-		lyeRecipe.orElseThrow().setKOH(CollectionUtils.firstElement(kOH.getData()));
+		lyeRecipe.orElseThrow().setAcids(List.copyOf(acids.getEntities()));
+		lyeRecipe.orElseThrow().setLiquids(List.copyOf(liquids.getEntities()));
+		lyeRecipe.orElseThrow().setAdditives(List.copyOf(additives.getEntities()));
+		lyeRecipe.orElseThrow().setNaOH(CollectionUtils.firstElement(naOH.getEntities()));
+		lyeRecipe.orElseThrow().setKOH(CollectionUtils.firstElement(kOH.getEntities()));
 	}
 
 	@Override
@@ -95,24 +95,24 @@ public class LyeRecipeDetailsPanel extends EntityDetailsPanel<LyeRecipe> {
 
 		entity.ifPresentOrElse(t -> {
 			if (t.getNaOH() == null) {
-				naOH.setData();
+				naOH.setEntities();
 			} else {
-				naOH.setData(List.of(t.getNaOH()));
+				naOH.setEntities(List.of(t.getNaOH()));
 			}
 			if (t.getKOH() == null) {
-				kOH.setData();
+				kOH.setEntities();
 			} else {
-				kOH.setData(List.of(t.getKOH()));
+				kOH.setEntities(List.of(t.getKOH()));
 			}
-			acids.setData(t.getAcids());
-			liquids.setData(t.getLiquids());
-			additives.setData(t.getAdditives());
+			acids.setEntities(t.getAcids());
+			liquids.setEntities(t.getLiquids());
+			additives.setEntities(t.getAdditives());
 		}, () -> {
-			naOH.setData();
-			kOH.setData();
-			acids.setData();
-			liquids.setData();
-			additives.setData();
+			naOH.setEntities();
+			kOH.setEntities();
+			acids.setEntities();
+			liquids.setEntities();
+			additives.setEntities();
 		});
 	}
 }

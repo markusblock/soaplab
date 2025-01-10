@@ -17,6 +17,7 @@ import org.soaplab.ui.views.EntityDetailsListener;
 import org.soaplab.ui.views.EntityTableListener;
 import org.soaplab.ui.views.EntityTablePanel;
 import org.soaplab.ui.views.EntityView;
+import org.soaplab.ui.views.NamedEntityTablePanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
@@ -48,7 +49,7 @@ public class RecipeView extends EntityView<SoapRecipe> {
 
 	@Override
 	protected EntityTablePanel<SoapRecipe> createEntityTable(EntityTableListener<SoapRecipe> listener) {
-		return new EntityTablePanel<SoapRecipe>(SoapRecipe.class, listener);
+		return new NamedEntityTablePanel<SoapRecipe>(SoapRecipe.class, listener);
 	}
 
 	@Override

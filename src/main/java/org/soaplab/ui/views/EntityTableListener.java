@@ -2,9 +2,9 @@ package org.soaplab.ui.views;
 
 import java.util.Optional;
 
-import org.soaplab.domain.NamedEntity;
+import org.soaplab.domain.Entity;
 
-public interface EntityTableListener<T extends NamedEntity> {
+public interface EntityTableListener<T extends Entity> {
 
 	/**
 	 * The selection in table has changed.

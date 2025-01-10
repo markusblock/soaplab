@@ -1,4 +1,4 @@
-package org.soaplab.ui.fat;
+package org.soaplab.ui.pageobjects;
 
 import static com.codeborne.selenide.Condition.empty;
 import static com.codeborne.selenide.Condition.hidden;
@@ -7,12 +7,15 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byTagName;
 import static com.codeborne.selenide.Selenide.$;
 import static org.soaplab.ui.fat.VaadinUtils.disabled;
+import static org.soaplab.ui.fat.VaadinUtils.readonly;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.UUID;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.soaplab.ui.fat.VaadinUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +24,7 @@ import lombok.Getter;
 @Getter
 public class PageObjectElement {
 
-	private By locator;
+	private final By locator;
 
 	public PageObjectElement shouldBeEmpty() {
 		$(locator).shouldBe(empty);
@@ -34,7 +37,8 @@ public class PageObjectElement {
 	}
 
 	public PageObjectElement shouldBeReadOnly() {
-		return shouldBeDisabled();
+		$(locator).shouldBe(readonly());
+		return this;
 	}
 
 	public PageObjectElement shouldBeDisabled() {
@@ -108,5 +112,34 @@ public class PageObjectElement {
 	public PageObjectElement click() {
 		VaadinUtils.clickOnElement(locator);
 		return this;
+	}
+
+	public PageObjectElement doubleClick() {
+		VaadinUtils.doubleClickOnElement(locator);
+		return this;
+	}
+
+	public PageObjectElement press(CharSequence... keysToPress) {
+		$(locator).$(byTagName("input")).scrollIntoView(true).press(keysToPress);
+		return this;
+	}
+
+	public PageObjectElement pressEnter() {
+		$(locator).$(byTagName("input")).scrollIntoView(true).pressEnter();
+		return this;
+	}
+
+	public PageObjectElement pressEscape() {
+		$(locator).$(byTagName("input")).scrollIntoView(true).pressEscape();
+		return this;
+	}
+
+	public WebElement toWebElement() {
+		return $(locator).toWebElement();
+	}
+
+	public boolean isEnabled() {
+		return $(locator).isEnabled();
+
 	}
 }

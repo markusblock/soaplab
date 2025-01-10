@@ -17,7 +17,7 @@ public class AllIngredientsTablePanel extends EntityTablePanel<Ingredient> {
 	public AllIngredientsTablePanel(EntityTableListener<Ingredient> listener) {
 		super(Ingredient.class, listener);
 
-		addColumn(Ingredient.Fields.inci, "domain.ingredient.inci");
+		addEntityColumn(Ingredient.Fields.inci, "domain.ingredient.inci");
 
 		final Column<Ingredient> priceColumn = addPriceColumn(Ingredient.Fields.cost, "domain.ingredient.price");
 		priceColumn.setRenderer(new PriceRenderer<Ingredient>(Ingredient::getCost));

@@ -5,6 +5,9 @@ import static com.codeborne.selenide.Selenide.$;
 import java.time.Duration;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selectors;
@@ -24,8 +27,44 @@ public class VaadinUtils {
 		return Condition.attribute("selected");
 	}
 
+	public static WebElementCondition editable() {
+		return Condition.attribute("editable");
+	}
+
+	public static WebElementCondition readonly() {
+		return Condition.attribute("readonly");
+	}
+
 	public static void clickOnElement(By selector) {
 		$(selector).scrollIntoView(true).shouldNotBe(disabled()).click();
+	}
+
+	public static void doubleClickOnElement(By selector) {
+//		$(selector).doubleClick();
+//		final String jsDoubleClick = "var target = arguments[0];                                 "
+//				+ "var offsetX = arguments[1];                                "
+//				+ "var offsetY = arguments[2];                                "
+//				+ "var rect = target.getBoundingClientRect();                 "
+//				+ "var cx = rect.left + (offsetX || (rect.width / 2));        "
+//				+ "var cy = rect.top + (offsetY || (rect.height / 2));        "
+//				+ "                                                           "
+//				+ "emit('mousedown', {clientX: cx, clientY: cy, buttons: 1}); "
+//				+ "emit('mouseup',   {clientX: cx, clientY: cy});             "
+//				+ "emit('mousedown', {clientX: cx, clientY: cy, buttons: 1}); "
+//				+ "emit('mouseup',   {clientX: cx, clientY: cy});             "
+//				+ "emit('click',     {clientX: cx, clientY: cy, detail: 2});  "
+//				+ "                                                           "
+//				+ "function emit(name, init) {                                "
+//				+ "target.dispatchEvent(new MouseEvent(name, init));        "
+//				+ "}                                                          ";
+
+		final WebElement webElement = $(selector).toWebElement();
+		final WebDriver webDriver = Selenide.webdriver().object();
+
+//		new Actions(webDriver).moveToElement(webElement, 0, 0).perform();
+//		((JavascriptExecutor) webDriver).executeScript(jsDoubleClick, webElement, 0, 0);
+
+		new Actions(webDriver).moveToElement(webElement).doubleClick().perform();
 	}
 
 	public static void waitUntilPageLoaded() {

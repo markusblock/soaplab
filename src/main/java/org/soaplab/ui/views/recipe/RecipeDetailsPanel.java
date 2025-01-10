@@ -13,13 +13,13 @@ import org.soaplab.repository.LyeRecipeRepository;
 import org.soaplab.service.soapcalc.SoapCalculatorService;
 import org.soaplab.ui.views.EntityDetailsListener;
 import org.soaplab.ui.views.EntityDetailsPanel;
-import org.soaplab.ui.views.RecipeEntryList;
+import org.soaplab.ui.views.RecipeEntryTable;
 
 public class RecipeDetailsPanel extends EntityDetailsPanel<SoapRecipe> {
 
 	private static final long serialVersionUID = 1L;
-	private final RecipeEntryList<Fat> fats;
-	private final RecipeEntryList<Additive> additives;
+	private final RecipeEntryTable<Fat> fats;
+	private final RecipeEntryTable<Additive> additives;
 	private Optional<SoapRecipe> soapRecipe;
 	private final SoapCalculatorService soapCalculatorService;
 
@@ -47,14 +47,14 @@ public class RecipeDetailsPanel extends EntityDetailsPanel<SoapRecipe> {
 		addEntitySelector("domain.fragrancerecipe", SoapRecipe::getFragranceRecipe, SoapRecipe::setFragranceRecipe,
 				fragranceRecipeRepository);
 
-		fats = new RecipeEntryList<Fat>(fatRepository, "domain.fats");
+		fats = new RecipeEntryTable<Fat>(fatRepository, "domain.fats");
 		// TODO add panel the same way as the propertypanels
 		fats.setWidthFull();
-		addContent(fats);
+		addRecipeEntryTable(fats);
 
-		additives = new RecipeEntryList<>(additiveRepository, "domain.additives");
+		additives = new RecipeEntryTable<>(additiveRepository, "domain.additives");
 		additives.setWidthFull();
-		addContent(additives);
+		addRecipeEntryTable(additives);
 
 	}
 
@@ -75,8 +75,8 @@ public class RecipeDetailsPanel extends EntityDetailsPanel<SoapRecipe> {
 	@Override
 	protected void updateEntityWithChangesFromUI() {
 		super.updateEntityWithChangesFromUI();
-		soapRecipe.orElseThrow().setFats(List.copyOf(fats.getData()));
-		soapRecipe.orElseThrow().setAdditives(List.copyOf(additives.getData()));
+		soapRecipe.orElseThrow().setFats(List.copyOf(fats.getEntities()));
+		soapRecipe.orElseThrow().setAdditives(List.copyOf(additives.getEntities()));
 	}
 
 	@Override
@@ -91,11 +91,11 @@ public class RecipeDetailsPanel extends EntityDetailsPanel<SoapRecipe> {
 		this.soapRecipe = soapRecipe;
 
 		soapRecipe.ifPresentOrElse(t -> {
-			fats.setData(t.getFats());
-			additives.setData(t.getAdditives());
+			fats.setEntities(t.getFats());
+			additives.setEntities(t.getAdditives());
 		}, () -> {
-			fats.setData();
-			additives.setData();
+			fats.setEntities();
+			additives.setEntities();
 		});
 	}
 }

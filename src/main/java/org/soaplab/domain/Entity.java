@@ -26,6 +26,8 @@ public abstract class Entity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	// TODO move id creation out of repo into service layer, detect a new entity by
+	// empty version attribute
 	private UUID id;
 
 	@JsonIgnore

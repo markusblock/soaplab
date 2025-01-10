@@ -6,16 +6,22 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.soaplab.domain.Ingredient;
 import org.soaplab.domain.NamedEntity;
 import org.soaplab.domain.Percentage;
 import org.soaplab.domain.Price;
+import org.soaplab.domain.RecipeEntry;
 import org.soaplab.domain.Weight;
 import org.soaplab.repository.EntityRepository;
 import org.springframework.util.Assert;
 
+import com.vaadin.flow.component.BlurNotifier;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.InputNotifier;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.KeyNotifier;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -25,6 +31,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.TextFieldBase;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.Setter;
@@ -44,6 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 public class EntityDetailsPanel<T extends NamedEntity> extends Div implements BeforeEnterObserver, BeforeLeaveObserver {
 
 	private static final long serialVersionUID = 1L;
+	public static final String PANEL_ID = "entitydetailspanel";
 
 	private final VerticalLayout content;
 	private final FormLayout commonEntityDetailsSection;
@@ -51,6 +59,7 @@ public class EntityDetailsPanel<T extends NamedEntity> extends Div implements Be
 
 	private final Binder<T> binder;
 	private final List<HasEnabled> editablePropertyFields;
+	private final List<RecipeEntryTable<? extends Ingredient>> recipeEntryTables = new ArrayList<>();
 
 	private Optional<T> entity;
 	private boolean inEditMode;
@@ -61,6 +70,8 @@ public class EntityDetailsPanel<T extends NamedEntity> extends Div implements Be
 		super();
 		this.listener = listener;
 
+		setId(PANEL_ID);
+
 		editablePropertyFields = new ArrayList<>();
 
 		binder = new Binder<>();
@@ -69,7 +80,7 @@ public class EntityDetailsPanel<T extends NamedEntity> extends Div implements Be
 		add(content);
 
 		commonEntityDetailsSection = new FormLayout();
-		commonEntityDetailsSection.setId("entitydetails.section.common");
+		commonEntityDetailsSection.setId(PANEL_ID + ".section.common");
 		commonEntityDetailsSection.setResponsiveSteps(
 				// Use one column by default
 				new ResponsiveStep("0", 1, LabelsPosition.ASIDE));
@@ -82,7 +93,7 @@ public class EntityDetailsPanel<T extends NamedEntity> extends Div implements Be
 		addPropertyStringField("domain.entity.name", T::getName, T::setName, true);
 
 		propertySection = new FormLayout();
-		propertySection.setId("entitydetails.section.properties");
+		propertySection.setId(PANEL_ID + ".section.properties");
 		propertySection.setResponsiveSteps(
 				// Use two columns by default
 				new ResponsiveStep("0", 3, LabelsPosition.TOP));
@@ -94,8 +105,28 @@ public class EntityDetailsPanel<T extends NamedEntity> extends Div implements Be
 		});
 	}
 
-	protected void addContent(Component component) {
-		content.add(component);
+	protected <INGREDIENT extends Ingredient> void addRecipeEntryTable(RecipeEntryTable<INGREDIENT> recipeItemsTable) {
+		content.add(recipeItemsTable);
+		recipeEntryTables.add(recipeItemsTable);
+		recipeItemsTable.setEntityTableListener(new DefaultEntityTableListener<RecipeEntry<INGREDIENT>>() {
+			@Override
+			public void entityChangedInEntityTable(RecipeEntry<INGREDIENT> entity) {
+				log.trace("Entity changed subPanel %s".formatted(entity));
+				updateEntityWithChangesFromUI();
+				fireEntityChanged();
+				leaveEditMode();
+			}
+
+			@Override
+			public void entityTableEntersEditMode() {
+				log.trace("subpanel entityTableEntersEditMode");
+			}
+
+			@Override
+			public void entityTableLeavesEditMode() {
+				log.trace("subpanel entityTableLeavesEditMode");
+			}
+		});
 	}
 
 	protected void addEntityDetail(Component component) {
@@ -208,18 +239,40 @@ public class EntityDetailsPanel<T extends NamedEntity> extends Div implements Be
 	}
 
 	private TextArea createPropertyTextArea(String id) {
-		final TextArea textArea = new TextArea();
-		textArea.setId(id);
-		textArea.setWidthFull();
-		textArea.setEnabled(false);
-		return textArea;
+		final TextArea propertyField = new TextArea();
+		propertyField.setId(PANEL_ID + "." + id);
+		propertyField.setWidthFull();
+		propertyField.setEnabled(false);
+		propertyField.setValueChangeMode(ValueChangeMode.EAGER);
+
+		addValueChangedListener(propertyField);
+		addKeyPressedListeners(propertyField);
+		addFocusListener(propertyField);
+		addInputListener(propertyField);
+		addBlurListener(propertyField);
+
+		return propertyField;
 	}
 
 	private TextField createPropertyTextField(String id) {
 		final TextField propertyField = new TextField();
-		propertyField.setId(id);
+		propertyField.setId(PANEL_ID + "." + id);
 		propertyField.setWidthFull();
+		propertyField.setEnabled(false);
+		// set to eager otherwise ESC won't reset the value in the current focussed
+		// field
 		propertyField.setValueChangeMode(ValueChangeMode.EAGER);
+
+		addValueChangedListener(propertyField);
+		addKeyPressedListeners(propertyField);
+		addFocusListener(propertyField);
+		addInputListener(propertyField);
+		addBlurListener(propertyField);
+
+		return propertyField;
+	}
+
+	private void addValueChangedListener(final TextFieldBase<?, String> propertyField) {
 		propertyField.addValueChangeListener(event -> {
 			if (!event.isFromClient()) {
 				return;
@@ -235,20 +288,18 @@ public class EntityDetailsPanel<T extends NamedEntity> extends Div implements Be
 				log.trace("value changed from %s to %s".formatted(oldValue, newValue));
 			}
 		});
-		propertyField.addKeyDownListener(Key.ESCAPE, event -> {
-			log.debug("ESC pressed, resetting field to old value");
-			setEntityInternal(entity);
-		});
-		propertyField.addKeyDownListener(Key.ENTER, event -> {
-			log.debug("ENTER pressed");
-			if (binder.hasChanges()) {
-				log.debug("binder has changes");
-				updateEntityWithChangesFromUI();
-				fireEntityChanged();
+	}
+
+	private void addInputListener(InputNotifier propertyField) {
+		propertyField.addInputListener(event -> {
+			if (!event.isFromClient()) {
+				return;
 			}
-			leaveEditMode();
-			// binder.refreshFields();
+			log.debug("received input event on " + event.getSource().getId());
 		});
+	}
+
+	private void addFocusListener(Focusable<?> propertyField) {
 		propertyField.addFocusListener(event -> {
 			if (!event.isFromClient()) {
 				return;
@@ -256,20 +307,36 @@ public class EntityDetailsPanel<T extends NamedEntity> extends Div implements Be
 			log.debug("received focus event on " + event.getSource().getId());
 			enterEditMode();
 		});
-		propertyField.addInputListener(event -> {
-			if (!event.isFromClient()) {
-				return;
-			}
-			log.debug("received input event on " + event.getSource().getId());
-		});
+	}
+
+	private void addBlurListener(BlurNotifier<?> propertyField) {
 		propertyField.addBlurListener(event -> {
 			if (!event.isFromClient()) {
 				return;
 			}
 			log.debug("received blur event on " + event.getSource().getId());
 		});
-		propertyField.setEnabled(false);
-		return propertyField;
+	}
+
+	private void addKeyPressedListeners(KeyNotifier propertyField) {
+		propertyField.addKeyDownListener(Key.ESCAPE, event -> {
+			log.debug("ESC pressed, resetting field to old value");
+			setEntityInternal(entity);
+		});
+		propertyField.addKeyDownListener(Key.ENTER, event -> {
+			log.debug("ENTER pressed");
+			if (binder.hasChanges() || subPanelHasChanges()) {
+				log.debug("binder or subPanel has changes");
+				updateEntityWithChangesFromUI();
+				fireEntityChanged();
+			}
+			leaveEditMode();
+			// binder.refreshFields();
+		});
+	}
+
+	protected boolean subPanelHasChanges() {
+		return false;
 	}
 
 	public void editEntity(T newEntity) {
@@ -311,7 +378,7 @@ public class EntityDetailsPanel<T extends NamedEntity> extends Div implements Be
 		binder.writeBeanIfValid(entity.orElse(null));
 	}
 
-	private void fireEntityChanged() {
+	protected void fireEntityChanged() {
 		listener.entityChangedInEntityDetails(entity.orElse(null));
 	}
 
@@ -337,11 +404,13 @@ public class EntityDetailsPanel<T extends NamedEntity> extends Div implements Be
 	private void enableEditableFields() {
 		log.trace("enableEditableFields");
 		editablePropertyFields.forEach(tf -> tf.setEnabled(true));
+		recipeEntryTables.forEach(table -> table.enterEditMode());
 	}
 
 	private void disableEditableFields() {
 		log.trace("disableEditableFields");
 		editablePropertyFields.forEach(tf -> tf.setEnabled(false));
+		recipeEntryTables.forEach(table -> table.leaveEditMode());
 	}
 
 	/**
@@ -363,5 +432,4 @@ public class EntityDetailsPanel<T extends NamedEntity> extends Div implements Be
 	public void cancelEditMode() {
 		leaveEditMode();
 	}
-
 }

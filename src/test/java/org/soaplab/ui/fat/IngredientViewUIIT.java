@@ -1,23 +1,44 @@
 package org.soaplab.ui.fat;
 
+import static org.soaplab.ui.pageobjects.EntityTablePanelPageObject.COLUMN_HEADER_NAME;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.soaplab.domain.Fat;
-import org.soaplab.domain.Ingredient;
 import org.soaplab.testdata.RandomIngredientsTestData;
+import org.soaplab.ui.pageobjects.FatDetailsPageObject;
+import org.soaplab.ui.pageobjects.FatTablePanelPageObject;
+import org.soaplab.ui.pageobjects.FatViewPageObject;
+import org.soaplab.ui.pageobjects.PageObjectElement;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class IngredientViewUIIT extends UIIntegrationTestBase {
 
 	private FatViewPageObject pageObject;
+	private FatTablePanelPageObject tablePanel;
+	private FatDetailsPageObject detailsPanel;
 
 	@Autowired
 	private RepositoryTestHelper repoHelper;
 
+	private static Fat ingredient1;
+	private static Fat ingredient2;
+	private static Fat ingredient3;
+
 	@BeforeEach
 	void beforeEach() {
+		if (ingredient1 == null) {
+			ingredient1 = repoHelper.createFat();
+			ingredient2 = repoHelper.createFat();
+			ingredient3 = repoHelper.createFat();
+		}
+
 		pageObject = new FatViewPageObject();
+		pageObject.refreshPage();
+
+		tablePanel = pageObject.getEntityTable();
+		detailsPanel = pageObject.getEntityDetails();
 	}
 
 	@AfterEach
@@ -26,170 +47,57 @@ public class IngredientViewUIIT extends UIIntegrationTestBase {
 	}
 
 	@Test
-	void editModeEnablesAndDisablesButtons() {
-		Fat ingredient = repoHelper.createFat();
-		IngredientListPageObject list = pageObject.getIngredientList();
-		list.triggerReload();
-		IngredientDetailsPageObject details = pageObject.getIngredientDetails();
-		list.selectIngredient(ingredient);
-		assertThatButtonAreInNonEditModeWithSelectedIngredient(list, details);
-		list.buttonAdd().click();
-		assertThatButtonAreInEditMode(list, details);
-		details.buttonCancel().click();
-		assertThatButtonAreInNonEditModeWithSelectedIngredient(list, details);
-		details.buttonEdit().click();
-		assertThatButtonAreInEditMode(list, details);
-		details.buttonSave().click();
-		assertThatButtonAreInNonEditModeWithSelectedIngredient(list, details);
+	void detailsPanelShouldShowsSelectedEntityInTablePanel() {
+		tablePanel.selectIngredient(ingredient1);
+		detailsPanel.name().shouldHaveValue(ingredient1.getName());
+
+		tablePanel.selectIngredient(ingredient2);
+		detailsPanel.name().shouldHaveValue(ingredient2.getName());
+
+		tablePanel.selectIngredient(ingredient3);
+		detailsPanel.name().shouldHaveValue(ingredient3.getName());
 	}
 
 	@Test
-	public void idReadOnlyInEditAndNonEditMode() {
-		Ingredient ingredient = repoHelper.createFat();
-		IngredientListPageObject list = pageObject.getIngredientList();
-		list.triggerReload();
-		list.selectIngredient(ingredient);
-		IngredientDetailsPageObject details = pageObject.getIngredientDetails();
-		details.id().shouldBeReadOnly();
-		details.buttonEdit().click();
-		details.id().shouldBeReadOnly();
-	}
+	void editModeDisablesButtons() {
+		pageObject.buttonAdd().shouldBeEnabled();
+		pageObject.buttonRemove().shouldBeEnabled();
+		final PageObjectElement editor = tablePanel.doubleClick(ingredient2, COLUMN_HEADER_NAME);
+		editor.shouldBeVisible();
 
-	@Test
-	public void nameEditableInEditAndReadOnlyInNonEditMode() {
-		Ingredient ingredient = repoHelper.createFat();
-		IngredientListPageObject list = pageObject.getIngredientList();
-		list.triggerReload();
-		list.search().shouldBeVisible();
-		list.selectIngredient(ingredient);
-		IngredientDetailsPageObject details = pageObject.getIngredientDetails();
-		details.name().shouldBeReadOnly();
-		details.buttonEdit().click();
-		details.name().shouldBeEditable();
-		details.buttonCancel().click();
-		details.name().shouldBeReadOnly();
-	}
+		pageObject.buttonAdd().shouldBeDisabled();
+		pageObject.buttonRemove().shouldBeDisabled();
 
-	@Test
-	public void selectionEnablesAndDisablesRemoveAndEditButtons() {
-		Fat ingredient = repoHelper.createFat();
-		IngredientListPageObject list = pageObject.getIngredientList();
-		list.triggerReload();
-		IngredientDetailsPageObject details = pageObject.getIngredientDetails();
-		list.selectIngredient(ingredient);
-		assertThatButtonAreInNonEditModeWithSelectedIngredient(list, details);
-		list.deSelectIngredient(ingredient);
-		assertThatButtonAreInNonEditModeWithNoSelectedIngredient(list, details);
-		list.selectIngredient(ingredient);
-		assertThatButtonAreInNonEditModeWithSelectedIngredient(list, details);
-	}
+		editor.pressEscape();
+		editor.shouldBeHidden();
 
-	@Test
-	public void detailsOfSelectedIngredientAreShown() {
-		Fat ingredient1 = repoHelper.createFat();
-		Fat ingredient2 = repoHelper.createFat();
-		Fat ingredient3 = repoHelper.createFat();
-		IngredientListPageObject list = pageObject.getIngredientList();
-		list.triggerReload();
-		IngredientDetailsPageObject details = pageObject.getIngredientDetails();
-		list.selectIngredient(ingredient1);
-		details.id().shouldHaveValue(ingredient1.getId());
-		details.name().shouldHaveValue(ingredient1.getName());
-		list.deSelectIngredient(ingredient1);
-		details.id().shouldBeEmpty();
-		details.name().shouldBeEmpty();
-		list.selectIngredient(ingredient2);
-		details.id().shouldHaveValue(ingredient2.getId());
-		details.name().shouldHaveValue(ingredient2.getName());
-		list.selectIngredient(ingredient3);
-		details.id().shouldHaveValue(ingredient3.getId());
-		details.name().shouldHaveValue(ingredient3.getName());
+		pageObject.buttonAdd().shouldBeEnabled();
+		pageObject.buttonRemove().shouldBeEnabled();
+
+		detailsPanel.name().doubleClick();
+
+		pageObject.buttonAdd().shouldBeDisabled();
+		pageObject.buttonRemove().shouldBeDisabled();
+
+		detailsPanel.name().pressEscape();
+
+		pageObject.buttonAdd().shouldBeEnabled();
+		pageObject.buttonRemove().shouldBeEnabled();
 	}
 
 	@Test
 	public void updateNameAndInciAreReflectedInList() {
-		Fat ingredient = repoHelper.createFat();
-		Fat updatedValues = RandomIngredientsTestData.getFatBuilder().build();
-		IngredientListPageObject list = pageObject.getIngredientList();
-		list.triggerReload();
-		IngredientDetailsPageObject details = pageObject.getIngredientDetails();
-		list.selectIngredient(ingredient);
-		details.buttonEdit().click();
-		details.name().setValue(updatedValues.getName());
-		details.inci().setValue(updatedValues.getInci());
-		details.buttonSave().click();
+		final Fat ingredient = repoHelper.createFat();
+		final Fat updatedValues = RandomIngredientsTestData.getFatBuilder().build();
+		pageObject.refreshPage();
 
-		list.ingredientShouldAppear(updatedValues.getName());
-		list.ingredientShouldNotAppear(ingredient.getName());
+		tablePanel.selectIngredient(ingredient);
+		detailsPanel.name().doubleClick();
+		detailsPanel.name().setValue(updatedValues.getName());
+		detailsPanel.inci().setValue(updatedValues.getInci());
+		detailsPanel.name().pressEnter();
+
+		tablePanel.ingredientShouldAppear(updatedValues.getName());
+		tablePanel.ingredientShouldNotAppear(ingredient.getName());
 	}
-
-	@Test
-	public void searchIngredientFiltersList() {
-		Fat ingredient1 = repoHelper.createFat("abc", "123");
-		Fat ingredient2 = repoHelper.createFat("def", "456");
-		Fat ingredient3 = repoHelper.createFat("cccX", "555");
-		IngredientListPageObject list = pageObject.getIngredientList();
-		list.triggerReload();
-
-		// search by name - single result
-		list.search().setValue(ingredient1.getName());
-		list.ingredientShouldAppear(ingredient1);
-		list.ingredientShouldNotAppear(ingredient2, ingredient3);
-
-		// search by inci - single result
-		list.search().setValue(ingredient1.getInci());
-		list.ingredientShouldAppear(ingredient1);
-		list.ingredientShouldNotAppear(ingredient2, ingredient3);
-
-		// search by name - multiple result
-		list.search().setValue("c");
-		list.ingredientShouldAppear(ingredient1, ingredient3);
-		list.ingredientShouldNotAppear(ingredient2);
-		// search while typing
-		list.search().appendValue("c");
-		list.ingredientShouldAppear(ingredient3);
-		list.ingredientShouldNotAppear(ingredient1, ingredient2);
-
-		// search by inci - multiple result
-		list.search().setValue("5");
-		list.ingredientShouldAppear(ingredient2, ingredient3);
-		list.ingredientShouldNotAppear(ingredient1);
-
-		// case insensitive
-		list.search().setValue("x");
-		list.ingredientShouldAppear(ingredient3);
-		list.ingredientShouldNotAppear(ingredient1, ingredient2);
-		// cancel search ESC+button click
-
-	}
-
-	private void assertThatButtonAreInEditMode(IngredientListPageObject list, IngredientDetailsPageObject details) {
-		details.buttonSave().shouldBeEnabled();
-		details.buttonCancel().shouldBeEnabled();
-		details.buttonEdit().shouldBeHidden();
-		list.buttonAdd().shouldBeDisabled();
-		list.buttonRemove().shouldBeDisabled();
-		list.search().shouldBeDisabled();
-	}
-
-	private void assertThatButtonAreInNonEditModeWithSelectedIngredient(IngredientListPageObject list,
-			IngredientDetailsPageObject details) {
-		details.buttonSave().shouldBeHidden();
-		details.buttonCancel().shouldBeHidden();
-		details.buttonEdit().shouldBeEnabled();
-		list.buttonAdd().shouldBeEnabled();
-		list.buttonRemove().shouldBeEnabled();
-		list.search().shouldBeEnabled();
-	}
-
-	private void assertThatButtonAreInNonEditModeWithNoSelectedIngredient(IngredientListPageObject list,
-			IngredientDetailsPageObject details) {
-		details.buttonSave().shouldBeHidden();
-		details.buttonCancel().shouldBeHidden();
-		details.buttonEdit().shouldBeDisabled();
-		list.buttonAdd().shouldBeEnabled();
-		list.buttonRemove().shouldBeDisabled();
-		list.search().shouldBeEnabled();
-	}
-
 }

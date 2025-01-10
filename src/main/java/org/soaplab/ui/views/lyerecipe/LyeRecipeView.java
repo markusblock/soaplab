@@ -18,6 +18,7 @@ import org.soaplab.ui.views.EntityDetailsListener;
 import org.soaplab.ui.views.EntityTableListener;
 import org.soaplab.ui.views.EntityTablePanel;
 import org.soaplab.ui.views.EntityView;
+import org.soaplab.ui.views.NamedEntityTablePanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
@@ -49,7 +50,7 @@ public class LyeRecipeView extends EntityView<LyeRecipe> {
 
 	@Override
 	protected EntityTablePanel<LyeRecipe> createEntityTable(EntityTableListener<LyeRecipe> listener) {
-		return new EntityTablePanel<LyeRecipe>(LyeRecipe.class, listener);
+		return new NamedEntityTablePanel<LyeRecipe>(LyeRecipe.class, listener);
 	}
 
 	@Override

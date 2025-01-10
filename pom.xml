@@ -21,7 +21,7 @@
 		<beantutils.version>1.9.4</beantutils.version>
 		<springdoc.version>2.0.4</springdoc.version>
 		<equalsverifier.version>3.13</equalsverifier.version>
-		<selenide.version>7.3.2</selenide.version>
+		<selenide.version>7.6.0</selenide.version>
 		<!-- Overriding to avoid ClassNotFound in WebDriverManager -->
 		<httpclient5.version>5.2.1</httpclient5.version>
 		<sonar.organization>markusblock</sonar.organization>
