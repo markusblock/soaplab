@@ -125,6 +125,7 @@ public class EntityTablePanel<T extends Entity> extends VerticalLayout {
 		textField.setClearButtonVisible(true);
 		textField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
 		textField.addValueChangeListener(e -> filterChangeConsumer.accept(propertyName, e.getValue()));
+		textField.setSizeFull();
 
 		final VerticalLayout layout = new VerticalLayout(label, textField);
 		layout.getThemeList().clear();

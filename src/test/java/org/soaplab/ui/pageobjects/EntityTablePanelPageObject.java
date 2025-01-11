@@ -48,25 +48,81 @@ public class EntityTablePanelPageObject {
 
 	public void clearSearchInColumn(String columnHeaderName) {
 		final String id = grid.getColumnIdByColumnHeaderText(columnHeaderName);
-		new PageObjectElement(byId(id)).setValue("");
+		new PageObjectElement(byId(id)).setValue((String) null).shouldBeEmpty();
 	}
 
+	/**
+	 * Filter table by entity names and check if the provided entity appears.
+	 */
 	public EntityTablePanelPageObject entityShouldAppear(NamedEntity... entities) {
-		grid.columnShouldContainAllOf(columnNameIndex, getEntityNameList(entities));
+		ingredientShouldAppear(getEntityNameList(entities).toArray(new String[entities.length]));
 		return this;
 	}
 
+	/**
+	 * Filter table by entity names and check if the provided entity appears.
+	 */
 	public EntityTablePanelPageObject ingredientShouldAppear(String... ingredientNames) {
+		// filter table otherwise the ingredient couldn't be found if it is outside the
+		// displayed rows
+		Arrays.asList(ingredientNames).forEach(name -> {
+			searchByColumn(COLUMN_HEADER_NAME).setValue(name);
+			grid.columnShouldContainAllOf(columnNameIndex, name);
+			clearSearchInColumn(COLUMN_HEADER_NAME);
+		});
+		return this;
+	}
+
+	/**
+	 * Filter table by entity names and check if the provided entity doesn't appear.
+	 */
+	public EntityTablePanelPageObject ingredientShouldNotAppear(NamedEntity... entities) {
+		ingredientShouldNotAppear(getEntityNameList(entities).toArray(new String[entities.length]));
+		return this;
+	}
+
+	/**
+	 * Filter table by entity names and check if the provided entity doesn't appear.
+	 */
+	public EntityTablePanelPageObject ingredientShouldNotAppear(String... ingredientNames) {
+		// filter table otherwise the ingredient couldn't be found if it is outside the
+		// displayed rows
+		Arrays.asList(ingredientNames).forEach(name -> {
+			searchByColumn(COLUMN_HEADER_NAME).setValue(name);
+			grid.columnShouldNotContain(columnNameIndex, name);
+			clearSearchInColumn(COLUMN_HEADER_NAME);
+		});
+		return this;
+	}
+
+	/**
+	 * check if the provided entity appears without filtering the table.
+	 */
+	public EntityTablePanelPageObject entityShouldAppearInViewPort(NamedEntity... entities) {
+		ingredientShouldAppearInViewPort(getEntityNameList(entities).toArray(new String[entities.length]));
+		return this;
+	}
+
+	/**
+	 * check if the provided entity appears without filtering the table.
+	 */
+	public EntityTablePanelPageObject ingredientShouldAppearInViewPort(String... ingredientNames) {
 		grid.columnShouldContainAllOf(columnNameIndex, Arrays.asList(ingredientNames));
 		return this;
 	}
 
-	public EntityTablePanelPageObject ingredientShouldNotAppear(NamedEntity... entities) {
-		grid.columnShouldNotContain(columnNameIndex, getEntityNameList(entities));
+	/**
+	 * check if the provided entity doesn't appear without filtering the table.
+	 */
+	public EntityTablePanelPageObject entityShouldNotAppearInViewPort(NamedEntity... entities) {
+		ingredientShouldNotAppearInViewPort(getEntityNameList(entities).toArray(new String[entities.length]));
 		return this;
 	}
 
-	public EntityTablePanelPageObject ingredientShouldNotAppear(String... ingredientNames) {
+	/**
+	 * check if the provided entity doesn't appear without filtering the table.
+	 */
+	public EntityTablePanelPageObject ingredientShouldNotAppearInViewPort(String... ingredientNames) {
 		grid.columnShouldNotContain(columnNameIndex, Arrays.asList(ingredientNames));
 		return this;
 	}
@@ -83,23 +139,17 @@ public class EntityTablePanelPageObject {
 		return Arrays.asList(ingredients).stream().map(NamedEntity::getName).collect(Collectors.toList());
 	}
 
+	/**
+	 * Filters table for provided ingredient and selects it. Filtered table is a
+	 * side effect of this method.
+	 */
 	public EntityTablePanelPageObject selectIngredient(Ingredient ingredient) {
-		grid.columnShouldContainAllOf(columnNameIndex, ingredient.getName());
-		if (isRowSelected(ingredient.getName())) {
-			return this;
-		}
-		VaadinUtils.clickOnElement(grid.getRowSelector(ingredient.getName()));
-		rowShouldBeSelected(ingredient);
-		return this;
-	}
-
-	public EntityTablePanelPageObject deSelectIngredient(Ingredient ingredient) {
+		searchByColumn(COLUMN_HEADER_NAME).setValue(ingredient.getName());
 		grid.columnShouldContainAllOf(columnNameIndex, ingredient.getName());
 		if (!isRowSelected(ingredient.getName())) {
-			return this;
+			VaadinUtils.clickOnElement(grid.getRowSelector(ingredient.getName()));
+			rowShouldBeSelected(ingredient);
 		}
-		VaadinUtils.clickOnElement(grid.getRowSelector(ingredient.getName()));
-		rowShouldNotBeSelected(ingredient);
 		return this;
 	}
 
@@ -130,11 +180,10 @@ public class EntityTablePanelPageObject {
 	}
 
 	public PageObjectElement doubleClick(Ingredient ingredient, String columnHeaderName) {
+		selectIngredient(ingredient);
+
 		final int colIdx = grid.getColumnIndexByColumnHeaderText(columnHeaderName);
 		final int rowIdx = grid.getRowIndexByValue(columnNameIndex, ingredient.getName());
-
-		// select row
-		VaadinUtils.clickOnElement(grid.getCellSelector(rowIdx, columnNameIndex));
 
 		VaadinUtils.doubleClickOnElement(grid.getCellSelector(rowIdx, colIdx));
 
@@ -149,16 +198,7 @@ public class EntityTablePanelPageObject {
 
 		// TODO differ editmode
 
-		final int colIdx = grid.getColumnIndexByColumnHeaderText(columnHeaderName);
-		final int rowIdx = grid.getRowIndexByValue(columnNameIndex, ingredient.getName());
-		final By cellSelector = grid.getCellSelector(rowIdx, colIdx);
-		VaadinUtils.clickOnElement(cellSelector);
-		return new PageObjectElement(cellSelector);
-	}
-
-	public PageObjectElement selectCell(Ingredient ingredient, String columnHeaderName) {
-
-		// TODO differ editmode
+		selectIngredient(ingredient);
 
 		final int colIdx = grid.getColumnIndexByColumnHeaderText(columnHeaderName);
 		final int rowIdx = grid.getRowIndexByValue(columnNameIndex, ingredient.getName());
@@ -168,10 +208,9 @@ public class EntityTablePanelPageObject {
 	}
 
 	public PageObjectElement pressEnter(Ingredient ingredient) {
-		final int rowIdx = grid.getRowIndexByValue(columnNameIndex, ingredient.getName());
+		selectIngredient(ingredient);
 
-		// select row
-		VaadinUtils.clickOnElement(grid.getCellSelector(rowIdx, columnNameIndex));
+		final int rowIdx = grid.getRowIndexByValue(columnNameIndex, ingredient.getName());
 
 		final By rowSelector = grid.getRowSelector(rowIdx);
 		Selenide.$(rowSelector).pressEnter();

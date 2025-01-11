@@ -15,7 +15,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
@@ -77,7 +76,7 @@ public class VaadinGrid {
 				return i + 1;
 			}
 		}
-		return -1;
+		throw new RuntimeException("Couldn't find column with header text %s".formatted(headerText));
 	}
 
 	public String getColumnIdByColumnHeaderText(String headerText) {
@@ -92,7 +91,7 @@ public class VaadinGrid {
 			}
 		}
 
-		return null;
+		throw new RuntimeException("Couldn't find column with header text %s".formatted(headerText));
 	}
 
 	/**
@@ -120,12 +119,11 @@ public class VaadinGrid {
 				}
 			}
 		}
-		return -1;
+		throw new RuntimeException("Couldn't find row with value %s in column %s".formatted(rowValue, columnIndex));
 	}
 
 	public By getEditorLocator(int rowIndex, int columnIndex) {
 		final SelenideElement tdElement = getTdElement(rowIndex, columnIndex);
-//		return new ByChained(getGridCellContentLocator(tdElement), By.cssSelector("vaadin-text-field input"));
 		return new ByChained(getGridCellContentLocator(tdElement), By.cssSelector("vaadin-text-field"));
 	}
 
@@ -224,16 +222,5 @@ public class VaadinGrid {
 
 	private String getTextOfTds(int colIdx) {
 		return StringUtils.join(getTdsOfColumn(colIdx).stream().map(element -> element.getText()).toList(), ",");
-	}
-
-	public SelenideElement getCell(int rowIdx, int colIdx) {
-		final ElementsCollection trs = Selenide.$(locator).$$(Selectors.shadowDeepCss("table tbody tr"));
-		final SelenideElement tr = Selenide.$(locator).$$(Selectors.shadowDeepCss("table tbody tr")).get(rowIdx + 1);
-		final ElementsCollection tds = Selenide.$(locator).$$(Selectors.shadowDeepCss("table tbody tr")).get(rowIdx + 1)
-				.$$("td");
-		final SelenideElement td = Selenide.$(locator).$$(Selectors.shadowDeepCss("table tbody tr")).get(rowIdx + 1)
-				.$$("td").get(colIdx + 1);
-		return Selenide.$(locator).$$(Selectors.shadowDeepCss("table tbody tr")).get(rowIdx + 1).$$("td")
-				.get(colIdx + 1);
 	}
 }

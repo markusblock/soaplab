@@ -39,7 +39,6 @@ public class EntityGrid<T extends Entity> extends Grid<T> {
 	@Getter
 	private final EntityFilter<T> entityFilter;
 
-	private final Optional<T> unchangedEntity = Optional.empty();
 	private boolean entityChanged = false;
 	private boolean editorCanceled = false;
 	private Optional<T> focusedEntity = Optional.empty();
@@ -61,7 +60,7 @@ public class EntityGrid<T extends Entity> extends Grid<T> {
 
 		final Editor<T> editor = getEditor();
 		editor.setBinder(binder);
-		editor.setBuffered(false);
+		editor.setBuffered(true);
 
 		addEditorCancelListener(editor);
 		addEditorCloseListener(editor);
@@ -121,6 +120,7 @@ public class EntityGrid<T extends Entity> extends Grid<T> {
 			log.trace("%s: close editor".formatted(getId()));
 			if (entityChanged && !editorCanceled) {
 				final T entity = l.getItem();
+				binder.writeBeanIfValid(entity);
 				tableListener.entityChangedInEntityTable(entity);
 				getDataProvider().refreshItem(entity);
 			}
@@ -172,7 +172,7 @@ public class EntityGrid<T extends Entity> extends Grid<T> {
 			log.trace("%s: Enter pressed".formatted(getId()));
 
 			if (getEditor().isOpen()) {
-				getEditor().closeEditor();
+				getEditor().save();
 			} else {
 				editEntity();
 			}
@@ -211,7 +211,7 @@ public class EntityGrid<T extends Entity> extends Grid<T> {
 				focusedEntity = Optional.empty();
 				focusedColumn = Optional.empty();
 				if (getEditor().isOpen()) {
-					getEditor().closeEditor();
+					getEditor().cancel();
 				}
 			}
 		});

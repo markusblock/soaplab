@@ -20,9 +20,13 @@ public class EntityDetailsPanelPageObject {
 	}
 
 	public void reset() {
-		// TODO implement
-		// if in edit mode -> cancel
+		if (isInEditMode()) {
+			name().pressEscape();
+		}
+	}
 
+	public boolean isInEditMode() {
+		return name().isEditable();
 	}
 
 	public void doubleClick() {
@@ -31,15 +35,5 @@ public class EntityDetailsPanelPageObject {
 
 	public void click() {
 		VaadinUtils.clickOnElement(byId(PANEL_ID));
-	}
-
-	public void editModeShouldBeActive() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void editModeShouldNotBeActive() {
-		// TODO Auto-generated method stub
-
 	}
 }

@@ -80,7 +80,6 @@ public class EntityTablePanelUIIT extends UIIntegrationTestBase {
 	public void enterSavesChanges() {
 		final Fat ingredient = repoHelper.createFat();
 		viewPageObject.refreshPage();
-		pageObject.selectIngredient(ingredient);
 		final PageObjectElement editor = pageObject.doubleClick(ingredient, COLUMN_HEADER_INCI);
 		editor.shouldBeVisible();
 		editor.setValue("test");
@@ -95,7 +94,6 @@ public class EntityTablePanelUIIT extends UIIntegrationTestBase {
 	public void escDiscardsChanges() {
 		final Fat ingredient = repoHelper.createFat();
 		viewPageObject.refreshPage();
-		pageObject.selectIngredient(ingredient);
 		final PageObjectElement editor = pageObject.doubleClick(ingredient, COLUMN_HEADER_NAME);
 		editor.shouldBeVisible();
 		editor.setValue("test");
@@ -115,36 +113,39 @@ public class EntityTablePanelUIIT extends UIIntegrationTestBase {
 
 		// search by name - single result
 		pageObject.searchByColumn(COLUMN_HEADER_NAME).setValue(ingredient1.getName());
-		pageObject.entityShouldAppear(ingredient1);
-		pageObject.ingredientShouldNotAppear(ingredient2, ingredient3);
+		pageObject.entityShouldAppearInViewPort(ingredient1);
+		pageObject.entityShouldNotAppearInViewPort(ingredient2, ingredient3);
+
+		// reset search by name
 		pageObject.clearSearchInColumn(COLUMN_HEADER_NAME);
+		pageObject.entityShouldAppear(ingredient1, ingredient2, ingredient3);
 
 		// search by inci - single result
 		pageObject.searchByColumn(COLUMN_HEADER_INCI).setValue(ingredient1.getInci());
-		pageObject.entityShouldAppear(ingredient1);
-		pageObject.ingredientShouldNotAppear(ingredient2, ingredient3);
+		pageObject.entityShouldAppearInViewPort(ingredient1);
+		pageObject.entityShouldNotAppearInViewPort(ingredient2, ingredient3);
 		pageObject.clearSearchInColumn(COLUMN_HEADER_INCI);
 
 		// search by name - multiple result
 		pageObject.searchByColumn(COLUMN_HEADER_NAME).setValue("c");
-		pageObject.entityShouldAppear(ingredient1, ingredient3);
-		pageObject.ingredientShouldNotAppear(ingredient2);
+		pageObject.entityShouldAppearInViewPort(ingredient1, ingredient3);
+		pageObject.entityShouldNotAppearInViewPort(ingredient2);
 		// search while typing
 		pageObject.searchByColumn(COLUMN_HEADER_NAME).appendValue("c");
-		pageObject.entityShouldAppear(ingredient3);
-		pageObject.ingredientShouldNotAppear(ingredient1, ingredient2);
+		pageObject.entityShouldAppearInViewPort(ingredient3);
+		pageObject.entityShouldNotAppearInViewPort(ingredient1, ingredient2);
 		pageObject.clearSearchInColumn(COLUMN_HEADER_NAME);
 
 		// search by inci - multiple result
 		pageObject.searchByColumn(COLUMN_HEADER_INCI).setValue("5");
-		pageObject.entityShouldAppear(ingredient2, ingredient3);
-		pageObject.ingredientShouldNotAppear(ingredient1);
+		pageObject.entityShouldAppearInViewPort(ingredient2, ingredient3);
+		pageObject.entityShouldNotAppearInViewPort(ingredient1);
 		pageObject.clearSearchInColumn(COLUMN_HEADER_INCI);
 
 		// case insensitive
 		pageObject.searchByColumn(COLUMN_HEADER_NAME).setValue("x");
-		pageObject.entityShouldAppear(ingredient3);
-		pageObject.ingredientShouldNotAppear(ingredient1, ingredient2);
+		pageObject.entityShouldAppearInViewPort(ingredient3);
+		pageObject.entityShouldNotAppearInViewPort(ingredient1, ingredient2);
 		pageObject.clearSearchInColumn(COLUMN_HEADER_NAME);
 	}
 

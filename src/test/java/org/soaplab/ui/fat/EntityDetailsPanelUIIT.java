@@ -26,6 +26,7 @@ public class EntityDetailsPanelUIIT extends UIIntegrationTestBase {
 
 		viewPageObject = new FatViewPageObject();
 		viewPageObject.refreshPage();
+		viewPageObject.getEntityTable().selectIngredient(ingredient1);
 		pageObject = viewPageObject.getEntityDetails();
 		pageObject.name().shouldHaveValue(ingredient1.getName());
 	}
@@ -44,7 +45,7 @@ public class EntityDetailsPanelUIIT extends UIIntegrationTestBase {
 
 	@Test
 	void editModeShouldBeCanceledByEscPressed() {
-		pageObject.name().doubleClick();
+		pageObject.name().doubleClick().shouldBeEditable();
 
 		pageObject.name().pressEscape();
 
@@ -53,7 +54,7 @@ public class EntityDetailsPanelUIIT extends UIIntegrationTestBase {
 
 	@Test
 	void editModeShouldBeCanceledByEnterPressed() {
-		pageObject.name().doubleClick();
+		pageObject.name().doubleClick().shouldBeEditable();
 
 		pageObject.name().pressEnter();
 

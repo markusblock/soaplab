@@ -2,6 +2,7 @@ package org.soaplab.ui.pageobjects;
 
 import static com.codeborne.selenide.Condition.empty;
 import static com.codeborne.selenide.Condition.hidden;
+import static com.codeborne.selenide.Condition.not;
 import static com.codeborne.selenide.Condition.value;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byTagName;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.UUID;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.soaplab.ui.fat.VaadinUtils;
@@ -60,6 +62,10 @@ public class PageObjectElement {
 		return this;
 	}
 
+	public boolean isEditable() {
+		return $(locator).has(not(disabled()));
+	}
+
 	public PageObjectElement shouldBeEditable() {
 		return shouldBeEnabled();
 	}
@@ -88,6 +94,11 @@ public class PageObjectElement {
 
 	public PageObjectElement setValue(String value) {
 		$(locator).$(byTagName("input")).scrollIntoView(true).setValue(value);
+		if (ObjectUtils.isEmpty(value)) {
+			shouldBeEmpty();
+		} else {
+			shouldHaveValue(value);
+		}
 		return this;
 	}
 
@@ -110,11 +121,13 @@ public class PageObjectElement {
 	}
 
 	public PageObjectElement click() {
+		$(locator).scrollIntoCenter();
 		VaadinUtils.clickOnElement(locator);
 		return this;
 	}
 
 	public PageObjectElement doubleClick() {
+		$(locator).scrollIntoCenter();
 		VaadinUtils.doubleClickOnElement(locator);
 		return this;
 	}
@@ -136,10 +149,5 @@ public class PageObjectElement {
 
 	public WebElement toWebElement() {
 		return $(locator).toWebElement();
-	}
-
-	public boolean isEnabled() {
-		return $(locator).isEnabled();
-
 	}
 }
