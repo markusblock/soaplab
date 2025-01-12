@@ -1,4 +1,4 @@
-package org.soaplab.ui.fat;
+package org.soaplab.ui.views;
 
 import static org.soaplab.ui.pageobjects.EntityTablePanelPageObject.COLUMN_HEADER_INCI;
 import static org.soaplab.ui.pageobjects.EntityTablePanelPageObject.COLUMN_HEADER_NAME;
@@ -7,6 +7,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.soaplab.domain.Fat;
+import org.soaplab.ui.RepositoryTestHelper;
+import org.soaplab.ui.UIIntegrationTestBase;
 import org.soaplab.ui.pageobjects.FatTablePanelPageObject;
 import org.soaplab.ui.pageobjects.FatViewPageObject;
 import org.soaplab.ui.pageobjects.PageObjectElement;
@@ -20,9 +22,9 @@ public class EntityTablePanelUIIT extends UIIntegrationTestBase {
 	@Autowired
 	private RepositoryTestHelper repoHelper;
 
-	private static Fat ingredient1;
-	private static Fat ingredient2;
-	private static Fat ingredient3;
+	private Fat ingredient1;
+	private Fat ingredient2;
+	private Fat ingredient3;
 
 	@BeforeEach
 	void beforeEach() {
@@ -87,7 +89,7 @@ public class EntityTablePanelUIIT extends UIIntegrationTestBase {
 		editor.pressEnter();
 
 		editor.shouldBeHidden();
-		pageObject.ingredientPropertyShouldBeDisplayed(ingredient, COLUMN_HEADER_INCI, "test");
+		pageObject.entityPropertyShouldBeDisplayed(ingredient, COLUMN_HEADER_INCI, "test");
 	}
 
 	@Test
@@ -101,7 +103,7 @@ public class EntityTablePanelUIIT extends UIIntegrationTestBase {
 		editor.pressEscape();
 		editor.shouldBeHidden();
 
-		pageObject.ingredientShouldAppear(ingredient.getName());
+		pageObject.entityShouldAppear(ingredient.getName());
 	}
 
 	@Test

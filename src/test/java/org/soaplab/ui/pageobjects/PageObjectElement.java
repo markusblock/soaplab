@@ -7,8 +7,8 @@ import static com.codeborne.selenide.Condition.value;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byTagName;
 import static com.codeborne.selenide.Selenide.$;
-import static org.soaplab.ui.fat.VaadinUtils.disabled;
-import static org.soaplab.ui.fat.VaadinUtils.readonly;
+import static org.soaplab.ui.VaadinUtils.disabled;
+import static org.soaplab.ui.VaadinUtils.readonly;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -17,7 +17,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.ObjectUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.soaplab.ui.fat.VaadinUtils;
+import org.soaplab.ui.VaadinUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -3,7 +3,7 @@ package org.soaplab.repository.microstream;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.soaplab.repository.FatRepository;
-import org.soaplab.ui.fat.RepositoryTestHelper;
+import org.soaplab.ui.RepositoryTestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;

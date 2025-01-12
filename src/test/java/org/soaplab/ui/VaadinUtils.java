@@ -1,4 +1,4 @@
-package org.soaplab.ui.fat;
+package org.soaplab.ui;
 
 import static com.codeborne.selenide.Selenide.$;
 

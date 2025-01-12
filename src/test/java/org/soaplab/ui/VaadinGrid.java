@@ -1,4 +1,4 @@
-package org.soaplab.ui.fat;
+package org.soaplab.ui;
 
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
@@ -205,7 +205,6 @@ public class VaadinGrid {
 				.asDynamicIterable().stream().toList();
 		for (final SelenideElement selenideElement : trs) {
 			final List<SelenideElement> tdsOfRow = selenideElement.$$("td").asFixedIterable().stream().toList();
-			Assert.isTrue(columnIndex < tdsOfRow.size(), "column index must be <=" + tdsOfRow.size());
 			// tdsOfRow 0-based, columnIndex 1-based
 			final SelenideElement cell = tdsOfRow.get(columnIndex - 1);
 			tdsOfColumn.add(cell);

@@ -3,7 +3,15 @@ package org.soaplab.testdata;
 import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntries;
 import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntry;
 
-import org.soaplab.domain.*;
+import org.soaplab.domain.Acid;
+import org.soaplab.domain.Additive;
+import org.soaplab.domain.Fat;
+import org.soaplab.domain.Fragrance;
+import org.soaplab.domain.FragranceRecipe;
+import org.soaplab.domain.KOH;
+import org.soaplab.domain.Liquid;
+import org.soaplab.domain.LyeRecipe;
+import org.soaplab.domain.NaOH;
 import org.soaplab.domain.SoapRecipe.SoapRecipeBuilder;
 import org.soaplab.domain.utils.SoapRecipeTestDataBuilder;
 
@@ -23,6 +31,7 @@ public class RandomSoapRecipeTestData extends SoapRecipeTestDataBuilder {
 	private Fragrance fragrance1;
 	private Fragrance fragrance2;
 	private LyeRecipe lyeRecipe;
+	private FragranceRecipe fragranceRecipe;
 	private Additive lyeAdditive1;
 	private Additive lyeAdditive2;
 	private Additive soapBatterAdditive1;
@@ -44,7 +53,7 @@ public class RandomSoapRecipeTestData extends SoapRecipeTestDataBuilder {
 		return super.getSoapRecipeBuilder() //
 				.name(RandomIngredientsTestData.getRandomString()) //
 				.lyeRecipe(createLyeRecipe()) //
-				.fragranceRecipe(createFragranceRecipe())
+				.fragranceRecipe(createFragranceRecipe()) //
 				.fats(createRecipeEntries( //
 						createRecipeEntry(fat1, 60d), //
 						createRecipeEntry(fat2, 40d))) //
@@ -89,7 +98,7 @@ public class RandomSoapRecipeTestData extends SoapRecipeTestDataBuilder {
 		lyeAdditive1 = createAdditive();
 		lyeAdditive2 = createAdditive();
 
-		return RandomIngredientsTestData.getLyeRecipeBuilder() //
+		lyeRecipe = RandomIngredientsTestData.getLyeRecipeBuilder() //
 				.naOH(createRecipeEntry(naoh, 80d)) //
 				.kOH(createRecipeEntry(koh, 20d)) //
 				.acids(createRecipeEntries( //
@@ -102,16 +111,18 @@ public class RandomSoapRecipeTestData extends SoapRecipeTestDataBuilder {
 						createRecipeEntry(lyeAdditive1, 3d), //
 						createRecipeEntry(lyeAdditive2, 6d))) //
 				.build();
+		return lyeRecipe;
 	}
 
 	protected FragranceRecipe createFragranceRecipe() {
 		fragrance1 = createFragrance();
 		fragrance2 = createFragrance();
 
-		return RandomIngredientsTestData.getFragranceRecipeBuilder() //
+		fragranceRecipe = RandomIngredientsTestData.getFragranceRecipeBuilder() //
 				.fragrances(createRecipeEntries( //
 						createRecipeEntry(fragrance1, 10d), //
 						createRecipeEntry(fragrance2, 90d))) //
 				.build();
+		return fragranceRecipe;
 	}
 }

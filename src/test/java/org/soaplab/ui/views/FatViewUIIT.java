@@ -1,4 +1,4 @@
-package org.soaplab.ui.fat;
+package org.soaplab.ui.views;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.soaplab.domain.Fat;
 import org.soaplab.testdata.RandomIngredientsTestData;
+import org.soaplab.ui.RepositoryTestHelper;
+import org.soaplab.ui.UIIntegrationTestBase;
 import org.soaplab.ui.pageobjects.EntityDetailsPanelPageObject;
 import org.soaplab.ui.pageobjects.EntityTablePanelPageObject;
 import org.soaplab.ui.pageobjects.FatDetailsPageObject;
@@ -82,11 +84,11 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 
 		final EntityTablePanelPageObject table = entityView.getEntityTable();
 		table.entityShouldAppear(fat1).entityShouldAppear(fat2);
-		table.selectIngredient(fat1);
+		table.selectEntity(fat1);
 
 		entityView.buttonRemove().click();
 
-		table.ingredientShouldNotAppear(fat1).entityShouldAppear(fat2);
+		table.entityShouldNotAppear(fat1).entityShouldAppear(fat2);
 		repoHelper.assertThatFatNotExists(getTestName());
 	}
 
@@ -98,7 +100,7 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 
 		final EntityTablePanelPageObject table = entityView.getEntityTable();
 		table.entityShouldAppear(fat1);
-		table.selectIngredient(fat1);
+		table.selectEntity(fat1);
 
 		final EntityDetailsPanelPageObject details = entityView.getEntityDetails();
 		details.id().shouldBeReadOnly().shouldNotBeEmpty();
@@ -114,7 +116,7 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 		details.name().shouldBeDisabled().shouldHaveValue(fat2.getName());
 		details.inci().shouldBeDisabled().shouldHaveValue(fat2.getInci());
 
-		table.ingredientShouldNotAppear(fat1);
+		table.entityShouldNotAppear(fat1);
 		table.entityShouldAppear(fat2);
 		repoHelper.assertThatFatExists(fat2.getName(), fat2.getInci());
 		repoHelper.assertThatFatNotExists(fat1.getName());

@@ -1,7 +1,7 @@
 package org.soaplab.ui.pageobjects;
 
 import static com.codeborne.selenide.Selectors.byId;
-import static org.soaplab.ui.fat.VaadinUtils.selected;
+import static org.soaplab.ui.VaadinUtils.selected;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 import org.openqa.selenium.By;
 import org.soaplab.domain.Ingredient;
 import org.soaplab.domain.NamedEntity;
-import org.soaplab.ui.fat.VaadinGrid;
-import org.soaplab.ui.fat.VaadinUtils;
+import org.soaplab.ui.VaadinGrid;
+import org.soaplab.ui.VaadinUtils;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
@@ -25,16 +25,17 @@ public class EntityTablePanelPageObject {
 	public static String COLUMN_HEADER_NAME = "Name";
 	public static String COLUMN_HEADER_INCI = "Inci";
 	private int columnNameIndex = 0;
-	private String id;
 	final List<PageObjectElement> searchFieldsToClear = new ArrayList<>();
 	final List<PageObjectElement> editorsToClose = new ArrayList<>();
 
 	public EntityTablePanelPageObject(String id) {
 		this(byId(id));
-		this.id = id;
 	}
 
 	private EntityTablePanelPageObject(By by) {
+
+		Selenide.$(by).shouldBe(Condition.visible);
+
 		grid = new VaadinGrid(by);
 		columnNameIndex = grid.getColumnIndexByColumnHeaderText(COLUMN_HEADER_NAME);
 	}
@@ -55,17 +56,17 @@ public class EntityTablePanelPageObject {
 	 * Filter table by entity names and check if the provided entity appears.
 	 */
 	public EntityTablePanelPageObject entityShouldAppear(NamedEntity... entities) {
-		ingredientShouldAppear(getEntityNameList(entities).toArray(new String[entities.length]));
+		entityShouldAppear(getEntityNameList(entities).toArray(new String[entities.length]));
 		return this;
 	}
 
 	/**
 	 * Filter table by entity names and check if the provided entity appears.
 	 */
-	public EntityTablePanelPageObject ingredientShouldAppear(String... ingredientNames) {
+	public EntityTablePanelPageObject entityShouldAppear(String... entityNames) {
 		// filter table otherwise the ingredient couldn't be found if it is outside the
 		// displayed rows
-		Arrays.asList(ingredientNames).forEach(name -> {
+		Arrays.asList(entityNames).forEach(name -> {
 			searchByColumn(COLUMN_HEADER_NAME).setValue(name);
 			grid.columnShouldContainAllOf(columnNameIndex, name);
 			clearSearchInColumn(COLUMN_HEADER_NAME);
@@ -76,18 +77,18 @@ public class EntityTablePanelPageObject {
 	/**
 	 * Filter table by entity names and check if the provided entity doesn't appear.
 	 */
-	public EntityTablePanelPageObject ingredientShouldNotAppear(NamedEntity... entities) {
-		ingredientShouldNotAppear(getEntityNameList(entities).toArray(new String[entities.length]));
+	public EntityTablePanelPageObject entityShouldNotAppear(NamedEntity... entities) {
+		entityShouldNotAppear(getEntityNameList(entities).toArray(new String[entities.length]));
 		return this;
 	}
 
 	/**
 	 * Filter table by entity names and check if the provided entity doesn't appear.
 	 */
-	public EntityTablePanelPageObject ingredientShouldNotAppear(String... ingredientNames) {
+	public EntityTablePanelPageObject entityShouldNotAppear(String... entityNames) {
 		// filter table otherwise the ingredient couldn't be found if it is outside the
 		// displayed rows
-		Arrays.asList(ingredientNames).forEach(name -> {
+		Arrays.asList(entityNames).forEach(name -> {
 			searchByColumn(COLUMN_HEADER_NAME).setValue(name);
 			grid.columnShouldNotContain(columnNameIndex, name);
 			clearSearchInColumn(COLUMN_HEADER_NAME);
@@ -99,15 +100,15 @@ public class EntityTablePanelPageObject {
 	 * check if the provided entity appears without filtering the table.
 	 */
 	public EntityTablePanelPageObject entityShouldAppearInViewPort(NamedEntity... entities) {
-		ingredientShouldAppearInViewPort(getEntityNameList(entities).toArray(new String[entities.length]));
+		entityShouldAppearInViewPort(getEntityNameList(entities).toArray(new String[entities.length]));
 		return this;
 	}
 
 	/**
 	 * check if the provided entity appears without filtering the table.
 	 */
-	public EntityTablePanelPageObject ingredientShouldAppearInViewPort(String... ingredientNames) {
-		grid.columnShouldContainAllOf(columnNameIndex, Arrays.asList(ingredientNames));
+	public EntityTablePanelPageObject entityShouldAppearInViewPort(String... entityNames) {
+		grid.columnShouldContainAllOf(columnNameIndex, Arrays.asList(entityNames));
 		return this;
 	}
 
@@ -115,22 +116,22 @@ public class EntityTablePanelPageObject {
 	 * check if the provided entity doesn't appear without filtering the table.
 	 */
 	public EntityTablePanelPageObject entityShouldNotAppearInViewPort(NamedEntity... entities) {
-		ingredientShouldNotAppearInViewPort(getEntityNameList(entities).toArray(new String[entities.length]));
+		entityShouldNotAppearInViewPort(getEntityNameList(entities).toArray(new String[entities.length]));
 		return this;
 	}
 
 	/**
 	 * check if the provided entity doesn't appear without filtering the table.
 	 */
-	public EntityTablePanelPageObject ingredientShouldNotAppearInViewPort(String... ingredientNames) {
-		grid.columnShouldNotContain(columnNameIndex, Arrays.asList(ingredientNames));
+	public EntityTablePanelPageObject entityShouldNotAppearInViewPort(String... entityNames) {
+		grid.columnShouldNotContain(columnNameIndex, Arrays.asList(entityNames));
 		return this;
 	}
 
-	public EntityTablePanelPageObject ingredientPropertyShouldBeDisplayed(Ingredient ingredient,
-			String columnHeaderName, String value) {
+	public EntityTablePanelPageObject entityPropertyShouldBeDisplayed(NamedEntity namedEntity, String columnHeaderName,
+			String value) {
 		final int colIdx = grid.getColumnIndexByColumnHeaderText(columnHeaderName);
-		final int rowIdx = grid.getRowIndexByValue(columnNameIndex, ingredient.getName());
+		final int rowIdx = grid.getRowIndexByValue(columnNameIndex, namedEntity.getName());
 		grid.cellShouldContain(rowIdx, colIdx, value);
 		return this;
 	}
@@ -140,22 +141,22 @@ public class EntityTablePanelPageObject {
 	}
 
 	/**
-	 * Filters table for provided ingredient and selects it. Filtered table is a
-	 * side effect of this method.
+	 * Filters table for provided entity and selects it. Filtered table is a side
+	 * effect of this method.
 	 */
-	public EntityTablePanelPageObject selectIngredient(Ingredient ingredient) {
-		searchByColumn(COLUMN_HEADER_NAME).setValue(ingredient.getName());
-		grid.columnShouldContainAllOf(columnNameIndex, ingredient.getName());
-		if (!isRowSelected(ingredient.getName())) {
-			VaadinUtils.clickOnElement(grid.getRowSelector(ingredient.getName()));
-			rowShouldBeSelected(ingredient);
+	public EntityTablePanelPageObject selectEntity(NamedEntity entity) {
+		searchByColumn(COLUMN_HEADER_NAME).setValue(entity.getName());
+		grid.columnShouldContainAllOf(columnNameIndex, entity.getName());
+		if (!isRowSelected(entity.getName())) {
+			VaadinUtils.clickOnElement(grid.getRowSelector(entity.getName()));
+			rowShouldBeSelected(entity);
 		}
 		return this;
 	}
 
-	public EntityTablePanelPageObject rowShouldBeSelected(Ingredient ingredient) {
-		grid.columnShouldContainAllOf(columnNameIndex, ingredient.getName());
-		getRowElement(ingredient.getName()).get().shouldBe(selected());
+	public EntityTablePanelPageObject rowShouldBeSelected(NamedEntity entity) {
+		grid.columnShouldContainAllOf(columnNameIndex, entity.getName());
+		getRowElement(entity.getName()).get().shouldBe(selected());
 		return this;
 	}
 
@@ -180,7 +181,7 @@ public class EntityTablePanelPageObject {
 	}
 
 	public PageObjectElement doubleClick(Ingredient ingredient, String columnHeaderName) {
-		selectIngredient(ingredient);
+		selectEntity(ingredient);
 
 		final int colIdx = grid.getColumnIndexByColumnHeaderText(columnHeaderName);
 		final int rowIdx = grid.getRowIndexByValue(columnNameIndex, ingredient.getName());
@@ -198,7 +199,7 @@ public class EntityTablePanelPageObject {
 
 		// TODO differ editmode
 
-		selectIngredient(ingredient);
+		selectEntity(ingredient);
 
 		final int colIdx = grid.getColumnIndexByColumnHeaderText(columnHeaderName);
 		final int rowIdx = grid.getRowIndexByValue(columnNameIndex, ingredient.getName());
@@ -208,7 +209,7 @@ public class EntityTablePanelPageObject {
 	}
 
 	public PageObjectElement pressEnter(Ingredient ingredient) {
-		selectIngredient(ingredient);
+		selectEntity(ingredient);
 
 		final int rowIdx = grid.getRowIndexByValue(columnNameIndex, ingredient.getName());
 

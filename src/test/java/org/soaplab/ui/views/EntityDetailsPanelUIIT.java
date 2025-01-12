@@ -1,9 +1,11 @@
-package org.soaplab.ui.fat;
+package org.soaplab.ui.views;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.soaplab.domain.Fat;
+import org.soaplab.ui.RepositoryTestHelper;
+import org.soaplab.ui.UIIntegrationTestBase;
 import org.soaplab.ui.pageobjects.EntityDetailsPanelPageObject;
 import org.soaplab.ui.pageobjects.FatViewPageObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,7 @@ public class EntityDetailsPanelUIIT extends UIIntegrationTestBase {
 	@Autowired
 	private RepositoryTestHelper repoHelper;
 
-	private static Fat ingredient1;
+	private Fat ingredient1;
 
 	@BeforeEach
 	void beforeEach() {
@@ -26,7 +28,7 @@ public class EntityDetailsPanelUIIT extends UIIntegrationTestBase {
 
 		viewPageObject = new FatViewPageObject();
 		viewPageObject.refreshPage();
-		viewPageObject.getEntityTable().selectIngredient(ingredient1);
+		viewPageObject.getEntityTable().selectEntity(ingredient1);
 		pageObject = viewPageObject.getEntityDetails();
 		pageObject.name().shouldHaveValue(ingredient1.getName());
 	}
@@ -93,7 +95,7 @@ public class EntityDetailsPanelUIIT extends UIIntegrationTestBase {
 	public void enterSavesChanges() {
 		final Fat ingredient = repoHelper.createFat();
 		viewPageObject.refreshPage();
-		viewPageObject.getEntityTable().selectIngredient(ingredient);
+		viewPageObject.getEntityTable().selectEntity(ingredient);
 		pageObject.name().shouldHaveValue(ingredient.getName());
 		pageObject.name().doubleClick().shouldBeEditable();
 		pageObject.name().setValue("test");
@@ -107,7 +109,7 @@ public class EntityDetailsPanelUIIT extends UIIntegrationTestBase {
 	public void escDiscardsChanges() {
 		final Fat ingredient = repoHelper.createFat();
 		viewPageObject.refreshPage();
-		viewPageObject.getEntityTable().selectIngredient(ingredient);
+		viewPageObject.getEntityTable().selectEntity(ingredient);
 		pageObject.name().shouldHaveValue(ingredient.getName());
 		pageObject.name().doubleClick().shouldBeEditable();
 		pageObject.name().setValue("test");

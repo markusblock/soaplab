@@ -16,7 +16,8 @@ import org.soaplab.domain.exception.EntityDeletionFailedException;
 import org.soaplab.domain.utils.SoapRecipeUtils;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.SoapRecipeRepository;
-import org.soaplab.ui.fat.RepositoryTestHelper;
+import org.soaplab.testdata.RandomSoapRecipeRepositoryTestData;
+import org.soaplab.ui.RepositoryTestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -46,8 +47,9 @@ class SoapRecipeRepositoryIT {
 	 * @throws Exception
 	 */
 	void updatedReferencedEntityIsContainedInGet() throws Exception {
-		final SoapRecipe soapRecipe = repoHelper.createSoapRecipeWithRandomData();
-		final Fat fat = soapRecipe.getFats().get(0).getIngredient();
+		final RandomSoapRecipeRepositoryTestData testData = repoHelper.createSoapRecipeWithRandomData();
+		final SoapRecipe soapRecipe = testData.getSoapRecipe();
+		final Fat fat = testData.getFat1();
 
 		fat.setSapNaoh(BigDecimal.valueOf(0.999d));
 		fatRepository.update(fat);
@@ -67,8 +69,9 @@ class SoapRecipeRepositoryIT {
 	 * @throws Exception
 	 */
 	void updatingCompositEntityDoesNotUpdateReferencedEntity() throws Exception {
-		final SoapRecipe soapRecipe = repoHelper.createSoapRecipeWithRandomData();
-		final Fat fat = soapRecipe.getFats().get(0).getIngredient();
+		final RandomSoapRecipeRepositoryTestData testData = repoHelper.createSoapRecipeWithRandomData();
+		final SoapRecipe soapRecipe = testData.getSoapRecipe();
+		final Fat fat = testData.getFat1();
 		final BigDecimal sapNaohOldValue = fat.getSapNaoh();
 		fat.setSapNaoh(BigDecimal.valueOf(0.999d));
 		soapRecipe.setNotes("TEST");
@@ -82,7 +85,8 @@ class SoapRecipeRepositoryIT {
 
 	@Test
 	void addingReferencedEntityToCompositeEntity() throws Exception {
-		final SoapRecipe soapRecipe = repoHelper.createSoapRecipeWithRandomData();
+		final RandomSoapRecipeRepositoryTestData testData = repoHelper.createSoapRecipeWithRandomData();
+		final SoapRecipe soapRecipe = testData.getSoapRecipe();
 		final Fat newFat = repoHelper.createFat();
 		final SoapRecipe updatedSoapRecipe = SoapRecipeUtils.addFat(soapRecipe, newFat, 80d);
 		soapRecipeRepository.update(updatedSoapRecipe);
@@ -93,8 +97,9 @@ class SoapRecipeRepositoryIT {
 
 	@Test
 	void removingReferencedEntityFromCompositeEntity() throws Exception {
-		final SoapRecipe soapRecipe = repoHelper.createSoapRecipeWithRandomData();
-		final Fat fat = soapRecipe.getFats().get(0).getIngredient();
+		final RandomSoapRecipeRepositoryTestData testData = repoHelper.createSoapRecipeWithRandomData();
+		final SoapRecipe soapRecipe = testData.getSoapRecipe();
+		final Fat fat = testData.getFat1();
 		final SoapRecipe updatedSoapRecipe = SoapRecipeUtils.removeFat(soapRecipe, fat);
 		soapRecipeRepository.update(updatedSoapRecipe);
 
@@ -104,8 +109,9 @@ class SoapRecipeRepositoryIT {
 
 	@Test
 	void deletingReferencedEntityIsNotAllowed() throws Exception {
-		final SoapRecipe soapRecipe = repoHelper.createSoapRecipeWithRandomData();
-		final Fat fat = soapRecipe.getFats().get(0).getIngredient();
+		final RandomSoapRecipeRepositoryTestData testData = repoHelper.createSoapRecipeWithRandomData();
+		final SoapRecipe soapRecipe = testData.getSoapRecipe();
+		final Fat fat = testData.getFat1();
 		final EntityDeletionFailedException exception = assertThrows(EntityDeletionFailedException.class, () -> {
 			fatRepository.delete(fat.getId());
 		});

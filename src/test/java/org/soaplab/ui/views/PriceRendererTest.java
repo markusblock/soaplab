@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.soaplab.domain.Ingredient;
 import org.soaplab.domain.Price;
+import org.soaplab.ui.views.PriceRenderer;
 
 class PriceRendererTest {
 

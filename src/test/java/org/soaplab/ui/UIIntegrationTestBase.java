@@ -1,4 +1,4 @@
-package org.soaplab.ui.fat;
+package org.soaplab.ui;
 
 import static com.codeborne.selenide.Selenide.open;
 
@@ -33,7 +33,10 @@ import org.testcontainers.containers.BrowserWebDriverContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import com.codeborne.selenide.Browsers;
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 import com.codeborne.selenide.junit5.BrowserStrategyExtension;
 import com.codeborne.selenide.junit5.ScreenShooterExtension;
@@ -231,6 +234,13 @@ public class UIIntegrationTestBase {
 
 	protected String getTestName() {
 		return testInfo.getTestMethod().get().getName();
+	}
+
+	public void selectMenuItem(String menuItemName) {
+		final SelenideElement menuItem = Selenide.$$("vaadin-tabs vaadin-tab a span")
+				.filterBy(Condition.text(menuItemName)).first();
+		menuItem.click();
+		VaadinUtils.waitUntilPageLoaded();
 	}
 
 	private synchronized static void removeDatabaseFolder() {

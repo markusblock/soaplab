@@ -1,4 +1,4 @@
-package org.soaplab.ui.fat;
+package org.soaplab.ui;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -9,9 +9,11 @@ import java.util.UUID;
 
 import org.soaplab.assertions.FatAssert;
 import org.soaplab.domain.Fat;
-import org.soaplab.domain.SoapRecipe;
+import org.soaplab.domain.Fragrance;
 import org.soaplab.domain.exception.EntityNotFoundException;
 import org.soaplab.repository.FatRepository;
+import org.soaplab.repository.FragranceRecipeRepository;
+import org.soaplab.repository.FragranceRepository;
 import org.soaplab.testdata.RandomIngredientsTestData;
 import org.soaplab.testdata.RandomSoapRecipeRepositoryTestData;
 import org.springframework.stereotype.Component;
@@ -22,8 +24,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RepositoryTestHelper {
 
-	private final RandomSoapRecipeRepositoryTestData testData;
 	private final FatRepository fatRepository;
+	private final FragranceRepository fragranceRepository;
+	private final FragranceRecipeRepository fragranceRecipeRepository;
 
 	public void assertThatFatExists(String name, String inci) {
 		final List<Fat> foundFatsByName = fatRepository.findByName(name);
@@ -70,8 +73,25 @@ public class RepositoryTestHelper {
 		return fatRepository.create(RandomIngredientsTestData.getFatBuilder().name(name).inci(inci).build());
 	}
 
-	public SoapRecipe createSoapRecipeWithRandomData() {
-		return testData.createSoapRecipe();
+	public RandomSoapRecipeRepositoryTestData createSoapRecipeWithRandomData() {
+		final RandomSoapRecipeRepositoryTestData testData = createTestData();
+		testData.createSoapRecipe();
+		return testData;
+	}
+
+	public Fragrance createFragrance() {
+		return fragranceRepository.create(RandomIngredientsTestData.getFragranceBuilder().build());
+	}
+
+	private RandomSoapRecipeRepositoryTestData createTestData() {
+		return new RandomSoapRecipeRepositoryTestData(null, fatRepository, null, null, fragranceRepository, null, null,
+				null, null, fragranceRecipeRepository);
+	}
+
+	public RandomSoapRecipeRepositoryTestData creatFragranceRecipe() {
+		final RandomSoapRecipeRepositoryTestData testData = createTestData();
+		testData.createFragranceRecipe();
+		return testData;
 	}
 
 }

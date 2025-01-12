@@ -1,4 +1,4 @@
-package org.soaplab.ui.fat;
+package org.soaplab.ui.views;
 
 import static org.soaplab.ui.pageobjects.EntityTablePanelPageObject.COLUMN_HEADER_NAME;
 
@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.soaplab.domain.Fat;
 import org.soaplab.testdata.RandomIngredientsTestData;
+import org.soaplab.ui.RepositoryTestHelper;
+import org.soaplab.ui.UIIntegrationTestBase;
 import org.soaplab.ui.pageobjects.FatDetailsPageObject;
 import org.soaplab.ui.pageobjects.FatTablePanelPageObject;
 import org.soaplab.ui.pageobjects.FatViewPageObject;
@@ -22,9 +24,9 @@ public class IngredientViewUIIT extends UIIntegrationTestBase {
 	@Autowired
 	private RepositoryTestHelper repoHelper;
 
-	private static Fat ingredient1;
-	private static Fat ingredient2;
-	private static Fat ingredient3;
+	private Fat ingredient1;
+	private Fat ingredient2;
+	private Fat ingredient3;
 
 	@BeforeEach
 	void beforeEach() {
@@ -38,6 +40,7 @@ public class IngredientViewUIIT extends UIIntegrationTestBase {
 		pageObject.refreshPage();
 
 		tablePanel = pageObject.getEntityTable();
+		tablePanel.selectEntity(ingredient1);
 		detailsPanel = pageObject.getEntityDetails();
 	}
 
@@ -48,13 +51,13 @@ public class IngredientViewUIIT extends UIIntegrationTestBase {
 
 	@Test
 	void detailsPanelShouldShowsSelectedEntityInTablePanel() {
-		tablePanel.selectIngredient(ingredient1);
+		tablePanel.selectEntity(ingredient1);
 		detailsPanel.name().shouldHaveValue(ingredient1.getName());
 
-		tablePanel.selectIngredient(ingredient2);
+		tablePanel.selectEntity(ingredient2);
 		detailsPanel.name().shouldHaveValue(ingredient2.getName());
 
-		tablePanel.selectIngredient(ingredient3);
+		tablePanel.selectEntity(ingredient3);
 		detailsPanel.name().shouldHaveValue(ingredient3.getName());
 	}
 
@@ -91,13 +94,13 @@ public class IngredientViewUIIT extends UIIntegrationTestBase {
 		final Fat updatedValues = RandomIngredientsTestData.getFatBuilder().build();
 		pageObject.refreshPage();
 
-		tablePanel.selectIngredient(ingredient);
+		tablePanel.selectEntity(ingredient);
 		detailsPanel.name().doubleClick();
 		detailsPanel.name().setValue(updatedValues.getName());
 		detailsPanel.inci().setValue(updatedValues.getInci());
 		detailsPanel.name().pressEnter();
 
-		tablePanel.ingredientShouldAppear(updatedValues.getName());
-		tablePanel.ingredientShouldNotAppear(ingredient.getName());
+		tablePanel.entityShouldAppear(updatedValues.getName());
+		tablePanel.entityShouldNotAppear(ingredient.getName());
 	}
 }

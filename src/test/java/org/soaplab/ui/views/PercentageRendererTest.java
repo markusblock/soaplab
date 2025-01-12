@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.soaplab.domain.KOH;
 import org.soaplab.domain.Percentage;
+import org.soaplab.ui.views.PercentageRenderer;
 
 class PercentageRendererTest {
 

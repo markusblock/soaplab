@@ -2,7 +2,7 @@ package org.soaplab.ui.pageobjects;
 
 import static com.codeborne.selenide.Selectors.byId;
 
-import org.soaplab.ui.fat.VaadinUtils;
+import org.soaplab.ui.VaadinUtils;
 
 import com.codeborne.selenide.Selenide;
 

@@ -97,6 +97,7 @@ public class MainAppLayout extends AppLayout implements BeforeEnterObserver {
 		menuBar.addMenuItem(VaadinIcon.SAFE_LOCK, getTranslation("domain.fragrancerecipes"), FragranceRecipeView.class);
 		menuBar.addMenuItem(VaadinIcon.DOLLAR, getTranslation("domain.ingredients"), AllIngredientsView.class);
 		menuBar.addMenuItem(VaadinIcon.OPTIONS, getTranslation("dev.developmentview"), DevelopmentView.class);
+		menuBar.setId("menu.main");
 
 		addToDrawer(menuBar.getMenuItemComponents());
 		final Div spacing = new Div();

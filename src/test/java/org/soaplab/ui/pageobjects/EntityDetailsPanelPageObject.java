@@ -3,7 +3,7 @@ package org.soaplab.ui.pageobjects;
 import static com.codeborne.selenide.Selectors.byId;
 import static org.soaplab.ui.views.EntityDetailsPanel.PANEL_ID;
 
-import org.soaplab.ui.fat.VaadinUtils;
+import org.soaplab.ui.VaadinUtils;
 
 public class EntityDetailsPanelPageObject {
 

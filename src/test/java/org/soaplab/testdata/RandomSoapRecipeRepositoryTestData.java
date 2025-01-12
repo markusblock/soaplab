@@ -1,7 +1,28 @@
 package org.soaplab.testdata;
 
-import org.soaplab.domain.*;
-import org.soaplab.repository.*;
+import org.soaplab.domain.Acid;
+import org.soaplab.domain.Additive;
+import org.soaplab.domain.Entity;
+import org.soaplab.domain.Fat;
+import org.soaplab.domain.Fragrance;
+import org.soaplab.domain.FragranceRecipe;
+import org.soaplab.domain.KOH;
+import org.soaplab.domain.Liquid;
+import org.soaplab.domain.LyeRecipe;
+import org.soaplab.domain.NaOH;
+import org.soaplab.domain.NamedEntity;
+import org.soaplab.domain.SoapRecipe;
+import org.soaplab.repository.AcidRepository;
+import org.soaplab.repository.AdditiveRepository;
+import org.soaplab.repository.EntityRepository;
+import org.soaplab.repository.FatRepository;
+import org.soaplab.repository.FragranceRecipeRepository;
+import org.soaplab.repository.FragranceRepository;
+import org.soaplab.repository.KOHRepository;
+import org.soaplab.repository.LiquidRepository;
+import org.soaplab.repository.LyeRecipeRepository;
+import org.soaplab.repository.NaOHRepository;
+import org.soaplab.repository.SoapRecipeRepository;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
@@ -29,23 +50,23 @@ public class RandomSoapRecipeRepositoryTestData extends RandomSoapRecipeTestData
 	}
 
 	@Override
-	protected Liquid createLiquid() {
+	public Liquid createLiquid() {
 		return createEntityInRepo(super.createLiquid(), liquidRepository);
 
 	}
 
 	@Override
-	protected Acid createAcid() {
+	public Acid createAcid() {
 		return createEntityInRepo(super.createAcid(), acidRepository);
 	}
 
 	@Override
-	protected Fat createFat() {
+	public Fat createFat() {
 		return createEntityInRepo(super.createFat(), fatRepository);
 	}
 
 	@Override
-	protected Fragrance createFragrance() {
+	public Fragrance createFragrance() {
 		return createEntityInRepo(super.createFragrance(), fragranceRepository);
 	}
 
@@ -65,16 +86,17 @@ public class RandomSoapRecipeRepositoryTestData extends RandomSoapRecipeTestData
 	}
 
 	@Override
-	protected Additive createAdditive() {
+	public Additive createAdditive() {
 		return createEntityInRepo(super.createAdditive(), additiveRepository);
 	}
 
 	@Override
-	protected LyeRecipe createLyeRecipe() {
+	public LyeRecipe createLyeRecipe() {
 		return createEntityInRepo(super.createLyeRecipe(), lyeRecipeRepository);
 	}
 
-	protected FragranceRecipe createFragranceRecipe() {
+	@Override
+	public FragranceRecipe createFragranceRecipe() {
 		return createEntityInRepo(super.createFragranceRecipe(), fragranceRecipeRepository);
 	}
 }

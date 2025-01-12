@@ -14,7 +14,7 @@ import org.soaplab.domain.Fat.FatBuilder;
 import org.soaplab.domain.exception.DuplicateNameException;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.testdata.RandomIngredientsTestData;
-import org.soaplab.ui.fat.RepositoryTestHelper;
+import org.soaplab.ui.RepositoryTestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
