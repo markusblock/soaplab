@@ -88,7 +88,7 @@ public class RepositoryTestHelper {
 				null, null, fragranceRecipeRepository);
 	}
 
-	public RandomSoapRecipeRepositoryTestData creatFragranceRecipe() {
+	public RandomSoapRecipeRepositoryTestData createFragranceRecipe() {
 		final RandomSoapRecipeRepositoryTestData testData = createTestData();
 		testData.createFragranceRecipe();
 		return testData;

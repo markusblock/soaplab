@@ -28,7 +28,7 @@ public class EntityDetailsPanelUIIT extends UIIntegrationTestBase {
 
 		viewPageObject = new FatViewPageObject();
 		viewPageObject.refreshPage();
-		viewPageObject.getEntityTable().selectEntity(ingredient1);
+		viewPageObject.getEntityTable().row(ingredient1).select();
 		pageObject = viewPageObject.getEntityDetails();
 		pageObject.name().shouldHaveValue(ingredient1.getName());
 	}
@@ -42,7 +42,7 @@ public class EntityDetailsPanelUIIT extends UIIntegrationTestBase {
 	void editModeShouldBeEnabledByDoubleClick() {
 		pageObject.name().doubleClick();
 
-		pageObject.name().shouldBeEditable();
+		pageObject.shouldBeEditable();
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class EntityDetailsPanelUIIT extends UIIntegrationTestBase {
 
 		pageObject.name().pressEscape();
 
-		pageObject.name().shouldBeDisabled();
+		pageObject.shouldNoBeEditable();
 	}
 
 	@Test
@@ -60,7 +60,7 @@ public class EntityDetailsPanelUIIT extends UIIntegrationTestBase {
 
 		pageObject.name().pressEnter();
 
-		pageObject.name().shouldBeDisabled();
+		pageObject.shouldNoBeEditable();
 	}
 
 	@Test
@@ -95,7 +95,7 @@ public class EntityDetailsPanelUIIT extends UIIntegrationTestBase {
 	public void enterSavesChanges() {
 		final Fat ingredient = repoHelper.createFat();
 		viewPageObject.refreshPage();
-		viewPageObject.getEntityTable().selectEntity(ingredient);
+		viewPageObject.getEntityTable().row(ingredient).select();
 		pageObject.name().shouldHaveValue(ingredient.getName());
 		pageObject.name().doubleClick().shouldBeEditable();
 		pageObject.name().setValue("test");
@@ -109,7 +109,7 @@ public class EntityDetailsPanelUIIT extends UIIntegrationTestBase {
 	public void escDiscardsChanges() {
 		final Fat ingredient = repoHelper.createFat();
 		viewPageObject.refreshPage();
-		viewPageObject.getEntityTable().selectEntity(ingredient);
+		viewPageObject.getEntityTable().row(ingredient).select();
 		pageObject.name().shouldHaveValue(ingredient.getName());
 		pageObject.name().doubleClick().shouldBeEditable();
 		pageObject.name().setValue("test");

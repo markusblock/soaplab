@@ -1,20 +1,22 @@
 package org.soaplab.ui;
 
 import static com.codeborne.selenide.Selectors.byText;
-import static com.codeborne.selenide.Selenide.$;
+import static org.soaplab.ui.VaadinUtils.classAttributeContainingClass;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.SearchContext;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.pagefactory.ByChained;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
@@ -32,32 +34,24 @@ public class VaadinGrid {
 		return new ByChained(locator, byText(rowValue));
 	}
 
-	public By getRowSelector(int rowIdx) {
-		return new ByChained(locator, Selectors.shadowDeepCss("table tbody tr:nth-of-type(%s)".formatted(rowIdx)));
-	}
-
-	public By getCellSelector(String rowValue, int colIdx) {
-		return new ByChained(locator, byText(rowValue), Selectors.byXpath("(th)[%s]".formatted(colIdx)));
-	}
-
-	public By getCellSelector(int rowIdx, int colIdx) {
-		return getTdLocator(rowIdx, colIdx);
-	}
-
 	public void cellShouldContain(int rowIdx, int colIdx, String value) {
 		final SelenideElement tdElement = getTdElement(rowIdx, colIdx);
 		Selenide.$(getGridCellContentLocator(tdElement)).shouldHave(Condition.text(value));
 	}
 
-	public void columnShouldContainAllOf(int colIdx, String value) {
-		columnShouldContainAllOf(colIdx, List.of(value));
+	public void columnShouldContainExactly(int colIdx, String value) {
+		columnShouldContainExactly(colIdx, List.of(value));
 	}
 
-	public void columnShouldContainAllOf(int colIdx, List<String> values) {
+	public boolean isFilterable() {
+		return Selenide.$(locator).has(classAttributeContainingClass("filterable"));
+	}
+
+	public void columnShouldContainExactly(int colIdx, List<String> values) {
 		Selenide.Wait()
 				.withMessage("Waiting for column %s to contain values '%s'. Values of column are '%s'".formatted(colIdx,
 						StringUtils.join(values, ","), getTextOfTds(colIdx)))
-				.until(driver -> columnContainsAllOf(colIdx, values));
+				.until(driver -> columnContainsExactly(colIdx, values));
 	}
 
 	/**
@@ -68,26 +62,34 @@ public class VaadinGrid {
 	 * @return
 	 */
 	public int getColumnIndexByColumnHeaderText(String headerText) {
-		final List<SelenideElement> ths = Selenide.$(locator).$$(Selectors.shadowDeepCss("table thead th"))
-				.asFixedIterable().stream().toList();
-		for (int i = 0; i < ths.size(); i++) {
-			final SelenideElement selenideElement = ths.get(i);
-			if (headerText.equalsIgnoreCase(selenideElement.getText())) {
-				return i + 1;
+		final ElementsCollection trs = findElementsInGridShadowRoot(Selectors.byCssSelector("table thead tr"));
+		for (int trIndex = 0; trIndex < trs.size(); trIndex++) {
+			final SelenideElement tr = trs.get(trIndex);
+			final ElementsCollection ths = tr.$$("th");
+			int columnCounter = 1;
+			for (int thIndex = 0; thIndex < ths.size(); thIndex++) {
+				final SelenideElement th = ths.get(thIndex);
+				if (headerText.equalsIgnoreCase(th.getText())) {
+					return columnCounter;
+				}
+				columnCounter++;
 			}
 		}
 		throw new RuntimeException("Couldn't find column with header text %s".formatted(headerText));
 	}
 
 	public String getColumnIdByColumnHeaderText(String headerText) {
-		final List<SelenideElement> ths = Selenide.$(locator).$$(Selectors.shadowDeepCss("table thead th"))
-				.asFixedIterable().stream().toList();
-		for (int i = 0; i < ths.size(); i++) {
-			final SelenideElement selenideElement = ths.get(i);
-			if (headerText.equalsIgnoreCase(selenideElement.getText())) {
-				final SelenideElement gridCellContentElement = getGridCellContentElement(selenideElement);
-				final String attr = gridCellContentElement.$("vaadin-text-field").attr("id");
-				return attr;
+		final ElementsCollection trs = findElementsInGridShadowRoot(Selectors.byCssSelector("table thead tr"));
+		for (int trIndex = 0; trIndex < trs.size(); trIndex++) {
+			final SelenideElement tr = trs.get(trIndex);
+			final ElementsCollection ths = tr.$$("th");
+			for (int thIndex = 0; thIndex < ths.size(); thIndex++) {
+				final SelenideElement th = ths.get(thIndex);
+				if (headerText.equalsIgnoreCase(th.getText())) {
+					final SelenideElement gridCellContentElement = getGridCellContentElement(th);
+					final String attr = gridCellContentElement.$("vaadin-text-field").attr("id");
+					return attr;
+				}
 			}
 		}
 
@@ -104,71 +106,47 @@ public class VaadinGrid {
 	 */
 	public int getRowIndexByValue(int columnIndex, String rowValue) {
 		final List<SelenideElement> tdsOfColumn = getTdsOfColumn(columnIndex);
+		int rowCounter = 1;
 		for (int i = 0; i < tdsOfColumn.size(); i++) {
 			final SelenideElement tdOfColumn = tdsOfColumn.get(i);
 			final SelenideElement gridCellContentElement = getGridCellContentElement(tdOfColumn);
-			// get text from content directly if editor is closed
-			final String text = gridCellContentElement.getText();
-			if (rowValue.equalsIgnoreCase(text)) {
-				return i + 1;
-			} else if (ObjectUtils.isEmpty(text)) {
-				// get text from textfield if editor is opened
-				final String text2 = gridCellContentElement.$("vaadin-text-field").getValue();
-				if (text2.equalsIgnoreCase(rowValue)) {
-					return i + 1;
+			final boolean displayed = gridCellContentElement.isDisplayed();
+			if (displayed) {
+				// get text from content directly if editor is closed
+				final String text = gridCellContentElement.getText();
+				if (rowValue.equalsIgnoreCase(text)) {
+					return rowCounter;
+				} else if (ObjectUtils.isEmpty(text)) {
+					// get text from textfield if editor is opened
+					final String text2 = gridCellContentElement.$("vaadin-text-field").getValue();
+					if (text2.equalsIgnoreCase(rowValue)) {
+						return rowCounter;
+					}
 				}
+				// count only visible rows
+				rowCounter++;
+			} else {
+				// strange but there are fake row contained
+				// do not count this row
 			}
 		}
 		throw new RuntimeException("Couldn't find row with value %s in column %s".formatted(rowValue, columnIndex));
 	}
 
-	public By getEditorLocator(int rowIndex, int columnIndex) {
+	public By getEditorLocator(int rowIndex, int columnIndex, String editorType) {
 		final SelenideElement tdElement = getTdElement(rowIndex, columnIndex);
-		return new ByChained(getGridCellContentLocator(tdElement), By.cssSelector("vaadin-text-field"));
+		return new ByChained(getGridCellContentLocator(tdElement), By.cssSelector(editorType));
 	}
 
-	private SelenideElement getTdElement(int rowIndex, int columnIndex) {
-		return $(locator).$(getTdLocator(rowIndex, columnIndex));
+	public void columnShouldNotContainAnyOf(int colIdx, String value) {
+		columnShouldNotContainAnyOf(colIdx, List.of(value));
 	}
 
-	private By getTdLocator(int rowIndex, int columnIndex) {
-		return Selectors
-				.shadowDeepCss("table tbody tr:nth-of-type(%s) td:nth-of-type(%s)".formatted(rowIndex, columnIndex));
-	}
-
-	private SelenideElement getGridCellContentElement(SelenideElement tdElement) {
-		return Selenide.$(getGridCellContentLocator(tdElement));
-	}
-
-	private By getGridCellContentLocator(SelenideElement tdElement) {
-		final String slotName = tdElement.$("slot").attr("name");
-		return new ByChained(locator, By.cssSelector("vaadin-grid-cell-content[slot='%s']".formatted(slotName)));
-	}
-
-	public void columnShouldNotContain(int colIdx, String value) {
-		columnShouldNotContain(colIdx, List.of(value));
-	}
-
-	public void columnShouldNotContain(int colIdx, List<String> values) {
+	public void columnShouldNotContainAnyOf(int colIdx, List<String> values) {
 		Selenide.Wait()
 				.withMessage("Waiting for column %s to not contain values '%s'. Values of first column are '%s'"
 						.formatted(colIdx, values, getTextOfTds(colIdx)))
-				.until(driver -> !columnContainsAllOf(colIdx, values));
-	}
-
-	private boolean columnContainsAllOf(int columnIndex, List<String> values) {
-		final List<SelenideElement> tdsOfColumnFilteredByValue = getTdsOfColumnFilteredByValue(columnIndex, values);
-		return !CollectionUtils.isEmpty(tdsOfColumnFilteredByValue)
-				&& tdsOfColumnFilteredByValue.size() == values.size();
-	}
-
-	public Optional<SelenideElement> getTdElementByValueOfColumn(int columnIndex, String value) {
-		final List<SelenideElement> vaadinGridCellContents = getTdsOfColumnFilteredByValue(columnIndex, List.of(value));
-		if (CollectionUtils.isEmpty(vaadinGridCellContents)) {
-			return Optional.empty();
-		}
-
-		return Optional.of(vaadinGridCellContents.get(0));
+				.until(driver -> columnContainsNoneOf(colIdx, values));
 	}
 
 	/**
@@ -201,8 +179,7 @@ public class VaadinGrid {
 	public List<SelenideElement> getTdsOfColumn(int columnIndex) {
 		Assert.isTrue(columnIndex > 0, "column index must be >0");
 		final List<SelenideElement> tdsOfColumn = new ArrayList<>();
-		final List<SelenideElement> trs = Selenide.$(locator).$$(Selectors.shadowDeepCss("table tbody tr"))
-				.asDynamicIterable().stream().toList();
+		final ElementsCollection trs = findElementsInGridShadowRoot(Selectors.byCssSelector("table tbody tr"));
 		for (final SelenideElement selenideElement : trs) {
 			final List<SelenideElement> tdsOfRow = selenideElement.$$("td").asFixedIterable().stream().toList();
 			// tdsOfRow 0-based, columnIndex 1-based
@@ -212,11 +189,61 @@ public class VaadinGrid {
 		return tdsOfColumn;
 	}
 
-	public void filter(int colIdx, String string) {
-		final List<SelenideElement> ths = Selenide.$(locator).$$(Selectors.shadowDeepCss("table thead th"))
-				.asFixedIterable().stream().toList();
-		final SelenideElement selenideElement = ths.get(colIdx);
-		selenideElement.$(Selectors.shadowDeepCss("vaadin-text-field input")).append(string);
+	public SelenideElement getTdElement(int rowIdx, int colIdx) {
+		return Selenide.$(getTdWebElement(rowIdx, colIdx));
+	}
+
+	public WebElement getTdWebElement(int rowIdx, int colIdx) {
+		return findWebElementInGridShadowRoot(
+				By.cssSelector("table tbody tr:nth-child(%s) td:nth-child(%s)".formatted(rowIdx, colIdx)));
+	}
+
+	public SelenideElement getTrElement(int rowIdx) {
+		return Selenide.$(getTrWebElement(rowIdx));
+	}
+
+	public WebElement getTrWebElement(int rowIdx) {
+		return findWebElementInGridShadowRoot(By.cssSelector("table tbody tr:nth-child(%s)".formatted(rowIdx)));
+	}
+
+	private ElementsCollection findElementsInGridShadowRoot(By cssSelector) {
+		return Selenide.$$(findWebElementsInGridShadowRoot(cssSelector));
+	}
+
+	private SelenideElement findElementInGridShadowRoot(By cssSelector) {
+		return Selenide.$(findWebElementInGridShadowRoot(cssSelector));
+	}
+
+	private List<WebElement> findWebElementsInGridShadowRoot(By cssSelector) {
+		return getShadowRoot().findElements(cssSelector);
+	}
+
+	private WebElement findWebElementInGridShadowRoot(By cssSelector) {
+		return getShadowRoot().findElement(cssSelector);
+	}
+
+	private SearchContext getShadowRoot() {
+		return Selenide.$(locator).getWrappedElement().getShadowRoot();
+	}
+
+	public SelenideElement getGridCellContentElement(SelenideElement tdElement) {
+		return Selenide.$(getGridCellContentLocator(tdElement));
+	}
+
+	private By getGridCellContentLocator(SelenideElement tdElement) {
+		final String slotName = tdElement.$("slot").attr("name");
+		return new ByChained(locator, By.cssSelector("vaadin-grid-cell-content[slot='%s']".formatted(slotName)));
+	}
+
+	private boolean columnContainsExactly(int columnIndex, List<String> values) {
+		final List<SelenideElement> tdsOfColumnFilteredByValue = getTdsOfColumnFilteredByValue(columnIndex, values);
+		return !CollectionUtils.isEmpty(tdsOfColumnFilteredByValue)
+				&& tdsOfColumnFilteredByValue.size() == values.size();
+	}
+
+	private boolean columnContainsNoneOf(int columnIndex, List<String> values) {
+		final List<SelenideElement> tdsOfColumnFilteredByValue = getTdsOfColumnFilteredByValue(columnIndex, values);
+		return CollectionUtils.isEmpty(tdsOfColumnFilteredByValue);
 	}
 
 	private String getTextOfTds(int colIdx) {

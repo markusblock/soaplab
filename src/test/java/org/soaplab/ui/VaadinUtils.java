@@ -12,6 +12,7 @@ import org.openqa.selenium.interactions.Actions;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebElementCondition;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +36,16 @@ public class VaadinUtils {
 		return Condition.attribute("readonly");
 	}
 
+	public static WebElementCondition classAttributeContainingClass(String className) {
+		return Condition.attributeMatching("class", ".*" + className + ".*");
+	}
+
 	public static void clickOnElement(By selector) {
 		$(selector).scrollIntoView(true).shouldNotBe(disabled()).click();
+	}
+
+	public static void clickOnElement(SelenideElement element) {
+		element.scrollIntoView(true).shouldNotBe(disabled()).click();
 	}
 
 	public static void doubleClickOnElement(By selector) {
@@ -65,6 +74,15 @@ public class VaadinUtils {
 //		((JavascriptExecutor) webDriver).executeScript(jsDoubleClick, webElement, 0, 0);
 
 		new Actions(webDriver).moveToElement(webElement).doubleClick().perform();
+	}
+
+	public static void doubleClickOnElement(SelenideElement element) {
+		doubleClickOnElement(element.toWebElement());
+	}
+
+	public static void doubleClickOnElement(WebElement webElement) {
+		final WebDriver webDriver = Selenide.webdriver().object();
+		new Actions(webDriver).scrollToElement(webElement).moveToElement(webElement).doubleClick().perform();
 	}
 
 	public static void waitUntilPageLoaded() {

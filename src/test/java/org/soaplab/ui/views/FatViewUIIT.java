@@ -84,7 +84,7 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 
 		final EntityTablePanelPageObject table = entityView.getEntityTable();
 		table.entityShouldAppear(fat1).entityShouldAppear(fat2);
-		table.selectEntity(fat1);
+		table.row(fat1).select();
 
 		entityView.buttonRemove().click();
 
@@ -100,7 +100,7 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 
 		final EntityTablePanelPageObject table = entityView.getEntityTable();
 		table.entityShouldAppear(fat1);
-		table.selectEntity(fat1);
+		table.row(fat1).select();
 
 		final EntityDetailsPanelPageObject details = entityView.getEntityDetails();
 		details.id().shouldBeReadOnly().shouldNotBeEmpty();

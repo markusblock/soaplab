@@ -1,7 +1,5 @@
 package org.soaplab.ui.views;
 
-import static org.soaplab.ui.pageobjects.EntityTablePanelPageObject.COLUMN_HEADER_NAME;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +38,7 @@ public class IngredientViewUIIT extends UIIntegrationTestBase {
 		pageObject.refreshPage();
 
 		tablePanel = pageObject.getEntityTable();
-		tablePanel.selectEntity(ingredient1);
+		tablePanel.row(ingredient1).select();
 		detailsPanel = pageObject.getEntityDetails();
 	}
 
@@ -51,13 +49,13 @@ public class IngredientViewUIIT extends UIIntegrationTestBase {
 
 	@Test
 	void detailsPanelShouldShowsSelectedEntityInTablePanel() {
-		tablePanel.selectEntity(ingredient1);
+		tablePanel.row(ingredient1).select();
 		detailsPanel.name().shouldHaveValue(ingredient1.getName());
 
-		tablePanel.selectEntity(ingredient2);
+		tablePanel.row(ingredient2).select();
 		detailsPanel.name().shouldHaveValue(ingredient2.getName());
 
-		tablePanel.selectEntity(ingredient3);
+		tablePanel.row(ingredient3).select();
 		detailsPanel.name().shouldHaveValue(ingredient3.getName());
 	}
 
@@ -65,7 +63,7 @@ public class IngredientViewUIIT extends UIIntegrationTestBase {
 	void editModeDisablesButtons() {
 		pageObject.buttonAdd().shouldBeEnabled();
 		pageObject.buttonRemove().shouldBeEnabled();
-		final PageObjectElement editor = tablePanel.doubleClick(ingredient2, COLUMN_HEADER_NAME);
+		final PageObjectElement editor = tablePanel.row(ingredient2).doubleClick();
 		editor.shouldBeVisible();
 
 		pageObject.buttonAdd().shouldBeDisabled();
@@ -94,7 +92,7 @@ public class IngredientViewUIIT extends UIIntegrationTestBase {
 		final Fat updatedValues = RandomIngredientsTestData.getFatBuilder().build();
 		pageObject.refreshPage();
 
-		tablePanel.selectEntity(ingredient);
+		tablePanel.row(ingredient).select();
 		detailsPanel.name().doubleClick();
 		detailsPanel.name().setValue(updatedValues.getName());
 		detailsPanel.inci().setValue(updatedValues.getInci());

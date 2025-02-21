@@ -29,6 +29,14 @@ public class EntityDetailsPanelPageObject {
 		return name().isEditable();
 	}
 
+	public void shouldBeEditable() {
+		name().shouldBeEditable();
+	}
+
+	public void shouldNoBeEditable() {
+		name().shouldBeDisabled();
+	}
+
 	public void doubleClick() {
 		VaadinUtils.doubleClickOnElement(byId(PANEL_ID));
 	}

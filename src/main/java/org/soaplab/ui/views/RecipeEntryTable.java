@@ -101,7 +101,8 @@ public class RecipeEntryTable<T extends Ingredient> extends Div {
 		content.add(grid);
 
 		// NAME COLUMN
-		final Column<RecipeEntry<T>> entityNameColumn = grid.addColumn(new IngredientValueProvider()).setSortable(true);
+		final Column<RecipeEntry<T>> entityNameColumn = grid.addColumn(new IngredientValueProvider())
+				.setHeader(getTranslation("domain.entity.name")).setSortable(true);
 		// NAME EDITOR
 		final ComboBox<T> entitySelector = new ComboBox<T>();
 		entitySelector.setWidthFull();
@@ -117,7 +118,7 @@ public class RecipeEntryTable<T extends Ingredient> extends Div {
 		formatter.setMaximumFractionDigits(2);
 		final Column<RecipeEntry<T>> percentageColumn = grid
 				.addColumn(new NumberRenderer<RecipeEntry<T>>(new PercentageValueProvider(), formatter))
-				.setSortable(true);
+				.setHeader(getTranslation("domain.recipe.percentage")).setSortable(true);
 		// PERCENTAGE EDITOR
 		final TextField percentageField = new TextField();
 		percentageField.setWidthFull();
@@ -132,12 +133,9 @@ public class RecipeEntryTable<T extends Ingredient> extends Div {
 				}, (entry, fieldvalue) -> entry.setPercentage(new Percentage(new BigDecimal(fieldvalue))));
 		percentageColumn.setEditorComponent(percentageField);
 
-		final HorizontalLayout toolbar = createToolbar(headerTextId);
-		toolbar.add(createAddButton());
-		toolbar.add(createRemoveButton());
-		final HeaderRow headerRow = grid.prependHeaderRow();
-		// headerRow.join(entityNameColumn, percentageColumn);
-		headerRow.getCell(entityNameColumn).setComponent(toolbar);
+		final HeaderRow headerRowTop = grid.prependHeaderRow();
+		headerRowTop.join(entityNameColumn, percentageColumn);
+		headerRowTop.getCell(entityNameColumn).setComponent(createToolbar(headerTextId));
 
 	}
 
@@ -145,11 +143,12 @@ public class RecipeEntryTable<T extends Ingredient> extends Div {
 		final HorizontalLayout toolbar = new HorizontalLayout();
 		toolbar.setSizeFull();
 		toolbar.setAlignItems(Alignment.CENTER);
-		toolbar.setJustifyContentMode(JustifyContentMode.END);
+		toolbar.setJustifyContentMode(JustifyContentMode.START);
 		final H1 listHeader = new H1(getTranslation(headerTextId));
 		listHeader.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
-		listHeader.setSizeFull();
 		toolbar.add(listHeader);
+		toolbar.add(createAddButton());
+		toolbar.add(createRemoveButton());
 		return toolbar;
 	}
 

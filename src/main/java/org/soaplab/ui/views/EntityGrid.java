@@ -62,9 +62,8 @@ public class EntityGrid<T extends Entity> extends Grid<T> {
 		editor.setBinder(binder);
 		editor.setBuffered(true);
 
-		addEditorCancelListener(editor);
-		addEditorCloseListener(editor);
 		addEditorOpenListener(editor);
+		addEditorCloseListener(editor);
 
 		addGridClickListener();
 		addGridDoubleClickListener();
@@ -92,11 +91,11 @@ public class EntityGrid<T extends Entity> extends Grid<T> {
 
 		final Editor<T> editor = getEditor();
 		editor.setBinder(binder);
-		editor.setBuffered(false);
+		editor.setBuffered(true);
 
-		addEditorCancelListener(editor);
-		addEditorCloseListener(editor);
 		addEditorOpenListener(editor);
+		addEditorCloseListener(editor);
+		addEditorSaveListener(editor);
 
 		addGridClickListener();
 		addGridDoubleClickListener();
@@ -107,26 +106,6 @@ public class EntityGrid<T extends Entity> extends Grid<T> {
 
 		setSelectionMode(SelectionMode.SINGLE);
 		addGridSelectionListener();
-	}
-
-	protected void addEditorCancelListener(final Editor<T> editor) {
-		editor.addCancelListener(l -> {
-			log.trace("%s: Cancel editor".formatted(getId()));
-		});
-	}
-
-	private void addEditorCloseListener(final Editor<T> editor) {
-		editor.addCloseListener(l -> {
-			log.trace("%s: close editor".formatted(getId()));
-			if (entityChanged && !editorCanceled) {
-				final T entity = l.getItem();
-				binder.writeBeanIfValid(entity);
-				tableListener.entityChangedInEntityTable(entity);
-				getDataProvider().refreshItem(entity);
-			}
-			resetEditorState();
-			tableListener.entityTableLeavesEditMode();
-		});
 	}
 
 	private void addEditorOpenListener(final Editor<T> editor) {
@@ -151,6 +130,34 @@ public class EntityGrid<T extends Entity> extends Grid<T> {
 		});
 	}
 
+	private void addEditorSaveListener(final Editor<T> editor) {
+		editor.addSaveListener(l -> {
+			log.trace("%s: save editor".formatted(getId()));
+//			if (entityChanged && !editorCanceled) {
+//				final T entity = l.getItem();
+//				binder.writeBeanIfValid(entity);
+//				tableListener.entityChangedInEntityTable(entity);
+//				getDataProvider().refreshItem(entity);
+//			}
+//			resetEditorState();
+//			tableListener.entityTableLeavesEditMode();
+		});
+	}
+
+	private void addEditorCloseListener(final Editor<T> editor) {
+		editor.addCloseListener(l -> {
+			log.trace("%s: close editor".formatted(getId()));
+			if (entityChanged && !editorCanceled) {
+				final T entity = l.getItem();
+				binder.writeBeanIfValid(entity);
+				tableListener.entityChangedInEntityTable(entity);
+				getDataProvider().refreshItem(entity);
+			}
+			resetEditorState();
+			tableListener.entityTableLeavesEditMode();
+		});
+	}
+
 	private void addGridClickListener() {
 		addItemClickListener(event -> {
 			log.trace("%s: clicked %s".formatted(getId(), event.getItem()));
@@ -172,6 +179,7 @@ public class EntityGrid<T extends Entity> extends Grid<T> {
 			log.trace("%s: Enter pressed".formatted(getId()));
 
 			if (getEditor().isOpen()) {
+				editorCanceled = false;
 				getEditor().save();
 			} else {
 				editEntity();

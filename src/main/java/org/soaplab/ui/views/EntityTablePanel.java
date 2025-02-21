@@ -41,6 +41,7 @@ public class EntityTablePanel<T extends Entity> extends VerticalLayout {
 
 		grid = new EntityGrid<>(entityClass, tableListener);
 		grid.getHeaderRows().clear();
+		grid.addClassName("filterable");
 		add(grid);
 
 		searchHeaderRow = grid.appendHeaderRow();
@@ -76,7 +77,7 @@ public class EntityTablePanel<T extends Entity> extends VerticalLayout {
 	}
 
 	protected Column<T> addEntityNameColumn(String propertyName, String id) {
-		return addEntityNameColumn(propertyName, id);
+		return addEntityColumn(propertyName, id);
 	}
 
 	protected Column<T> addIntegerColumn(String propertyName, String id) {

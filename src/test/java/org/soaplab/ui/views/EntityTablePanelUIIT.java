@@ -1,7 +1,7 @@
 package org.soaplab.ui.views;
 
-import static org.soaplab.ui.pageobjects.EntityTablePanelPageObject.COLUMN_HEADER_INCI;
-import static org.soaplab.ui.pageobjects.EntityTablePanelPageObject.COLUMN_HEADER_NAME;
+import static org.soaplab.ui.pageobjects.EntityTablePanelPageObject.COLUMN_HEADERNAME_INCI;
+import static org.soaplab.ui.pageobjects.EntityTablePanelPageObject.COLUMN_HEADERNAME_NAME;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +13,8 @@ import org.soaplab.ui.pageobjects.FatTablePanelPageObject;
 import org.soaplab.ui.pageobjects.FatViewPageObject;
 import org.soaplab.ui.pageobjects.PageObjectElement;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.codeborne.selenide.Condition;
 
 public class EntityTablePanelUIIT extends UIIntegrationTestBase {
 
@@ -46,21 +48,21 @@ public class EntityTablePanelUIIT extends UIIntegrationTestBase {
 
 	@Test
 	void editModeShouldBeEnabledByDoubleClick() {
-		final PageObjectElement editor = pageObject.doubleClick(ingredient2, COLUMN_HEADER_NAME);
+		final PageObjectElement editor = pageObject.row(ingredient2).doubleClick();
 
 		editor.shouldBeVisible();
 	}
 
 	@Test
 	void editModeShouldBeEnabledByEnterPressed() {
-		final PageObjectElement editor = pageObject.pressEnter(ingredient2);
+		final PageObjectElement editor = pageObject.row(ingredient2).pressEnter();
 
 		editor.shouldBeVisible();
 	}
 
 	@Test
 	void editModeShouldBeCanceledByEscPressed() {
-		final PageObjectElement editor = pageObject.pressEnter(ingredient3);
+		final PageObjectElement editor = pageObject.row(ingredient3).pressEnter();
 		editor.shouldBeVisible();
 
 		editor.pressEscape();
@@ -70,7 +72,7 @@ public class EntityTablePanelUIIT extends UIIntegrationTestBase {
 
 	@Test
 	void editModeShouldBeCanceledByEnterPressed() {
-		final PageObjectElement editor = pageObject.pressEnter(ingredient1);
+		final PageObjectElement editor = pageObject.row(ingredient1).pressEnter();
 		editor.shouldBeVisible();
 
 		editor.pressEnter();
@@ -82,28 +84,28 @@ public class EntityTablePanelUIIT extends UIIntegrationTestBase {
 	public void enterSavesChanges() {
 		final Fat ingredient = repoHelper.createFat();
 		viewPageObject.refreshPage();
-		final PageObjectElement editor = pageObject.doubleClick(ingredient, COLUMN_HEADER_INCI);
+		final PageObjectElement editor = pageObject.row(ingredient).doubleClick(COLUMN_HEADERNAME_INCI);
 		editor.shouldBeVisible();
 		editor.setValue("test");
 
 		editor.pressEnter();
 
 		editor.shouldBeHidden();
-		pageObject.entityPropertyShouldBeDisplayed(ingredient, COLUMN_HEADER_INCI, "test");
+		pageObject.row(ingredient).cellByHeader(COLUMN_HEADERNAME_INCI).shouldHave(Condition.text("test"));
 	}
 
 	@Test
 	public void escDiscardsChanges() {
 		final Fat ingredient = repoHelper.createFat();
 		viewPageObject.refreshPage();
-		final PageObjectElement editor = pageObject.doubleClick(ingredient, COLUMN_HEADER_NAME);
+		final PageObjectElement editor = pageObject.row(ingredient).doubleClick();
 		editor.shouldBeVisible();
 		editor.setValue("test");
 
 		editor.pressEscape();
 		editor.shouldBeHidden();
 
-		pageObject.entityShouldAppear(ingredient.getName());
+		pageObject.entityShouldAppear(ingredient);
 	}
 
 	@Test
@@ -114,41 +116,41 @@ public class EntityTablePanelUIIT extends UIIntegrationTestBase {
 		viewPageObject.refreshPage();
 
 		// search by name - single result
-		pageObject.searchByColumn(COLUMN_HEADER_NAME).setValue(ingredient1.getName());
+		pageObject.getColumnFilter(COLUMN_HEADERNAME_NAME).setValue(ingredient1.getName());
 		pageObject.entityShouldAppearInViewPort(ingredient1);
 		pageObject.entityShouldNotAppearInViewPort(ingredient2, ingredient3);
 
 		// reset search by name
-		pageObject.clearSearchInColumn(COLUMN_HEADER_NAME);
+		pageObject.clearColumnFilter(COLUMN_HEADERNAME_NAME);
 		pageObject.entityShouldAppear(ingredient1, ingredient2, ingredient3);
 
 		// search by inci - single result
-		pageObject.searchByColumn(COLUMN_HEADER_INCI).setValue(ingredient1.getInci());
+		pageObject.getColumnFilter(COLUMN_HEADERNAME_INCI).setValue(ingredient1.getInci());
 		pageObject.entityShouldAppearInViewPort(ingredient1);
 		pageObject.entityShouldNotAppearInViewPort(ingredient2, ingredient3);
-		pageObject.clearSearchInColumn(COLUMN_HEADER_INCI);
+		pageObject.clearColumnFilter(COLUMN_HEADERNAME_INCI);
 
 		// search by name - multiple result
-		pageObject.searchByColumn(COLUMN_HEADER_NAME).setValue("c");
+		pageObject.getColumnFilter(COLUMN_HEADERNAME_NAME).setValue("c");
 		pageObject.entityShouldAppearInViewPort(ingredient1, ingredient3);
 		pageObject.entityShouldNotAppearInViewPort(ingredient2);
 		// search while typing
-		pageObject.searchByColumn(COLUMN_HEADER_NAME).appendValue("c");
+		pageObject.getColumnFilter(COLUMN_HEADERNAME_NAME).appendValue("c");
 		pageObject.entityShouldAppearInViewPort(ingredient3);
 		pageObject.entityShouldNotAppearInViewPort(ingredient1, ingredient2);
-		pageObject.clearSearchInColumn(COLUMN_HEADER_NAME);
+		pageObject.clearColumnFilter(COLUMN_HEADERNAME_NAME);
 
 		// search by inci - multiple result
-		pageObject.searchByColumn(COLUMN_HEADER_INCI).setValue("5");
+		pageObject.getColumnFilter(COLUMN_HEADERNAME_INCI).setValue("5");
 		pageObject.entityShouldAppearInViewPort(ingredient2, ingredient3);
 		pageObject.entityShouldNotAppearInViewPort(ingredient1);
-		pageObject.clearSearchInColumn(COLUMN_HEADER_INCI);
+		pageObject.clearColumnFilter(COLUMN_HEADERNAME_INCI);
 
 		// case insensitive
-		pageObject.searchByColumn(COLUMN_HEADER_NAME).setValue("x");
+		pageObject.getColumnFilter(COLUMN_HEADERNAME_NAME).setValue("x");
 		pageObject.entityShouldAppearInViewPort(ingredient3);
 		pageObject.entityShouldNotAppearInViewPort(ingredient1, ingredient2);
-		pageObject.clearSearchInColumn(COLUMN_HEADER_NAME);
+		pageObject.clearColumnFilter(COLUMN_HEADERNAME_NAME);
 	}
 
 }
