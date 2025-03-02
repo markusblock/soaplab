@@ -11,9 +11,16 @@ import org.soaplab.assertions.FatAssert;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
 import org.soaplab.domain.exception.EntityNotFoundException;
+import org.soaplab.repository.AcidRepository;
+import org.soaplab.repository.AdditiveRepository;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.FragranceRecipeRepository;
 import org.soaplab.repository.FragranceRepository;
+import org.soaplab.repository.KOHRepository;
+import org.soaplab.repository.LiquidRepository;
+import org.soaplab.repository.LyeRecipeRepository;
+import org.soaplab.repository.NaOHRepository;
+import org.soaplab.repository.SoapRecipeRepository;
 import org.soaplab.testdata.RandomIngredientsTestData;
 import org.soaplab.testdata.RandomSoapRecipeRepositoryTestData;
 import org.springframework.stereotype.Component;
@@ -24,8 +31,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RepositoryTestHelper {
 
+	private final SoapRecipeRepository soapRecipeRepository;
 	private final FatRepository fatRepository;
+	private final AcidRepository acidRepository;
+	private final LiquidRepository liquidRepository;
 	private final FragranceRepository fragranceRepository;
+	private final NaOHRepository naohRepository;
+	private final KOHRepository kohRepository;
+	private final AdditiveRepository additiveRepository;
+	private final LyeRecipeRepository lyeRecipeRepository;
 	private final FragranceRecipeRepository fragranceRecipeRepository;
 
 	public void assertThatFatExists(String name, String inci) {
@@ -35,23 +49,20 @@ public class RepositoryTestHelper {
 		assertThat(foundFatsByName.get(0).getInci()).isEqualTo(inci);
 	}
 
-	public void assertThatFatHasValues(String name, String inci, Integer ins, BigDecimal sapNaoh, Integer iodine,
-			Integer lauric, Integer linoleic, Integer linolenic, Integer myristic, Integer oleic, Integer palmitic,
-			Integer ricinoleic, Integer stearic) {
-		final List<Fat> foundFatsByName = fatRepository.findByName(name);
-		assertThat(foundFatsByName).hasSize(1);
-		final Fat existingFat = foundFatsByName.get(0);
-		// not interested in ID diff -> use the ID of loaded fat
-		final Fat expectedFatValues = Fat.builder().id(existingFat.getId()).name(name).inci(inci).ins(ins)
-				.sapNaoh(sapNaoh).iodine(iodine).lauric(lauric).linoleic(linoleic).linolenic(linolenic)
-				.myristic(myristic).oleic(oleic).palmitic(palmitic).ricinoleic(ricinoleic).stearic(stearic).build();
-		FatAssert.assertThat(existingFat).isDeepEqualTo(expectedFatValues);
+	public void assertThatFatHasValues(UUID id, String name, String inci, Integer ins, BigDecimal sapNaoh,
+			Integer iodine, Integer lauric, Integer linoleic, Integer linolenic, Integer myristic, Integer oleic,
+			Integer palmitic, Integer ricinoleic, Integer stearic) {
+		final Fat existingFat = fatRepository.get(id);
+		final Fat expectedFatValues = Fat.builder().id(id).name(name).inci(inci).ins(ins).sapNaoh(sapNaoh)
+				.iodine(iodine).lauric(lauric).linoleic(linoleic).linolenic(linolenic).myristic(myristic).oleic(oleic)
+				.palmitic(palmitic).ricinoleic(ricinoleic).stearic(stearic).build();
+		FatAssert.assertThat(existingFat).isDeepEqualToExceptVersion(expectedFatValues);
 	}
 
-	public void assertThatFatHasSameValuesExceptId(Fat fat) {
-		assertThatFatHasValues(fat.getName(), fat.getInci(), fat.getIns(), fat.getSapNaoh(), fat.getIodine(),
-				fat.getLauric(), fat.getLinoleic(), fat.getLinolenic(), fat.getMyristic(), fat.getOleic(),
-				fat.getPalmitic(), fat.getRicinoleic(), fat.getStearic());
+	public void assertThatFatHasSameValuesExceptVersion(Fat fat) {
+		assertThatFatHasValues(fat.getId(), fat.getName(), fat.getInci(), fat.getIns(), fat.getSapNaoh(),
+				fat.getIodine(), fat.getLauric(), fat.getLinoleic(), fat.getLinolenic(), fat.getMyristic(),
+				fat.getOleic(), fat.getPalmitic(), fat.getRicinoleic(), fat.getStearic());
 	}
 
 	public void assertThatFatNotExists(String name) {
@@ -84,8 +95,9 @@ public class RepositoryTestHelper {
 	}
 
 	private RandomSoapRecipeRepositoryTestData createTestData() {
-		return new RandomSoapRecipeRepositoryTestData(null, fatRepository, null, null, fragranceRepository, null, null,
-				null, null, fragranceRecipeRepository);
+		return new RandomSoapRecipeRepositoryTestData(soapRecipeRepository, fatRepository, acidRepository,
+				liquidRepository, fragranceRepository, naohRepository, kohRepository, additiveRepository,
+				lyeRecipeRepository, fragranceRecipeRepository);
 	}
 
 	public RandomSoapRecipeRepositoryTestData createFragranceRecipe() {

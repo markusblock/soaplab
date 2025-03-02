@@ -28,14 +28,14 @@ public class AdditiveRepositoryMSImpl extends IngredientRepositoryMSImpl<Additiv
 	private boolean isEntityReferencedByLyeRecipe(Additive entity) {
 		return getDataRoot().getAllLyeRecipes().stream().anyMatch(lyeRecipe -> {
 			return lyeRecipe.getAdditives().stream()
-					.anyMatch(referencedEntity -> referencedEntity.getId().equals(entity.getId()));
+					.anyMatch(recipeEntry -> recipeEntry.getIngredient().getId().equals(entity.getId()));
 		});
 	}
 
 	private boolean isEntityReferencedBySoapRecipe(Additive entity) {
 		return getDataRoot().getAllSoapRecipes().stream().anyMatch(soapRecipe -> {
 			return soapRecipe.getAdditives().stream()
-					.anyMatch(referencedEntity -> referencedEntity.getId().equals(entity.getId()));
+					.anyMatch(recipeEntry -> recipeEntry.getIngredient().getId().equals(entity.getId()));
 		});
 	}
 }

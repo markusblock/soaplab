@@ -14,6 +14,7 @@ import org.eclipse.serializer.concurrency.XThreads;
 import org.eclipse.store.storage.embedded.types.EmbeddedStorageManager;
 import org.soaplab.SoaplabProperties;
 import org.soaplab.domain.NamedEntity;
+import org.soaplab.domain.exception.DuplicateIdException;
 import org.soaplab.domain.exception.DuplicateNameException;
 import org.soaplab.domain.exception.EntityNotFoundException;
 import org.soaplab.repository.EntityRepository;
@@ -40,10 +41,11 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 	public T create(T entity) {
 		log.debug("Adding new provided entity " + entity);
 		Assert.notNull(entity, "Entity must not be null");
+		Assert.notNull(entity.getId(), "Entity id must not be null");
+		assertNoEntityWithIdExists(entity);
 		assertNoEntityWithNameExists(entity);
 
-		final UUID uuid = UUID.randomUUID();
-		final T entityCopy = (T) entity.toBuilder().id(uuid).build();
+		final T entityCopy = (T) entity.toBuilder().version(Long.valueOf(1)).build();
 		log.info("Creating entity " + entityCopy);
 
 		XThreads.executeSynchronized(() -> {
@@ -62,6 +64,12 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 					throw new DuplicateNameException(entity.getName());
 				}
 			}
+		}
+	}
+
+	private void assertNoEntityWithIdExists(T entity) {
+		if (getInternalWithoutException(entity.getId()).isPresent()) {
+			throw new DuplicateIdException(entity.getId());
 		}
 	}
 
@@ -141,8 +149,6 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 	public T update(T entity) {
 		Assert.notNull(entity, "Entity must not be null");
 
-		log.info("Updating entity " + entity);
-
 		// would throw not found exception if not present
 		final T persistedEntity = getInternal(entity.getId());
 
@@ -155,7 +161,11 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 
 			// copy updated entity values to persistedEntity
 			try {
-				BeanUtils.copyProperties(persistedEntity, entity);
+				final long oldVersion = persistedEntity.getVersion();
+				final long newVersion = oldVersion + 1;
+				final NamedEntity entityWithAdaptedVertsion = entity.getCopyBuilder().version(newVersion).build();
+				log.info("Updating entity {} with values {}", persistedEntity, entityWithAdaptedVertsion);
+				BeanUtils.copyProperties(persistedEntity, entityWithAdaptedVertsion);
 				storeEntityInRepository(persistedEntity);
 				storeEntitiesInRepository();
 			} catch (IllegalAccessException | InvocationTargetException e) {

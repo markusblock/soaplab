@@ -23,29 +23,37 @@ public class FatAssert extends IngredientAssert {
 		super.isDeepEqualTo(expected);
 
 		final Fat expectedFat = (Fat) expected;
-		sapNaohIsEqual(expectedFat);
-		lauricIsEqual(expectedFat);
-		myristicIsEqual(expectedFat);
-		palmiticIsEqual(expectedFat);
-		stearicIsEqual(expectedFat);
-		ricinoleicIsEqual(expectedFat);
-		oleicIsEqual(expectedFat);
-		linoleicIsEqual(expectedFat);
-		linolenicIsEqual(expectedFat);
-		iodineIsEqual(expectedFat);
-		insIsEqual(expectedFat);
+		assertFatAttributes(expectedFat);
 
 		return this;
 	}
 
 	@Override
-	public FatAssert isDeepEqualToExceptId(Ingredient expected) {
+	public FatAssert isDeepEqualToExceptVersion(Ingredient expected) {
 
 		isNotNull();
 
-		super.isDeepEqualToExceptId(expected);
+		super.isDeepEqualToExceptVersion(expected);
 
 		final Fat expectedFat = (Fat) expected;
+		assertFatAttributes(expectedFat);
+
+		return this;
+	}
+
+	@Override
+	public IngredientAssert isDeepEqualToExceptIdAndVersion(Ingredient expected) {
+		isNotNull();
+
+		super.isDeepEqualToExceptIdAndVersion(expected);
+
+		final Fat expectedFat = (Fat) expected;
+		assertFatAttributes(expectedFat);
+
+		return this;
+	}
+
+	private void assertFatAttributes(final Fat expectedFat) {
 		sapNaohIsEqual(expectedFat);
 		lauricIsEqual(expectedFat);
 		myristicIsEqual(expectedFat);
@@ -57,8 +65,6 @@ public class FatAssert extends IngredientAssert {
 		linolenicIsEqual(expectedFat);
 		iodineIsEqual(expectedFat);
 		insIsEqual(expectedFat);
-
-		return this;
 	}
 
 	public FatAssert sapNaohIsEqual(Fat expectedFat) {

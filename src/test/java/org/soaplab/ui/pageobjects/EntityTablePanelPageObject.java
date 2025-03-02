@@ -54,6 +54,7 @@ public class EntityTablePanelPageObject {
 
 	public void filterGrid(String filterValue, String columnHeaderName) {
 		if (grid.isFilterable()) {
+			clearColumnFilter(columnHeaderName);
 			getColumnFilter(columnHeaderName).setValue(filterValue);
 		}
 	}

@@ -102,6 +102,10 @@ public class PageObjectElement {
 		return this;
 	}
 
+	public String getValue() {
+		return $(locator).$(byTagName("input")).scrollIntoView(true).getValue();
+	}
+
 	public PageObjectElement clearValue() {
 		$(locator).$(byTagName("input")).scrollIntoView(true).clear();
 		return this;

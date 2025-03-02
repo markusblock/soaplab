@@ -47,8 +47,7 @@ public class SoapRecipeUtils {
 	}
 
 	public static <T extends Ingredient> RecipeEntry<T> createRecipeEntry(T ingredient, Double percentage) {
-		return RecipeEntry.<T>builder().id(ingredient.getId()).ingredient(ingredient)
-				.percentage(Percentage.of(percentage)).build();
+		return RecipeEntry.<T>builder().ingredient(ingredient).percentage(Percentage.of(percentage)).build();
 	}
 
 	public static <T extends Ingredient> List<RecipeEntry<T>> createRecipeEntries(RecipeEntry<T>... recipeEntries) {

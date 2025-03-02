@@ -2,11 +2,14 @@ package org.soaplab.ui.views;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.soaplab.assertions.FatAssert;
 import org.soaplab.domain.Fat;
+import org.soaplab.repository.FatRepository;
 import org.soaplab.testdata.RandomIngredientsTestData;
 import org.soaplab.ui.RepositoryTestHelper;
 import org.soaplab.ui.UIIntegrationTestBase;
@@ -22,6 +25,9 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 
 	@Autowired
 	private RepositoryTestHelper repoHelper;
+
+	@Autowired
+	private FatRepository fatRepository;
 
 	@BeforeEach
 	void beforeEach() {
@@ -41,7 +47,8 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 				.build();
 
 		entityView.buttonAdd().click();
-		details.id().shouldBeReadOnly().shouldBeEmpty();
+		details.id().shouldBeReadOnly().shouldNotBeEmpty();
+		final String id = details.id().getValue();
 		details.name().shouldBeEditable().setValue(fat.getName());
 		details.inci().shouldBeEditable().setValue(fat.getInci());
 		details.ins().shouldBeEditable().setValue(fat.getIns());
@@ -73,7 +80,8 @@ public class FatViewUIIT extends UIIntegrationTestBase {
 		details.stearic().shouldBeDisabled().shouldHaveValue(fat.getStearic());
 
 		table.entityShouldAppear(fat);
-		repoHelper.assertThatFatHasSameValuesExceptId(fat);
+		final Fat loadedFat = fatRepository.get(UUID.fromString(id));
+		FatAssert.assertThat(fat).isDeepEqualToExceptIdAndVersion(loadedFat);
 	}
 
 	@Test

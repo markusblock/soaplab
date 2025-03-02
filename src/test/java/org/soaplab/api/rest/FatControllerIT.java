@@ -66,9 +66,9 @@ class FatControllerIT {
 		final Fat fat = RandomIngredientsTestData.getFatBuilder().build();
 
 		final ResponseEntity<Fat> response = restTemplate.postForEntity(createURLWithPort(), fat, Fat.class);
-		repoHelper.assertThatFatHasSameValuesExceptId(fat);
+
 		Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-		FatAssert.assertThat(response.getBody()).isDeepEqualToExceptId(fat);
+		FatAssert.assertThat(response.getBody()).isDeepEqualToExceptVersion(fat);
 	}
 
 	@Test
@@ -131,7 +131,7 @@ class FatControllerIT {
 		final ResponseEntity<Fat> response = restTemplate.exchange(createURLWithPortAndId(fat.getId()), HttpMethod.PUT,
 				requestEntity, Fat.class);
 		Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		FatAssert.assertThat(response.getBody()).isDeepEqualToExceptId(updatedFat);
+		FatAssert.assertThat(response.getBody()).isDeepEqualToExceptVersion(updatedFat);
 	}
 
 	private String createURLWithPort() {

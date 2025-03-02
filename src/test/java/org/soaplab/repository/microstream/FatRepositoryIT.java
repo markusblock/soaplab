@@ -6,11 +6,12 @@ import static org.soaplab.assertions.FatAssert.assertThat;
 
 import java.math.BigDecimal;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.soaplab.domain.Fat;
-import org.soaplab.domain.Fat.FatBuilder;
+import org.soaplab.domain.exception.DuplicateIdException;
 import org.soaplab.domain.exception.DuplicateNameException;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.testdata.RandomIngredientsTestData;
@@ -42,15 +43,27 @@ class FatRepositoryIT {
 	}
 
 	@Test
-	void createEntityWithDuplicateNameIsNotAllowed() throws Exception {
-		final FatBuilder<?, ?> fatBuilder = RandomIngredientsTestData.getFatBuilder();
-		fatRepository.create(fatBuilder.build());
+	void createEntityWithDuplicateIdIsNotAllowed() throws Exception {
+		final Fat fat = fatRepository.create(RandomIngredientsTestData.getFatBuilder().build());
 
-		final Exception exception = assertThrows(DuplicateNameException.class, () -> {
-			fatRepository.create(fatBuilder.build());
+		final Exception exception = assertThrows(DuplicateIdException.class, () -> {
+			fatRepository.create(RandomIngredientsTestData.getFatBuilder().id(fat.getId()).build());
 		});
 
-		final String expectedMessage = "Entity with name '" + fatBuilder.build().getName() + "' already exists";
+		final String expectedMessage = "Entity with id '" + fat.getId() + "' already exists";
+		final String actualMessage = exception.getMessage();
+		assertTrue(actualMessage.contains(expectedMessage));
+	}
+
+	@Test
+	void createEntityWithDuplicateNameIsNotAllowed() throws Exception {
+		final Fat fat = fatRepository.create(RandomIngredientsTestData.getFatBuilder().build());
+
+		final Exception exception = assertThrows(DuplicateNameException.class, () -> {
+			fatRepository.create(RandomIngredientsTestData.getFatBuilder().name(fat.getName()).build());
+		});
+
+		final String expectedMessage = "Entity with name '" + fat.getName() + "' already exists";
 		final String actualMessage = exception.getMessage();
 		assertTrue(actualMessage.contains(expectedMessage));
 	}
@@ -59,13 +72,13 @@ class FatRepositoryIT {
 	void updateEntityWithDuplicateNameIsNotAllowed() throws Exception {
 		final Fat fat1 = fatRepository.create(RandomIngredientsTestData.getFatBuilder().build());
 		final Fat fat2 = fatRepository.create(RandomIngredientsTestData.getFatBuilder().build());
-		final Fat updatedFat2 = fat2.toBuilder().name(fat1.getName()).build();
+		fat2.setName(fat1.getName());
 
 		final Exception exception = assertThrows(DuplicateNameException.class, () -> {
-			fatRepository.update(updatedFat2);
+			fatRepository.update(fat2);
 		});
 
-		final String expectedMessage = "Entity with name '" + updatedFat2.getName() + "' already exists";
+		final String expectedMessage = "Entity with name '" + fat2.getName() + "' already exists";
 		final String actualMessage = exception.getMessage();
 
 		assertTrue(actualMessage.contains(expectedMessage));
@@ -74,7 +87,7 @@ class FatRepositoryIT {
 	@Test
 	void updateEntity() throws Exception {
 		final Fat fat = repoHelper.createFat();
-		final String newStringValue = "test";
+		final String newStringValue = RandomStringUtils.random(5);
 		final Integer newIntegerValue = 123;
 		final BigDecimal newBigDecimalValue = BigDecimal.valueOf(567);
 		fat.setInci(newStringValue);
@@ -85,6 +98,20 @@ class FatRepositoryIT {
 		final Fat loadedFat = fatRepository.get(fat.getId());
 
 		assertThat(loadedFat).insIsEqual(fat).sapNaohIsEqual(fat).insIsEqual(fat);
+	}
+
+	@Test
+	void updateEntityIncreasesVersion() throws Exception {
+		final Fat fat = repoHelper.createFat();
+		fat.setName(RandomStringUtils.random(5));
+
+		final Fat updateFat = fatRepository.update(fat);
+		assertThat(updateFat).isDeepEqualToExceptVersion(fat);
+		assertThat(updateFat).versionIsEqualTo(2);
+
+		final Fat loadedFat = fatRepository.get(fat.getId());
+		assertThat(loadedFat).isDeepEqualToExceptVersion(fat);
+		assertThat(loadedFat).versionIsEqualTo(2);
 	}
 
 	@Test

@@ -5,7 +5,6 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import org.soaplab.domain.Ingredient;
 import org.soaplab.domain.Percentage;
@@ -174,7 +173,7 @@ public class RecipeEntryTable<T extends Ingredient> extends Div {
 
 	private void addRecipeEntry() {
 		recipeEntryListChanged = true;
-		final RecipeEntry<T> recipeEntry = RecipeEntry.<T>builder().id(UUID.randomUUID()).build();
+		final RecipeEntry<T> recipeEntry = RecipeEntry.<T>builder().build();
 		final List<RecipeEntry<T>> newData = new ArrayList<>(grid.getEntities());
 		newData.add(recipeEntry);
 		grid.setEntities(newData);

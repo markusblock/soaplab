@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.soaplab.domain.NamedEntity;
+import org.soaplab.domain.exception.DuplicateIdException;
 import org.soaplab.domain.exception.DuplicateNameException;
 import org.soaplab.domain.exception.EntityNotFoundException;
 import org.soaplab.repository.EntityRepository;
@@ -68,6 +69,12 @@ public class EntityController<T extends NamedEntity> {
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Entity with name already exists") // 400
 	@ExceptionHandler(DuplicateNameException.class)
 	public void duplicateName() {
+		// NoOp
+	}
+
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Entity with id already exists") // 400
+	@ExceptionHandler(DuplicateIdException.class)
+	public void duplicateId() {
 		// NoOp
 	}
 

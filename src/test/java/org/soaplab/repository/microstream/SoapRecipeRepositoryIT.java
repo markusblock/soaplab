@@ -55,10 +55,10 @@ class SoapRecipeRepositoryIT {
 		fatRepository.update(fat);
 
 		final Fat loadedUpdatedFat = fatRepository.get(fat.getId());
-		assertThat(loadedUpdatedFat).isDeepEqualTo(fat);
+		assertThat(loadedUpdatedFat).isDeepEqualToExceptVersion(fat);
 
 		final SoapRecipe loadedSoapRecipe = soapRecipeRepository.get(soapRecipe.getId());
-		assertThat(SoapRecipeUtils.getFat(loadedSoapRecipe, fat.getId()).get()).isDeepEqualTo(fat);
+		assertThat(SoapRecipeUtils.getFat(loadedSoapRecipe, fat.getId()).get()).isDeepEqualToExceptVersion(fat);
 	}
 
 	@Test
