@@ -20,8 +20,8 @@ public class Weight implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private BigDecimal weight;
-	private WeightUnit unit;
+	private BigDecimal weight = BigDecimal.valueOf(0);
+	private WeightUnit unit = WeightUnit.GRAMS;
 
 	public static Weight of(int weight, WeightUnit unit) {
 		return new Weight(BigDecimal.valueOf(weight), unit);

@@ -23,7 +23,7 @@ public class Price implements Serializable {
 	/**
 	 * Currency is € Euro.
 	 */
-	private BigDecimal value;
+	private BigDecimal value = BigDecimal.valueOf(0);
 
 	public static Price of(double value) {
 		return new Price(BigDecimal.valueOf(value));

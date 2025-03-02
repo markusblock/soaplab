@@ -20,7 +20,7 @@ public class Percentage implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private BigDecimal number;
+	private BigDecimal number = BigDecimal.valueOf(0);
 
 	public static Percentage of(int number) {
 		return new Percentage(BigDecimal.valueOf(number));

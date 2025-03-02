@@ -1,7 +1,7 @@
 package org.soaplab.testdata;
 
-import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntries;
-import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntry;
+import static org.soaplab.domain.Recipe.createRecipeEntries;
+import static org.soaplab.domain.Recipe.createRecipeEntry;
 
 import org.soaplab.domain.Acid;
 import org.soaplab.domain.Additive;

@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.SoapRecipe;
 import org.soaplab.domain.exception.EntityDeletionFailedException;
-import org.soaplab.domain.utils.SoapRecipeUtils;
 import org.soaplab.repository.FatRepository;
 import org.soaplab.repository.SoapRecipeRepository;
 import org.soaplab.testdata.RandomSoapRecipeRepositoryTestData;
@@ -58,7 +57,7 @@ class SoapRecipeRepositoryIT {
 		assertThat(loadedUpdatedFat).isDeepEqualToExceptVersion(fat);
 
 		final SoapRecipe loadedSoapRecipe = soapRecipeRepository.get(soapRecipe.getId());
-		assertThat(SoapRecipeUtils.getFat(loadedSoapRecipe, fat.getId()).get()).isDeepEqualToExceptVersion(fat);
+		assertThat(loadedSoapRecipe.getFat(fat.getId()).get()).isDeepEqualToExceptVersion(fat);
 	}
 
 	@Test
@@ -78,7 +77,7 @@ class SoapRecipeRepositoryIT {
 		soapRecipeRepository.update(soapRecipe);
 
 		final SoapRecipe loadedSoapRecipe = soapRecipeRepository.get(soapRecipe.getId());
-		final Fat fatFromLoadedRecipe = SoapRecipeUtils.getFat(loadedSoapRecipe, fat.getId()).get();
+		final Fat fatFromLoadedRecipe = loadedSoapRecipe.getFat(fat.getId()).get();
 		Assertions.assertThat(fatFromLoadedRecipe.getSapNaoh()).isEqualByComparingTo(sapNaohOldValue);
 		Assertions.assertThat(loadedSoapRecipe.getNotes()).isEqualTo("TEST");
 	}
@@ -88,11 +87,11 @@ class SoapRecipeRepositoryIT {
 		final RandomSoapRecipeRepositoryTestData testData = repoHelper.createSoapRecipeWithRandomData();
 		final SoapRecipe soapRecipe = testData.getSoapRecipe();
 		final Fat newFat = repoHelper.createFat();
-		final SoapRecipe updatedSoapRecipe = SoapRecipeUtils.addFat(soapRecipe, newFat, 80d);
-		soapRecipeRepository.update(updatedSoapRecipe);
+		soapRecipe.addFat(newFat, 80d);
+		soapRecipeRepository.update(soapRecipe);
 
 		final SoapRecipe loadedSoapRecipe = soapRecipeRepository.get(soapRecipe.getId());
-		assertThat(SoapRecipeUtils.getFat(loadedSoapRecipe, newFat.getId()).get()).isDeepEqualTo(newFat);
+		assertThat(loadedSoapRecipe.getFat(newFat.getId()).get()).isDeepEqualTo(newFat);
 	}
 
 	@Test
@@ -100,11 +99,12 @@ class SoapRecipeRepositoryIT {
 		final RandomSoapRecipeRepositoryTestData testData = repoHelper.createSoapRecipeWithRandomData();
 		final SoapRecipe soapRecipe = testData.getSoapRecipe();
 		final Fat fat = testData.getFat1();
-		final SoapRecipe updatedSoapRecipe = SoapRecipeUtils.removeFat(soapRecipe, fat);
-		soapRecipeRepository.update(updatedSoapRecipe);
+		soapRecipe.removeFat(fat);
+		soapRecipeRepository.update(soapRecipe);
 
 		final SoapRecipe loadedSoapRecipe = soapRecipeRepository.get(soapRecipe.getId());
-		Assertions.assertThat(SoapRecipeUtils.getFat(loadedSoapRecipe, fat.getId())).isEmpty();
+		Assertions.assertThat(loadedSoapRecipe.getFat(fat.getId())).isEmpty();
+		repoHelper.assertThatFatExists(fat.getId());
 	}
 
 	@Test
@@ -118,8 +118,8 @@ class SoapRecipeRepositoryIT {
 
 		assertTrue(exception.getReason().equals(EntityDeletionFailedException.REASON.ENTITY_STILL_REFERENCED));
 
-		final SoapRecipe soapRecipeUpdated = SoapRecipeUtils.removeFat(soapRecipe, fat);
-		soapRecipeRepository.update(soapRecipeUpdated);
+		soapRecipe.removeFat(fat);
+		soapRecipeRepository.update(soapRecipe);
 		fatRepository.delete(fat.getId());
 	}
 

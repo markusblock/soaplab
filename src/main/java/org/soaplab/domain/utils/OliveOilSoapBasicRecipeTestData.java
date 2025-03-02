@@ -1,11 +1,13 @@
 package org.soaplab.domain.utils;
 
-import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntries;
-import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntry;
+import static org.soaplab.domain.Recipe.createRecipeEntries;
+import static org.soaplab.domain.Recipe.createRecipeEntry;
 
-import ch.qos.logback.core.joran.conditional.PropertyEvalScriptBuilder;
-import org.soaplab.domain.*;
+import org.soaplab.domain.Fat;
+import org.soaplab.domain.Liquid;
+import org.soaplab.domain.LyeRecipe;
 import org.soaplab.domain.LyeRecipe.LyeRecipeBuilder;
+import org.soaplab.domain.NaOH;
 import org.soaplab.domain.SoapRecipe.SoapRecipeBuilder;
 
 import lombok.Getter;

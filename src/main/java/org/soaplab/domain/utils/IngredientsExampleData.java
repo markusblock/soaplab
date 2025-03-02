@@ -1,7 +1,7 @@
 package org.soaplab.domain.utils;
 
-import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntries;
-import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntry;
+import static org.soaplab.domain.Recipe.createRecipeEntries;
+import static org.soaplab.domain.Recipe.createRecipeEntry;
 
 import org.soaplab.domain.Acid;
 import org.soaplab.domain.Acid.AcidBuilder;
@@ -107,7 +107,7 @@ public class IngredientsExampleData {
 
 	public static LyeRecipeBuilder<?, ?> getLyeRecipeBuilderNaOH() {
 		return getLyeRecipeBuilder().name("Simple NaOH Lye").naOH(createRecipeEntry(getNaOHBuilder().build(), 100d))
-				.liquids(SoapRecipeUtils.createRecipeEntries(createRecipeEntry(getWaterBuilder().build(), 100d)));
+				.liquids(createRecipeEntries(createRecipeEntry(getWaterBuilder().build(), 100d)));
 	}
 
 	public static LyeRecipeBuilder<?, ?> getLyeRecipeBuilderMixed() {

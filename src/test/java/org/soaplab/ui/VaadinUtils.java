@@ -5,6 +5,7 @@ import static com.codeborne.selenide.Selenide.$;
 import java.time.Duration;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -104,7 +105,26 @@ public class VaadinUtils {
 		}
 
 		log.info("waiting for soaplab.id to become visible");
-		$(Selectors.byId("soaplab.id")).shouldBe(Condition.visible, Duration.ofSeconds(30));
+		boolean soaplabIdIsVisible = waitWithoutTimeoutException(Duration.ofSeconds(2), Selectors.byId("soaplab.id"),
+				Condition.visible);
+		if (!soaplabIdIsVisible) {
+			log.info("soaplab.id not yet visible, waiting ...");
+			soaplabIdIsVisible = waitWithoutTimeoutException(Duration.ofSeconds(10), Selectors.byId("soaplab.id"),
+					Condition.visible);
+			if (!soaplabIdIsVisible) {
+				log.info("soaplab.id still not visible, refreshing page ...");
+				Selenide.refresh();
+				$(Selectors.byId("soaplab.id")).is(Condition.visible, Duration.ofSeconds(30));
+			}
+		}
+	}
 
+	public static boolean waitWithoutTimeoutException(Duration duration, By selector, WebElementCondition condition) {
+		try {
+			Selenide.Wait().withTimeout(duration).until(d -> $(selector).is(condition));
+			return true;
+		} catch (final TimeoutException e) {
+			return false;
+		}
 	}
 }

@@ -28,7 +28,7 @@ public class RecipeDetailsPanel extends EntityDetailsPanel<SoapRecipe> {
 			AdditiveRepository additiveRepository, SoapCalculatorService soapCalculatorService) {
 		super(callback);
 		this.soapCalculatorService = soapCalculatorService;
-		addPropertyWeightField("domain.recipe.fatstotal", SoapRecipe::getFatsTotal, SoapRecipe::setFatsTotal);
+		addPropertyWeightField("domain.recipe.fatsweight", SoapRecipe::getFatsWeight, SoapRecipe::setFatsWeight);
 		addPropertyPercentageField("domain.recipe.superfat", SoapRecipe::getSuperFat, SoapRecipe::setSuperFat);
 		addPropertyPercentageField("domain.recipe.liquidtofatratio", SoapRecipe::getLiquidToFatRatio,
 				SoapRecipe::setLiquidToFatRatio);
@@ -36,11 +36,12 @@ public class RecipeDetailsPanel extends EntityDetailsPanel<SoapRecipe> {
 				SoapRecipe::setFragranceToFatRatio);
 		addPropertyTextArea("domain.recipe.notes", SoapRecipe::getNotes, SoapRecipe::setNotes);
 
-		addPropertyWeightFieldReadOnly("domain.recipe.naohTotal", recipe -> recipe.getLyeRecipe().getNaohTotal());
-		addPropertyWeightFieldReadOnly("domain.recipe.kohTotal", recipe -> recipe.getLyeRecipe().getKohTotal());
-		addPropertyWeightFieldReadOnly("domain.recipe.liquidTotal", recipe -> recipe.getLyeRecipe().getLiquidsTotal());
-		addPropertyWeightFieldReadOnly("domain.recipe.weightTotal", SoapRecipe::getWeightTotal);
-		addPropertyPriceFieldReadOnly("domain.recipe.costsTotal", SoapRecipe::getCostsTotal);
+		addPropertyWeightFieldReadOnly("domain.recipe.naohweight", recipe -> recipe.getLyeRecipe().getNaohWeight());
+		addPropertyWeightFieldReadOnly("domain.recipe.kohweight", recipe -> recipe.getLyeRecipe().getKohWeight());
+		addPropertyWeightFieldReadOnly("domain.recipe.liquidweight",
+				recipe -> recipe.getLyeRecipe().getLiquidsWeight());
+		addPropertyWeightFieldReadOnly("domain.recipe.weight", SoapRecipe::getWeight);
+		addPropertyPriceFieldReadOnly("domain.recipe.costs", SoapRecipe::getCosts);
 
 		addEntitySelector("domain.lyerecipe", SoapRecipe::getLyeRecipe, SoapRecipe::setLyeRecipe, lyeRecipeRepository);
 

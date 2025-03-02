@@ -6,8 +6,6 @@ package org.soaplab.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.soaplab.domain.utils.SoapRecipeUtils;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,34 +23,18 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @ExplicitEntity
 @FieldNameConstants
-public class FragranceRecipe extends NamedEntity {
+public class FragranceRecipe extends Recipe {
 	private static final long serialVersionUID = 1L;
-
-	/**
-	 * Optional notes on the recipt.
-	 */
-	private String notes;
-
-	/**
-	 * Calculated value. Recipe costs.
-	 */
-	private Price costs;
-
-	/**
-	 * Calculated value. Total weight of recipe.
-	 */
-	private Weight weight;
 
 	private List<RecipeEntry<Fragrance>> fragrances = new ArrayList<>();
 
 	@Override
 	public FragranceRecipeBuilder<?, ?> getCopyBuilder() {
 		return this.toBuilder() //
-				.fragrances(SoapRecipeUtils.getRecipeEntryListDeepClone(fragrances));
+				.fragrances(getRecipeEntryListDeepClone(fragrances));
 	}
 
 	public RecipeEntry<Fragrance> getRecipeEntry(Fragrance fragrance) {
-		return fragrances.stream().filter(recipeEntry -> recipeEntry.getIngredient().equals(fragrance)).findAny()
-				.orElseThrow();
+		return getRecipeEntry(fragrance, getFragrances());
 	}
 }

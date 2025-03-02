@@ -49,6 +49,11 @@ public class RepositoryTestHelper {
 		assertThat(foundFatsByName.get(0).getInci()).isEqualTo(inci);
 	}
 
+	public void assertThatFatExists(UUID uuid) {
+		final Fat fat = fatRepository.get(uuid);
+		assertThat(fat).isNotNull();
+	}
+
 	public void assertThatFatHasValues(UUID id, String name, String inci, Integer ins, BigDecimal sapNaoh,
 			Integer iodine, Integer lauric, Integer linoleic, Integer linolenic, Integer myristic, Integer oleic,
 			Integer palmitic, Integer ricinoleic, Integer stearic) {

@@ -20,7 +20,7 @@ public class SoapRecipeTestDataBuilder {
 	public SoapRecipeTestDataBuilder() {
 		soapRecipeBuilder //
 				.manufacturingDate(Date.from(Instant.now())) //
-				.fatsTotal(Weight.of(100, WeightUnit.GRAMS)) //
+				.fatsWeight(Weight.of(100, WeightUnit.GRAMS)) //
 				.liquidToFatRatio(Percentage.of(33)) //
 				.superFat(Percentage.of(10)) //
 				.fragranceToFatRatio(Percentage.of(3));
