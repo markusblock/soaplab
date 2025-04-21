@@ -22,8 +22,6 @@
 		<springdoc.version>2.8.6</springdoc.version>
 		<equalsverifier.version>3.19.3</equalsverifier.version>
 		<selenide.version>7.9.0</selenide.version>
-		<sonar.organization>markusblock</sonar.organization>
-  		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
   		<jacoco.version>0.8.13</jacoco.version>
   		
   		<skipTests>false</skipTests>
