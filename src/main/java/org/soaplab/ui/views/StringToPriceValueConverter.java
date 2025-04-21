@@ -15,7 +15,7 @@ public final class StringToPriceValueConverter implements Converter<String, Pric
 	private MyStringToBigDecConverter stringToBigDecConverter;
 
 	public StringToPriceValueConverter() {
-		stringToBigDecConverter = new MyStringToBigDecConverter("");
+		stringToBigDecConverter = new MyStringToBigDecConverter(MyStringToBigDecConverter.ALWAYS_2_DECIMAL_PLACES);
 	}
 
 	public Result<Price> convertToModel(String value, ValueContext context) {

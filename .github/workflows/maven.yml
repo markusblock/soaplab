@@ -16,24 +16,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
     - name: Set up JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
           distribution: temurin
           java-version: 17
           java-package: jdk
           cache: maven
     - name: Cache Maven packages
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
     - name: Cache SonarCloud packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
@@ -42,10 +42,10 @@ jobs:
       env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: mvn -B install sonar:sonar -Pproduction -Dsonar.projectKey=markusblock_soaplab -Dsonar.qualitygate.wait=true -Dsonar.qualitygate.timeout=600 -DtestBrowser=firefox -DtestEnvironment=container -DtestLocale=EN -Dheadless=true -Dfailsafe.rerunFailingTestsCount=2
+      run: mvn -B install sonar:sonar -Pproduction -Punit-integration-test -Dsonar.projectKey=markusblock_soaplab -Dsonar.qualitygate.wait=true -Dsonar.qualitygate.timeout=600 -DtestBrowser=firefox -DtestEnvironment=container -DtestLocale=EN -Dheadless=true -Dfailsafe.rerunFailingTestsCount=2
     - name: Upload failsafe and surefire testreports on failure
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
           name: test-report
           path: |

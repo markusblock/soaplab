@@ -14,6 +14,7 @@ import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fat.FatBuilder;
 import org.soaplab.domain.Fragrance;
 import org.soaplab.domain.Fragrance.FragranceBuilder;
+import org.soaplab.domain.FragranceRecipe;
 import org.soaplab.domain.FragranceType;
 import org.soaplab.domain.KOH;
 import org.soaplab.domain.KOH.KOHBuilder;
@@ -40,6 +41,10 @@ public class RandomIngredientsTestData {
 		return LyeRecipe.builder().id(getRandomUUID()).name(getRandomString()).notes(getRandomString());
 	}
 
+	public static FragranceRecipe.FragranceRecipeBuilder<?, ?> getFragranceRecipeBuilder() {
+		return FragranceRecipe.builder().id(getRandomUUID()).name(getRandomString()).notes(getRandomString());
+	}
+
 	public static AdditiveBuilder<?, ?> getAdditiveBuilder() {
 		return Additive.builder().id(getRandomUUID()).name(getRandomString()).inci(getRandomString());
 	}
@@ -51,7 +56,7 @@ public class RandomIngredientsTestData {
 
 	public static KOHBuilder<?, ?> getKOHBuilder() {
 		return KOH.builder().id(getRandomUUID()).name(getRandomString()).inci(getRandomString())
-				.kOHPurity(getRandomPercentage()).cost(getRandomPrice());
+				.kohPurity(getRandomPercentage()).cost(getRandomPrice());
 	}
 
 	public static FatBuilder<?, ?> getFatBuilder() {

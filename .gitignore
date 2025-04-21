@@ -171,3 +171,4 @@ package.json
 /.pnpmfile.cjs
 /vite.config.ts
 /vite.generated.ts
+/.vaadin-node-tasks.lock

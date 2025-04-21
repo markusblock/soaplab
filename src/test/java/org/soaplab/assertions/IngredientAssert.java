@@ -31,6 +31,8 @@ public class IngredientAssert extends AbstractAssert<IngredientAssert, Ingredien
 			return new KOHAssert((KOH) actual);
 		} else if (actual instanceof NaOH) {
 			return new NaOHAssert((NaOH) actual);
+		} else if (actual instanceof Ingredient) {
+			return new IngredientAssert(actual, IngredientAssert.class);
 		}
 
 		fail("unsupported type of Ingredient " + actual.getClass().getName());
@@ -42,18 +44,28 @@ public class IngredientAssert extends AbstractAssert<IngredientAssert, Ingredien
 		isNotNull();
 
 		idIsEqual(expected);
+		versionIsEqual(expected);
 		nameIsEqual(expected);
 		inciIsEqual(expected);
 
 		return this;
 	}
 
-	public IngredientAssert isDeepEqualToExceptId(Ingredient expected) {
+	public IngredientAssert isDeepEqualToExceptVersion(Ingredient expected) {
 
 		isNotNull();
 
-		// id is not checked to compare entities before and after it is stored. When
-		// stored the id is set.
+		idIsEqual(expected);
+		nameIsEqual(expected);
+		inciIsEqual(expected);
+
+		return this;
+	}
+
+	public IngredientAssert isDeepEqualToExceptIdAndVersion(Ingredient expected) {
+
+		isNotNull();
+
 		nameIsEqual(expected);
 		inciIsEqual(expected);
 
@@ -72,6 +84,21 @@ public class IngredientAssert extends AbstractAssert<IngredientAssert, Ingredien
 
 	public IngredientAssert inciIsEqual(Ingredient expected) {
 		Assertions.assertThat(actual.getInci()).isEqualTo(expected.getInci());
+		return this;
+	}
+
+	public IngredientAssert versionIsEqual(Ingredient expected) {
+		Assertions.assertThat(actual.getVersion()).isEqualTo(expected.getVersion());
+		return this;
+	}
+
+	public IngredientAssert versionIsIncreasedBy(Ingredient expected, long versionIncreasedBy) {
+		Assertions.assertThat(actual.getVersion()).isEqualTo(expected.getVersion() + versionIncreasedBy);
+		return this;
+	}
+
+	public IngredientAssert versionIsEqualTo(long versionExpected) {
+		Assertions.assertThat(actual.getVersion()).isEqualTo(versionExpected);
 		return this;
 	}
 }

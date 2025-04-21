@@ -8,23 +8,34 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldNameConstants;
 import lombok.experimental.SuperBuilder;
 
 @Getter
+@Setter
 @ToString
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
+@FieldNameConstants
 public abstract class Entity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private UUID id;
+	@Builder.Default
+	private UUID id = UUID.randomUUID();
+
+	/*
+	 * Version 0 means not yet stored. First stored version will be 1;
+	 */
+	private Long version = Long.valueOf(0);
 
 	@JsonIgnore
 	@Transient

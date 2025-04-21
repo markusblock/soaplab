@@ -20,9 +20,9 @@ public class FragranceRepositoryMSImpl extends IngredientRepositoryMSImpl<Fragra
 
 	@Override
 	protected void assertEntityIsNotReferencedByOtherEntities(Fragrance entity) {
-		if (getDataRoot().getAllSoapRecipes().stream().anyMatch(soapRecipe -> {
-			return soapRecipe.getFragrances().stream()
-					.anyMatch(referencedEntity -> referencedEntity.getId().equals(entity.getId()));
+		if (getDataRoot().getAllFragranceRecipes().stream().anyMatch(recipe -> {
+			return recipe.getFragrances().stream()
+					.anyMatch(recipeEntry -> recipeEntry.getIngredient().getId().equals(entity.getId()));
 		})) {
 			throw new EntityDeletionFailedException(entity, REASON.ENTITY_STILL_REFERENCED);
 		}

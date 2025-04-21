@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.12</version>
+		<version>3.3.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.soaplab</groupId>
@@ -16,17 +16,21 @@
 	
 	<properties>
 		<java.version>17</java.version>
-		<vaadin.version>24.3.9</vaadin.version>
-		<eclipsestore.version>1.3.2</eclipsestore.version>
+		<vaadin.version>24.3.20</vaadin.version>
+		<eclipsestore.version>2.1.2</eclipsestore.version>
 		<beantutils.version>1.9.4</beantutils.version>
 		<springdoc.version>2.0.4</springdoc.version>
 		<equalsverifier.version>3.13</equalsverifier.version>
-		<selenide.version>7.3.2</selenide.version>
+		<selenide.version>7.6.0</selenide.version>
 		<!-- Overriding to avoid ClassNotFound in WebDriverManager -->
 		<httpclient5.version>5.2.1</httpclient5.version>
 		<sonar.organization>markusblock</sonar.organization>
   		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
   		<jacoco.version>0.8.8</jacoco.version>
+  		
+  		<skipTests>false</skipTests>
+        <skipUTs>${skipTests}</skipUTs>
+        <skipITs>true</skipITs>
 	</properties>
 
 	
@@ -194,22 +198,18 @@
 		<dependency>
 		    <groupId>io.opentelemetry</groupId>
 		    <artifactId>opentelemetry-sdk-extension-autoconfigure-spi</artifactId>
-		    <version>1.25.0</version>
 		</dependency>
 		<dependency>
 		    <groupId>io.opentelemetry</groupId>
 		    <artifactId>opentelemetry-api</artifactId>
-		    <version>1.25.0</version>
 		</dependency>	
 		<dependency>
 		    <groupId>io.opentelemetry</groupId>
 		    <artifactId>opentelemetry-sdk</artifactId>
-		    <version>1.25.0</version>
 		</dependency>			
 		<dependency>
 		    <groupId>io.opentelemetry</groupId>
 		    <artifactId>opentelemetry-sdk-metrics</artifactId>
-		    <version>1.25.0</version>
 		</dependency>
 	</dependencies>
 
@@ -291,17 +291,58 @@
 			    </executions>
 			 </plugin>  
 			 
-			<plugin>
-			    <artifactId>maven-failsafe-plugin</artifactId>
-			    <executions>
-			        <execution>		       
-			            <goals>
-			                <goal>integration-test</goal>
-			                <goal>verify</goal>
-			            </goals>
-			        </execution>
-			    </executions>
-			</plugin>
+             <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-surefire-plugin</artifactId>
+                  <configuration>
+                      <includes>
+                          <include>**/*Tests.java</include>
+                          <include>**/*Test.java</include>
+                      </includes>
+                      <parallel>all</parallel>
+                      <threadCount>2</threadCount>
+                      <perCoreThreadCount>true</perCoreThreadCount>                                            
+                      <systemPropertyVariables>
+                          <allure.results.directory>${project.build.directory}/allure-results
+                          </allure.results.directory>
+                      </systemPropertyVariables>
+                      <argLine>${jacoco.agent.ut.arg}</argLine>
+                      <skipTests>${skipUTs}</skipTests>
+                      <properties>
+                          <property>
+                              <name>listener</name>
+                              <value>io.qameta.allure.junit5.AllureJunit5</value>
+                          </property>
+                      </properties>
+                  </configuration>
+              </plugin>
+              <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-failsafe-plugin</artifactId>
+                  <configuration>
+                      <includes>
+                          <include>**/*IT.java</include>
+                      </includes>
+                      <excludes>
+                          <exclude>**/*Test.java</exclude>
+                      </excludes>
+                      <parallel>all</parallel>
+                      <threadCount>2</threadCount>
+                      <perCoreThreadCount>true</perCoreThreadCount>                      
+                      <systemPropertyVariables>
+                          <allure.results.directory>${project.build.directory}/allure-results
+                          </allure.results.directory>
+                      </systemPropertyVariables>
+                      <argLine>${jacoco.agent.it.arg}</argLine>
+                      <skipTests>${skipITs}</skipTests>
+                      <properties>
+                          <property>
+                              <name>listener</name>
+                              <value>io.qameta.allure.junit5.AllureJunit5</value>
+                          </property>
+                      </properties>
+                  </configuration>
+              </plugin>
 			       			          
         </plugins>
         
@@ -351,51 +392,47 @@
         </profile>
 
         <profile>
-            <id>it</id>
+            <id>integration-test</id>
+            <properties>
+                <!-- skip unit tests -->
+                <skipUTs>true</skipUTs>
+                <skipITs>false</skipITs>
+            </properties>
+            <activation>
+                <property>
+                    <name>integration-test</name>
+                </property>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>start-spring-boot</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>start</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>stop-spring-boot</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>stop</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <!-- Runs the integration tests (*IT) after the server is started -->
-                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <trimStackTrace>false</trimStackTrace>
-                            <enableAssertions>true</enableAssertions>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
-
+        <profile>
+            <id>unit-integration-test</id>
+            <properties>
+                <!-- execute unit and integration tests -->
+                <skipUTs>false</skipUTs>
+                <skipITs>false</skipITs>
+            </properties>
+            <activation>
+                <property>
+                    <name>unit-integration-test</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
 </project>

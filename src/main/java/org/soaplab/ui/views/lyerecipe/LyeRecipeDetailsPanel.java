@@ -1,6 +1,7 @@
 package org.soaplab.ui.views.lyerecipe;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.soaplab.domain.Acid;
 import org.soaplab.domain.Additive;
@@ -13,48 +14,48 @@ import org.soaplab.repository.AdditiveRepository;
 import org.soaplab.repository.KOHRepository;
 import org.soaplab.repository.LiquidRepository;
 import org.soaplab.repository.NaOHRepository;
-import org.soaplab.ui.views.EntityDetails;
-import org.soaplab.ui.views.EntityViewDetailsControllerCallback;
-import org.soaplab.ui.views.RecipeEntryList;
+import org.soaplab.ui.views.EntityDetailsListener;
+import org.soaplab.ui.views.EntityDetailsPanel;
+import org.soaplab.ui.views.RecipeEntryTable;
 import org.springframework.util.CollectionUtils;
 
-public class LyeRecipeDetailsPanel extends EntityDetails<LyeRecipe> {
+public class LyeRecipeDetailsPanel extends EntityDetailsPanel<LyeRecipe> {
 
 	private static final long serialVersionUID = 1L;
-	private final RecipeEntryList<Acid> acids;
-	private final RecipeEntryList<Additive> additives;
-	private final RecipeEntryList<Liquid> liquids;
-	private final RecipeEntryList<NaOH> naOH;
-	private final RecipeEntryList<KOH> kOH;
+	private final RecipeEntryTable<Acid> acids;
+	private final RecipeEntryTable<Additive> additives;
+	private final RecipeEntryTable<Liquid> liquids;
+	private final RecipeEntryTable<NaOH> naOH;
+	private final RecipeEntryTable<KOH> kOH;
 
-	private LyeRecipe lyeRecipe;
+	private Optional<LyeRecipe> lyeRecipe;
 
-	public LyeRecipeDetailsPanel(EntityViewDetailsControllerCallback<LyeRecipe> callback, AcidRepository acidRepository,
+	public LyeRecipeDetailsPanel(EntityDetailsListener<LyeRecipe> callback, AcidRepository acidRepository,
 			LiquidRepository liquidRepository, NaOHRepository naOHRepository, KOHRepository kOHRepository,
 			AdditiveRepository additiveRepository) {
 		super(callback);
 
 		addPropertyTextArea("domain.recipe.notes", LyeRecipe::getNotes, LyeRecipe::setNotes);
 
-		naOH = new RecipeEntryList<NaOH>(naOHRepository, "domain.naoh");
+		naOH = new RecipeEntryTable<NaOH>(naOHRepository, "domain.naoh");
 		naOH.setWidthFull();
-		addContent(naOH);
+		addRecipeEntryTable(naOH);
 
-		kOH = new RecipeEntryList<KOH>(kOHRepository, "domain.koh");
+		kOH = new RecipeEntryTable<KOH>(kOHRepository, "domain.koh");
 		kOH.setWidthFull();
-		addContent(kOH);
+		addRecipeEntryTable(kOH);
 
-		acids = new RecipeEntryList<>(acidRepository, "domain.acids");
+		acids = new RecipeEntryTable<>(acidRepository, "domain.acids");
 		acids.setWidthFull();
-		addContent(acids);
+		addRecipeEntryTable(acids);
 
-		liquids = new RecipeEntryList<>(liquidRepository, "domain.liquids");
+		liquids = new RecipeEntryTable<>(liquidRepository, "domain.liquids");
 		liquids.setWidthFull();
-		addContent(liquids);
+		addRecipeEntryTable(liquids);
 
-		additives = new RecipeEntryList<>(additiveRepository, "domain.additives");
+		additives = new RecipeEntryTable<>(additiveRepository, "domain.additives");
 		additives.setWidthFull();
-		addContent(additives);
+		addRecipeEntryTable(additives);
 
 	}
 
@@ -79,39 +80,39 @@ public class LyeRecipeDetailsPanel extends EntityDetails<LyeRecipe> {
 	}
 
 	@Override
-	protected void preSave() {
-		super.preSave();
-		lyeRecipe.setAcids(List.copyOf(acids.getData()));
-		lyeRecipe.setLiquids(List.copyOf(liquids.getData()));
-		lyeRecipe.setAdditives(List.copyOf(additives.getData()));
-		lyeRecipe.setNaOH(CollectionUtils.firstElement(naOH.getData()));
-		lyeRecipe.setKOH(CollectionUtils.firstElement(kOH.getData()));
+	protected void updateEntityWithChangesFromUI() {
+		super.updateEntityWithChangesFromUI();
+		lyeRecipe.orElseThrow().setAcids(List.copyOf(acids.getEntities()));
+		lyeRecipe.orElseThrow().setLiquids(List.copyOf(liquids.getEntities()));
+		lyeRecipe.orElseThrow().setAdditives(List.copyOf(additives.getEntities()));
+		lyeRecipe.orElseThrow().setNaOH(CollectionUtils.firstElement(naOH.getEntities()));
+		lyeRecipe.orElseThrow().setKOH(CollectionUtils.firstElement(kOH.getEntities()));
 	}
 
 	@Override
-	protected void setEntity(LyeRecipe entity) {
+	protected void setEntity(Optional<LyeRecipe> entity) {
 		this.lyeRecipe = entity;
 
-		if (lyeRecipe == null) {
-			naOH.setData();
-			kOH.setData();
-			acids.setData();
-			liquids.setData();
-			additives.setData();
-		} else {
-			if (lyeRecipe.getNaOH() == null) {
-				naOH.setData();
+		entity.ifPresentOrElse(t -> {
+			if (t.getNaOH() == null) {
+				naOH.setEntities();
 			} else {
-				naOH.setData(List.of(lyeRecipe.getNaOH()));
+				naOH.setEntities(List.of(t.getNaOH()));
 			}
-			if (lyeRecipe.getKOH() == null) {
-				kOH.setData();
+			if (t.getKOH() == null) {
+				kOH.setEntities();
 			} else {
-				kOH.setData(List.of(lyeRecipe.getKOH()));
+				kOH.setEntities(List.of(t.getKOH()));
 			}
-			acids.setData(lyeRecipe.getAcids());
-			liquids.setData(lyeRecipe.getLiquids());
-			additives.setData(lyeRecipe.getAdditives());
-		}
+			acids.setEntities(t.getAcids());
+			liquids.setEntities(t.getLiquids());
+			additives.setEntities(t.getAdditives());
+		}, () -> {
+			naOH.setEntities();
+			kOH.setEntities();
+			acids.setEntities();
+			liquids.setEntities();
+			additives.setEntities();
+		});
 	}
 }

@@ -5,6 +5,7 @@ import org.soaplab.domain.Additive;
 import org.soaplab.domain.Entity;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
+import org.soaplab.domain.FragranceRecipe;
 import org.soaplab.domain.KOH;
 import org.soaplab.domain.Liquid;
 import org.soaplab.domain.LyeRecipe;
@@ -15,6 +16,7 @@ import org.soaplab.repository.AcidRepository;
 import org.soaplab.repository.AdditiveRepository;
 import org.soaplab.repository.EntityRepository;
 import org.soaplab.repository.FatRepository;
+import org.soaplab.repository.FragranceRecipeRepository;
 import org.soaplab.repository.FragranceRepository;
 import org.soaplab.repository.KOHRepository;
 import org.soaplab.repository.LiquidRepository;
@@ -40,6 +42,7 @@ public class RandomSoapRecipeRepositoryTestData extends RandomSoapRecipeTestData
 	private final KOHRepository kohRepository;
 	private final AdditiveRepository additiveRepository;
 	private final LyeRecipeRepository lyeRecipeRepository;
+	private final FragranceRecipeRepository fragranceRecipeRepository;
 
 	private <T extends NamedEntity> T createEntityInRepo(T entity, EntityRepository<T> repository) {
 		final Entity persistedEntity = repository.create(entity);
@@ -47,23 +50,23 @@ public class RandomSoapRecipeRepositoryTestData extends RandomSoapRecipeTestData
 	}
 
 	@Override
-	protected Liquid createLiquid() {
+	public Liquid createLiquid() {
 		return createEntityInRepo(super.createLiquid(), liquidRepository);
 
 	}
 
 	@Override
-	protected Acid createAcid() {
+	public Acid createAcid() {
 		return createEntityInRepo(super.createAcid(), acidRepository);
 	}
 
 	@Override
-	protected Fat createFat() {
+	public Fat createFat() {
 		return createEntityInRepo(super.createFat(), fatRepository);
 	}
 
 	@Override
-	protected Fragrance createFragrance() {
+	public Fragrance createFragrance() {
 		return createEntityInRepo(super.createFragrance(), fragranceRepository);
 	}
 
@@ -83,12 +86,17 @@ public class RandomSoapRecipeRepositoryTestData extends RandomSoapRecipeTestData
 	}
 
 	@Override
-	protected Additive createAdditive() {
+	public Additive createAdditive() {
 		return createEntityInRepo(super.createAdditive(), additiveRepository);
 	}
 
 	@Override
-	protected LyeRecipe createLyeRecipe() {
+	public LyeRecipe createLyeRecipe() {
 		return createEntityInRepo(super.createLyeRecipe(), lyeRecipeRepository);
+	}
+
+	@Override
+	public FragranceRecipe createFragranceRecipe() {
+		return createEntityInRepo(super.createFragranceRecipe(), fragranceRecipeRepository);
 	}
 }

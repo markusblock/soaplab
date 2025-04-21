@@ -6,11 +6,7 @@ import org.soaplab.domain.Additive;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
 import org.soaplab.domain.SoapRecipe;
-import org.soaplab.repository.AdditiveRepository;
-import org.soaplab.repository.FatRepository;
-import org.soaplab.repository.FragranceRepository;
-import org.soaplab.repository.LyeRecipeRepository;
-import org.soaplab.repository.SoapRecipeRepository;
+import org.soaplab.repository.*;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +18,7 @@ public class SoapRecipeRepositoryMSImpl extends EntityRepositoryMSImpl<SoapRecip
 	private static final long serialVersionUID = 1L;
 
 	private final FatRepository fatRepository;
-	private final FragranceRepository fragranceRepository;
+	private final FragranceRecipeRepository fragranceRecipeRepository;
 	private final LyeRecipeRepository lyeRecipeRepository;
 	private final AdditiveRepository additiveRepository;
 
@@ -33,15 +29,12 @@ public class SoapRecipeRepositoryMSImpl extends EntityRepositoryMSImpl<SoapRecip
 			final Fat fat = fatRepository.get(entry.getIngredient().getId());
 			entry.setIngredient(fat);
 		});
-		entity.getFragrances().forEach(entry -> {
-			final Fragrance fragrance = fragranceRepository.get(entry.getIngredient().getId());
-			entry.setIngredient(fragrance);
-		});
 		entity.getAdditives().forEach(entry -> {
 			final Additive additive = additiveRepository.get(entry.getIngredient().getId());
 			entry.setIngredient(additive);
 		});
 		entity.setLyeRecipe(lyeRecipeRepository.get(entity.getLyeRecipe().getId()));
+		entity.setFragranceRecipe(fragranceRecipeRepository.get(entity.getFragranceRecipe().getId()));
 	}
 
 	@Override

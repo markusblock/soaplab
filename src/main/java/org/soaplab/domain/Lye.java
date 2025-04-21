@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldNameConstants;
 import lombok.experimental.SuperBuilder;
 
 @Getter
@@ -12,6 +13,7 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @SuperBuilder(toBuilder = true)
+@FieldNameConstants
 public abstract class Lye extends Ingredient {
 
 	private static final long serialVersionUID = 1L;

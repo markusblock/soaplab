@@ -2,7 +2,6 @@ package org.soaplab.domain.utils;
 
 import java.time.Instant;
 import java.util.Date;
-import java.util.UUID;
 
 import org.soaplab.domain.Percentage;
 import org.soaplab.domain.SoapRecipe;
@@ -19,9 +18,9 @@ public class SoapRecipeTestDataBuilder {
 	private SoapRecipe soapRecipe;
 
 	public SoapRecipeTestDataBuilder() {
-		soapRecipeBuilder.id(UUID.randomUUID()) //
+		soapRecipeBuilder //
 				.manufacturingDate(Date.from(Instant.now())) //
-				.fatsTotal(Weight.of(100, WeightUnit.GRAMS)) //
+				.fatsWeight(Weight.of(100, WeightUnit.GRAMS)) //
 				.liquidToFatRatio(Percentage.of(33)) //
 				.superFat(Percentage.of(10)) //
 				.fragranceToFatRatio(Percentage.of(3));

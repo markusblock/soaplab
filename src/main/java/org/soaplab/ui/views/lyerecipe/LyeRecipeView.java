@@ -14,10 +14,11 @@ import org.soaplab.repository.LiquidRepository;
 import org.soaplab.repository.LyeRecipeRepository;
 import org.soaplab.repository.NaOHRepository;
 import org.soaplab.ui.MainAppLayout;
-import org.soaplab.ui.views.EntityList;
+import org.soaplab.ui.views.EntityDetailsListener;
+import org.soaplab.ui.views.EntityTableListener;
+import org.soaplab.ui.views.EntityTablePanel;
 import org.soaplab.ui.views.EntityView;
-import org.soaplab.ui.views.EntityViewDetailsControllerCallback;
-import org.soaplab.ui.views.EntityViewListControllerCallback;
+import org.soaplab.ui.views.NamedEntityTablePanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
@@ -27,6 +28,7 @@ public class LyeRecipeView extends EntityView<LyeRecipe> {
 
 	private static final long serialVersionUID = 1L;
 
+	private final LyeRecipeRepository repository;
 	private final AcidRepository acidRepository;
 	private final LiquidRepository liquidRepository;
 	private final NaOHRepository naOHRepository;
@@ -37,7 +39,8 @@ public class LyeRecipeView extends EntityView<LyeRecipe> {
 	public LyeRecipeView(LyeRecipeRepository repository, AcidRepository acidRepository,
 			LiquidRepository liquidRepository, NaOHRepository naOHRepository, KOHRepository kOHRepository,
 			AdditiveRepository additiveRepository) {
-		super(repository);
+		super(repository, "domain.lyerecipes");
+		this.repository = repository;
 		this.acidRepository = acidRepository;
 		this.liquidRepository = liquidRepository;
 		this.naOHRepository = naOHRepository;
@@ -46,18 +49,13 @@ public class LyeRecipeView extends EntityView<LyeRecipe> {
 	}
 
 	@Override
-	protected String getHeader() {
-		return getTranslation("domain.lyerecipes");
+	protected EntityTablePanel<LyeRecipe> createEntityTable(EntityTableListener<LyeRecipe> listener) {
+		return new NamedEntityTablePanel<LyeRecipe>(LyeRecipe.class, listener);
 	}
 
 	@Override
-	protected EntityList<LyeRecipe> createEntityList(EntityViewListControllerCallback<LyeRecipe> callback) {
-		return new EntityList<LyeRecipe>(callback);
-	}
-
-	@Override
-	protected LyeRecipeDetailsPanel createEntityDetails(EntityViewDetailsControllerCallback<LyeRecipe> callback) {
-		return new LyeRecipeDetailsPanel(callback, acidRepository, liquidRepository, naOHRepository, kOHRepository,
+	protected LyeRecipeDetailsPanel createEntityDetails(EntityDetailsListener<LyeRecipe> listener) {
+		return new LyeRecipeDetailsPanel(listener, acidRepository, liquidRepository, naOHRepository, kOHRepository,
 				additiveRepository);
 	}
 

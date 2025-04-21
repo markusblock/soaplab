@@ -2,14 +2,15 @@ package org.soaplab.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldNameConstants;
 import lombok.experimental.SuperBuilder;
 
 @Getter
@@ -19,7 +20,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @ExplicitEntity
-public class LyeRecipe extends NamedEntity {
+@FieldNameConstants
+public class LyeRecipe extends Recipe {
 
 	private static final long serialVersionUID = 1L;
 
@@ -41,50 +43,60 @@ public class LyeRecipe extends NamedEntity {
 	/**
 	 * Calculated value. Lye costs.
 	 */
-	private Price lyeCosts;
+	@Default
+	private Price lyeCosts = Price.of(0);
 	/**
 	 * Calculated value. Total weight of NaOH.
 	 */
-	private Weight naohTotal;
+	@Default
+	private Weight naohWeight = Weight.ofGrams(0);
 	/**
 	 * Calculated value. Total weight of KOH.
 	 */
-	private Weight kohTotal;
+	@Default
+	private Weight kohWeight = Weight.ofGrams(0);
 
 	/**
 	 * Calculated value. Total weight of lye.
 	 */
-	private Weight lyeTotal;
+	@Default
+	private Weight lyeWeight = Weight.ofGrams(0);
 
 	private List<RecipeEntry<Liquid>> liquids = new ArrayList<>();
 	/**
 	 * Calculated value. Total weight of liquids.
 	 */
-	private Weight liquidsTotal;
+	@Default
+	private Weight liquidsWeight = Weight.ofGrams(0);
 	/**
 	 * Calculated value. Liquids costs.
 	 */
-	private Price liquidsCosts;
+	@Default
+	private Price liquidsCosts = Price.of(0);
 
 	private List<RecipeEntry<Acid>> acids = new ArrayList<>();
 	/**
 	 * Calculated value. Total weight of acids.
 	 */
-	private Weight acidsTotal;
+	@Default
+	private Weight acidsWeight = Weight.ofGrams(0);
 	/**
 	 * Calculated value. Acids costs.
 	 */
-	private Price acidsCosts;
+	@Default
+	private Price acidsCosts = Price.of(0);
 
 	private List<RecipeEntry<Additive>> additives = new ArrayList<>();
 	/**
 	 * Calculated value. Total weight of lye additives.
 	 */
-	private Weight lyeAdditivesTotal;
+	@Default
+	private Weight lyeAdditivesWeight = Weight.ofGrams(0);
 	/**
 	 * Calculated value. Lye additives costs.
 	 */
-	private Price lyeAdditivesCosts;
+	@Default
+	private Price lyeAdditivesCosts = Price.of(0);
 
 	@Override
 	public LyeRecipeBuilder<?, ?> getCopyBuilder() {
@@ -94,10 +106,5 @@ public class LyeRecipe extends NamedEntity {
 				.additives(getRecipeEntryListDeepClone(additives)) //
 				.naOH(naOH == null ? null : naOH.getCopyBuilder().build()) //
 				.kOH(kOH == null ? null : kOH.getCopyBuilder().build());
-	}
-
-	private <T extends Ingredient> List<RecipeEntry<T>> getRecipeEntryListDeepClone(
-			List<RecipeEntry<T>> recipeEntries) {
-		return recipeEntries.stream().map(entry -> entry.getCopyBuilder().build()).collect(Collectors.toList());
 	}
 }

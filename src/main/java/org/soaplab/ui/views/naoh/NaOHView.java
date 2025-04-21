@@ -3,10 +3,10 @@ package org.soaplab.ui.views.naoh;
 import org.soaplab.domain.NaOH;
 import org.soaplab.repository.NaOHRepository;
 import org.soaplab.ui.MainAppLayout;
+import org.soaplab.ui.views.EntityDetailsListener;
+import org.soaplab.ui.views.EntityTableListener;
 import org.soaplab.ui.views.EntityView;
-import org.soaplab.ui.views.EntityViewDetailsControllerCallback;
-import org.soaplab.ui.views.EntityViewListControllerCallback;
-import org.soaplab.ui.views.IngredientList;
+import org.soaplab.ui.views.IngredientTablePanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
@@ -18,22 +18,17 @@ public class NaOHView extends EntityView<NaOH> {
 
 	@Autowired
 	public NaOHView(NaOHRepository repository) {
-		super(repository);
+		super(repository, "domain.naoh");
 	}
 
 	@Override
-	protected String getHeader() {
-		return getTranslation("domain.naoh");
+	protected IngredientTablePanel<NaOH> createEntityTable(EntityTableListener<NaOH> listener) {
+		return new NaOHTablePanel(listener);
 	}
 
 	@Override
-	protected IngredientList<NaOH> createEntityList(EntityViewListControllerCallback<NaOH> callback) {
-		return new IngredientList<NaOH>(callback);
-	}
-
-	@Override
-	protected NaOHDetailsPanel createEntityDetails(EntityViewDetailsControllerCallback<NaOH> callback) {
-		return new NaOHDetailsPanel(callback);
+	protected NaOHDetailsPanel createEntityDetails(EntityDetailsListener<NaOH> listener) {
+		return new NaOHDetailsPanel(listener);
 	}
 
 	@Override

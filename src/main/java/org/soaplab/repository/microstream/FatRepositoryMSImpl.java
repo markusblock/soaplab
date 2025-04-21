@@ -22,7 +22,7 @@ public class FatRepositoryMSImpl extends IngredientRepositoryMSImpl<Fat> impleme
 	protected void assertEntityIsNotReferencedByOtherEntities(Fat entity) {
 		if (getDataRoot().getAllSoapRecipes().stream().anyMatch(soapRecipe -> {
 			return soapRecipe.getFats().stream()
-					.anyMatch(referencedEntity -> referencedEntity.getId().equals(entity.getId()));
+					.anyMatch(recipeEntry -> recipeEntry.getIngredient().getId().equals(entity.getId()));
 		})) {
 			throw new EntityDeletionFailedException(entity, REASON.ENTITY_STILL_REFERENCED);
 		}

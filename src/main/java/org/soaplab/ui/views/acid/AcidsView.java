@@ -3,37 +3,32 @@ package org.soaplab.ui.views.acid;
 import org.soaplab.domain.Acid;
 import org.soaplab.repository.AcidRepository;
 import org.soaplab.ui.MainAppLayout;
+import org.soaplab.ui.views.EntityDetailsListener;
+import org.soaplab.ui.views.EntityTableListener;
 import org.soaplab.ui.views.EntityView;
-import org.soaplab.ui.views.EntityViewDetailsControllerCallback;
-import org.soaplab.ui.views.EntityViewListControllerCallback;
-import org.soaplab.ui.views.IngredientList;
+import org.soaplab.ui.views.IngredientTablePanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
 
-@Route(value = "acids", layout = MainAppLayout.class)
+@Route(value = "acid", layout = MainAppLayout.class)
 public class AcidsView extends EntityView<Acid> {
 
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
 	public AcidsView(AcidRepository repository) {
-		super(repository);
+		super(repository, "domain.acids");
 	}
 
 	@Override
-	protected String getHeader() {
-		return getTranslation("domain.acids");
+	protected IngredientTablePanel<Acid> createEntityTable(EntityTableListener<Acid> listener) {
+		return new AcidTablePanel(listener);
 	}
 
 	@Override
-	protected IngredientList<Acid> createEntityList(EntityViewListControllerCallback<Acid> callback) {
-		return new IngredientList<Acid>(callback);
-	}
-
-	@Override
-	protected AcidDetailsPanel createEntityDetails(EntityViewDetailsControllerCallback<Acid> callback) {
-		return new AcidDetailsPanel(callback);
+	protected AcidDetailsPanel createEntityDetails(EntityDetailsListener<Acid> listener) {
+		return new AcidDetailsPanel(listener);
 	}
 
 	@Override

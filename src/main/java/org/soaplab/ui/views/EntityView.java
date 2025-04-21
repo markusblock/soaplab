@@ -1,132 +1,192 @@
 package org.soaplab.ui.views;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.soaplab.domain.NamedEntity;
 import org.soaplab.repository.EntityRepository;
 
-import com.vaadin.flow.component.Unit;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public abstract class EntityView<T extends NamedEntity> extends VerticalLayout
-		implements BeforeEnterObserver, EntityViewListControllerCallback<T>, EntityViewDetailsControllerCallback<T> {
+		implements BeforeEnterObserver, EntityTableListener<T>, EntityDetailsListener<T> {
 
 	private static final long serialVersionUID = 1L;
 
 	private H1 title;
 
-	private EntityDetails<T> entityDetails;
-	private EntityList<T> entityList;
+	private Button addButton;
+	private Button removeButton;
+
+	private EntityTablePanel<T> entityTablePanel;
+	private EntityDetailsPanel<T> entityDetails;
 
 	@Getter
 	private final EntityRepository<T> repository;
-
-	private Optional<T> selectedEntity = Optional.empty();
+	private final String headerKey;
 
 	private boolean editNewEntityMode;
 
-	public EntityView(EntityRepository<T> repository) {
+	public EntityView(EntityRepository<T> repository, String headerKey) {
 		super();
 		this.repository = repository;
+		this.headerKey = headerKey;
 
 		setSizeFull();
 	}
 
-	protected abstract String getHeader();
+	protected abstract EntityTablePanel<T> createEntityTable(EntityTableListener<T> callback);
 
-	protected abstract EntityList<T> createEntityList(EntityViewListControllerCallback<T> callback);
+	protected abstract EntityDetailsPanel<T> createEntityDetails(EntityDetailsListener<T> callback);
 
-	protected abstract EntityDetails<T> createEntityDetails(EntityViewDetailsControllerCallback<T> callback);
+	protected boolean isCreateNewEntityAllowed() {
+		return true;
+	}
 
 	@Override
 	public void beforeEnter(BeforeEnterEvent event) {
 		removeAll();
 
-		title = new H1(getHeader());
+		final HorizontalLayout headerPanel = new HorizontalLayout();
+		headerPanel.setWidthFull();
+		add(headerPanel);
+
+		title = new H1(getTranslation(headerKey));
 		title.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
-		add(title);
+		headerPanel.add(title);
+
+		addButton = new Button();
+		addButton.setId("entity.add");
+		addButton.setIcon(VaadinIcon.PLUS.create());
+		addButton.addClickListener(clickEvent -> {
+			log.trace("add button clicked");
+			editNewEntityMode = true;
+			removeButton.setEnabled(false);
+			addButton.setEnabled(false);
+			entityTablePanel.cancelEditMode();
+			entityTablePanel.clearSelection();
+			entityDetails.leaveEditMode();
+			final T newEntity = createNewEmptyEntity();
+			entityDetails.showEntity(Optional.of(newEntity));
+			entityDetails.enterEditMode();
+		});
+		addButton.setEnabled(isCreateNewEntityAllowed());
+		headerPanel.add(addButton);
+
+		removeButton = new Button();
+		removeButton.setId("entity.remove");
+		removeButton.setIcon(VaadinIcon.MINUS.create());
+		removeButton.addClickListener(clickEvent -> {
+			log.trace("remove button clicked");
+			entityTablePanel.cancelEditMode();
+			entityDetails.leaveEditMode();
+			final Optional<T> selectedEntity = entityTablePanel.getSelectedEntity();
+			selectedEntity.ifPresent(t -> deleteEntity(t));
+		});
+		removeButton.setEnabled(true);
+		headerPanel.add(removeButton);
+
+		entityTablePanel = createEntityTable(this);
+		entityDetails = createEntityDetails(this);
+		final SplitLayout splitLayout = new SplitLayout(entityTablePanel, entityDetails);
+		splitLayout.setOrientation(SplitLayout.Orientation.VERTICAL);
+		splitLayout.setSizeFull();
+		splitLayout.setSplitterPosition(50);
+		add(splitLayout);
 
 		final HorizontalLayout masterDetail = new HorizontalLayout();
 		masterDetail.setSizeFull();
 
-		entityList = createEntityList(this);
-		entityList.setMinWidth(50, Unit.PERCENTAGE);
-		masterDetail.add(entityList);
-		entityDetails = createEntityDetails(this);
-		masterDetail.add(entityDetails);
+		final List<T> allEntities = repository.findAll();
+		entityTablePanel.setEntities(allEntities);
 
-		masterDetail.setFlexGrow(0.8, entityList);
-		add(masterDetail);
-
-		entityList.selectFirstEntity();
+		entityTablePanel.selectFirstEntity();
 	}
 
 	@Override
-	public void saveEntity(T entity) {
+	public void entityChangedInEntityDetails(T entity) {
+		log.trace("entityChangedInEntityDetails" + entity);
+		final T savedEntity = saveEntity(entity);
 		if (editNewEntityMode) {
-			entity = repository.create(entity);
-			entityList.refreshAll();
+			// refresh full table
+			entityTablePanel.setEntities(repository.findAll());
 		} else {
-			repository.update(entity);
-			entityList.refresh(entity);
+			// refresh only table row
+			entityTablePanel.refreshEntity(savedEntity);
 		}
+		entityTablePanel.selectEntity(savedEntity);
+	}
+
+	@Override
+	public void entityDetailsPanelEntersEditMode() {
+		entityTablePanel.cancelEditMode();
+		addButton.setEnabled(false);
+		removeButton.setEnabled(false);
+	}
+
+	@Override
+	public void entityDetailsPanelLeavesEditMode() {
 		editNewEntityMode = false;
-		entityList.listenToSelectionChanges();
-		entityList.select(entity);
+		addButton.setEnabled(isCreateNewEntityAllowed());
+		removeButton.setEnabled(true);
+		entityTablePanel.selectEntity(entityTablePanel.getSelectedEntity().orElse(null));
+	}
+
+	@Override
+	public void entityChangedInEntityTable(T entity) {
+		log.trace("entityChangedInEntityTable" + entity);
+		saveEntity(entity);
+		entityDetails.showEntity(Optional.of(entity));
+	}
+
+	@Override
+	public void selectionChangedInEntityTable(Optional<T> entity) {
+		log.trace("selectionChangedInEntityTable " + entity);
 		entityDetails.showEntity(entity);
 	}
 
 	@Override
-	public void deleteEntity(T entity) {
-		repository.delete(entity.getId());
-		entityList.refreshAll();
-		entityList.selectFirstEntity();
+	public void entityTableEntersEditMode() {
+		addButton.setEnabled(false);
+		removeButton.setEnabled(false);
+		entityDetails.cancelEditMode();
 	}
 
 	@Override
-	public void editEntity(T entity) {
-		entityList.ignoreSelectionChanges();
-		entityDetails.editEntity(entity);
+	public void entityTableLeavesEditMode() {
+		addButton.setEnabled(isCreateNewEntityAllowed());
+		removeButton.setEnabled(true);
 	}
 
-	@Override
-	public void cancelEditMode() {
-		editNewEntityMode = false;
-		entityList.listenToSelectionChanges();
-		if (selectedEntity.isPresent()) {
-			entityList.select(selectedEntity.get());
-			entityDetails.showEntity(selectedEntity.get());
+	public T saveEntity(T entity) {
+		log.trace("saveEntity " + entity);
+		if (editNewEntityMode) {
+			entity = repository.create(entity);
+			// refresh full table
 		} else {
-			entityList.selectFirstEntity();
+			entity = repository.update(entity);
+			// refresh only table row
 		}
+
+		return entity;
 	}
 
-	@Override
-	public void createNewEntity() {
-		editNewEntityMode = true;
-		entityList.ignoreSelectionChanges();
-		final Optional<T> selectedEntity = entityList.getSelectedEntity();
-		final T newEntity = createNewEmptyEntity();
-		entityList.deselectAll();
-		entityDetails.editEntity(newEntity);
-		this.selectedEntity = selectedEntity;
-	}
-
-	@Override
-	public void entitySelected(T entity) {
-		T refreshedEntity = null;
-		if (entity != null) {
-			//reload entity on selection
-			refreshedEntity = repository.get(entity.getId());
-		}
-		selectedEntity = Optional.ofNullable(refreshedEntity);
-		entityDetails.showEntity(refreshedEntity);
+	private void deleteEntity(T entity) {
+		log.trace("deleteEntity " + entity);
+		repository.delete(entity.getId());
+		entityTablePanel.setEntities(repository.findAll());
+		entityTablePanel.selectFirstEntity();
 	}
 
 	protected abstract T createNewEmptyEntity();

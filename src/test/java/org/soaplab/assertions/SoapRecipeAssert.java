@@ -24,7 +24,7 @@ public class SoapRecipeAssert extends AbstractAssert<SoapRecipeAssert, SoapRecip
 
 		Assertions.assertThat(actual.getId()).isEqualTo(expected.getId());
 		Assertions.assertThat(actual.getName()).isEqualTo(expected.getName());
-		Assertions.assertThat(actual.getFatsTotal()).isEqualTo(expected.getFatsTotal());
+		Assertions.assertThat(actual.getFatsWeight()).isEqualTo(expected.getFatsWeight());
 		Assertions.assertThat(actual.getFragranceToFatRatio()).isEqualTo(expected.getFragranceToFatRatio());
 		Assertions.assertThat(actual.getLiquidToFatRatio()).isEqualTo(expected.getLiquidToFatRatio());
 		Assertions.assertThat(actual.getManufacturingDate()).isEqualTo(expected.getManufacturingDate());
@@ -32,7 +32,8 @@ public class SoapRecipeAssert extends AbstractAssert<SoapRecipeAssert, SoapRecip
 		Assertions.assertThat(actual.getSuperFat()).isEqualTo(expected.getSuperFat());
 
 		assertIngredientMapsAreDeepEqual(actual.getFats(), expected.getFats());
-		assertIngredientMapsAreDeepEqual(actual.getFragrances(), expected.getFragrances());
+		LyeRecipeAssert.assertThat(actual.getLyeRecipe()).isDeepEqualTo(expected.getLyeRecipe());
+		FragranceRecipeAssert.assertThat(actual.getFragranceRecipe()).isDeepEqualTo(expected.getFragranceRecipe());
 
 		return this;
 	}

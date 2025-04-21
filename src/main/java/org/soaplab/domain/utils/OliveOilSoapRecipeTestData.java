@@ -1,12 +1,13 @@
 package org.soaplab.domain.utils;
 
-import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntries;
-import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntry;
+import static org.soaplab.domain.Recipe.createRecipeEntries;
+import static org.soaplab.domain.Recipe.createRecipeEntry;
 
 import org.soaplab.domain.Acid;
 import org.soaplab.domain.Additive;
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Fragrance;
+import org.soaplab.domain.FragranceRecipe;
 import org.soaplab.domain.KOH;
 import org.soaplab.domain.Liquid;
 import org.soaplab.domain.LyeRecipe.LyeRecipeBuilder;
@@ -21,7 +22,8 @@ public class OliveOilSoapRecipeTestData extends OliveOilSoapBasicRecipeTestData 
 	private Acid citricAcid;
 	private Liquid appleVinegar;
 	private Fat coconutOil;
-	private Fragrance lavendelFragrance;
+	private Fragrance lavendel;
+	private FragranceRecipe fragranceRecipe;
 	private Additive mica;
 	private Additive salt;
 	private Additive sugar;
@@ -62,6 +64,13 @@ public class OliveOilSoapRecipeTestData extends OliveOilSoapBasicRecipeTestData 
 		return IngredientsExampleData.getSugarBuilder().build();
 	}
 
+	protected FragranceRecipe createFragranceRecipe() {
+		lavendel = createFragranceLavendel();
+		return IngredientsExampleData.getFragranceRecipeBuilder()
+				.fragrances(createRecipeEntries(createRecipeEntry(lavendel, 100d))).build();
+	}
+
+	@Override
 	protected LyeRecipeBuilder<?, ?> createLyeRecipeBuilder() {
 		kOH = createKOH();
 		citricAcid = createAcidCitric();
@@ -84,16 +93,15 @@ public class OliveOilSoapRecipeTestData extends OliveOilSoapBasicRecipeTestData 
 	@Override
 	public SoapRecipeBuilder<?, ?> getSoapRecipeBuilder() {
 		coconutOil = createFatCoconutOil();
-		lavendelFragrance = createFragranceLavendel();
+		fragranceRecipe = createFragranceRecipe();
 		mica = createMica();
 
 		return super.getSoapRecipeBuilder()//
 				.fats(createRecipeEntries( //
 						createRecipeEntry(getOliveOil(), 80d), //
 						createRecipeEntry(coconutOil, 20d))) //
-				.fragrances(createRecipeEntries( //
-						createRecipeEntry(lavendelFragrance, 100d))) //
 				.additives(createRecipeEntries(createRecipeEntry(mica, 1d))) //
-				.lyeRecipe(getLyeRecipe());
+				.lyeRecipe(getLyeRecipe()) //
+				.fragranceRecipe(fragranceRecipe);
 	}
 }

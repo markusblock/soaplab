@@ -1,43 +1,38 @@
 package org.soaplab.ui.views.additives;
 
-import org.soaplab.domain.Liquid;
-import org.soaplab.repository.LiquidRepository;
+import org.soaplab.domain.Additive;
+import org.soaplab.repository.AdditiveRepository;
 import org.soaplab.ui.MainAppLayout;
+import org.soaplab.ui.views.EntityDetailsListener;
+import org.soaplab.ui.views.EntityTableListener;
 import org.soaplab.ui.views.EntityView;
-import org.soaplab.ui.views.EntityViewDetailsControllerCallback;
-import org.soaplab.ui.views.EntityViewListControllerCallback;
-import org.soaplab.ui.views.IngredientList;
+import org.soaplab.ui.views.IngredientTablePanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
 
 @Route(value = "additives", layout = MainAppLayout.class)
-public class AdditivesView extends EntityView<Liquid> {
+public class AdditivesView extends EntityView<Additive> {
 
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	public AdditivesView(LiquidRepository repository) {
-		super(repository);
+	public AdditivesView(AdditiveRepository repository) {
+		super(repository, "domain.additives");
 	}
 
 	@Override
-	protected String getHeader() {
-		return getTranslation("domain.liquids");
+	protected IngredientTablePanel<Additive> createEntityTable(EntityTableListener<Additive> listener) {
+		return new AdditiveTablePanel(listener);
 	}
 
 	@Override
-	protected IngredientList<Liquid> createEntityList(EntityViewListControllerCallback<Liquid> callback) {
-		return new IngredientList<Liquid>(callback);
+	protected AdditiveDetailsPanel createEntityDetails(EntityDetailsListener<Additive> listener) {
+		return new AdditiveDetailsPanel(listener);
 	}
 
 	@Override
-	protected LiquidDetailsPanel createEntityDetails(EntityViewDetailsControllerCallback<Liquid> callback) {
-		return new LiquidDetailsPanel(callback);
-	}
-
-	@Override
-	protected Liquid createNewEmptyEntity() {
-		return Liquid.builder().build();
+	protected Additive createNewEmptyEntity() {
+		return Additive.builder().build();
 	}
 }

@@ -1,17 +1,18 @@
-
 package org.soaplab.domain;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.UUID;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.FieldNameConstants;
 import lombok.experimental.SuperBuilder;
 
 @Getter
@@ -20,84 +21,73 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-public class SoapRecipe extends NamedEntity {
+@FieldNameConstants
+public class SoapRecipe extends Recipe {
 
 	private static final long serialVersionUID = 1L;
 
-	private Date manufacturingDate;
-
-	/**
-	 * Optional notes on the recipt.
-	 */
-	private String notes;
 	/**
 	 * Liquid in regards to the total amount of fats
 	 */
-	private Percentage liquidToFatRatio;
+	@Default
+	private Percentage liquidToFatRatio = Percentage.of(0);
 	/**
 	 * Weight of fats in total
 	 */
-	private Weight fatsTotal;
+	@Default
+	private Weight fatsWeight = Weight.ofGrams(0);
 	/**
 	 * Amount of superfat in percentage
 	 */
-	private Percentage superFat;
+	@Default
+	private Percentage superFat = Percentage.of(0);;
 	/**
 	 * Amount of fragrance in percentage regarding total fats
 	 */
-	private Percentage fragranceToFatRatio;
+	@Default
+	private Percentage fragranceToFatRatio = Percentage.of(0);
 
 	private LyeRecipe lyeRecipe;
 
-	private List<RecipeEntry<Fragrance>> fragrances = new ArrayList<>();
-	/**
-	 * Calculated value. Total weight of fragrances.
-	 */
-	private Weight fragrancesTotal;
-	/**
-	 * Calculated value. Fragrances costs.
-	 */
-	private Price fragrancesCosts;
+	private FragranceRecipe fragranceRecipe;
 
 	private List<RecipeEntry<Fat>> fats = new ArrayList<>();
 	/**
 	 * Calculated value. Fats costs.
 	 */
-	private Price fatsCosts;
+	@Default
+	private Price fatsCosts = Price.of(0);
 
 	private List<RecipeEntry<Additive>> additives = new ArrayList<>();
 	/**
 	 * Calculated value. Total weight of soap batter additives.
 	 */
-	private Weight additivesTotal;
+	@Default
+	private Weight additivesWeight = Weight.ofGrams(0);
 	/**
 	 * Calculated value. Soap batter additives costs.
 	 */
-	private Price additivesCosts;
-
-	/**
-	 * Calculated value. Total weight of all ingredients in the recipe.
-	 */
-	private Weight weightTotal;
-	/**
-	 * Calculated value. Total costs of all ingredients in the recipe.
-	 */
-	private Price costsTotal;
-	/**
-	 * Calculated value. Total costs of all ingredients in the recipe per 100g.
-	 */
-	private Price costsTotalPer100g;
+	@Default
+	private Price additivesCosts = Price.of(0);
 
 	@Override
 	public SoapRecipeBuilder<?, ?> getCopyBuilder() {
 		return this.toBuilder() //
 				.fats(getRecipeEntryListDeepClone(fats)) //
-				.fragrances(getRecipeEntryListDeepClone(fragrances)) //
-				.additives(getRecipeEntryListDeepClone(additives));
+				.additives(getRecipeEntryListDeepClone(additives)) //
+				.lyeRecipe(lyeRecipe == null ? null : lyeRecipe.getCopyBuilder().build()) //
+				.fragranceRecipe(fragranceRecipe == null ? null : fragranceRecipe.getCopyBuilder().build());
 	}
 
-	private <T extends Ingredient> List<RecipeEntry<T>> getRecipeEntryListDeepClone(
-			List<RecipeEntry<T>> recipeEntries) {
-		return recipeEntries.stream().map(entry -> entry.getCopyBuilder().build()).collect(Collectors.toList());
+	public void addFat(Fat fat, Double percentage) {
+		setFats(createNewRecipeEntryListWithAddedIngredient(fat, percentage, getFats()));
+	}
+
+	public void removeFat(Fat fat) {
+		setFats(createNewRecipeEntryListWithRemovedIngredient(fat, getFats()));
+	}
+
+	public Optional<Fat> getFat(UUID uuid) {
+		return getIngredient(uuid, getFats());
 	}
 }

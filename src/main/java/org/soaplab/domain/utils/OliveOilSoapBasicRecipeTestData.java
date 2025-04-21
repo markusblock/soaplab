@@ -1,7 +1,7 @@
 package org.soaplab.domain.utils;
 
-import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntries;
-import static org.soaplab.domain.utils.SoapRecipeUtils.createRecipeEntry;
+import static org.soaplab.domain.Recipe.createRecipeEntries;
+import static org.soaplab.domain.Recipe.createRecipeEntry;
 
 import org.soaplab.domain.Fat;
 import org.soaplab.domain.Liquid;
