@@ -23,10 +23,18 @@
 		<equalsverifier.version>3.19.3</equalsverifier.version>
 		<selenide.version>7.9.0</selenide.version>
   		<jacoco.version>0.8.13</jacoco.version>
+  		<sonar.plugin.version>5.1.0.4751</sonar.plugin.version>
   		
   		<skipTests>false</skipTests>
         <skipUTs>${skipTests}</skipUTs>
         <skipITs>true</skipITs>
+        
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.organization>markusblock</sonar.organization>
+        <sonar.projectKey>markusblock_soaplab</sonar.projectKey>
+        <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
+        <sonar.qualitygate.timeout>600</sonar.qualitygate.timeout>
+        
 	</properties>
     
     <url>https://github.com/markusblock/soaplab</url>
@@ -340,6 +348,12 @@
                           </property>
                       </properties>
                   </configuration>
+              </plugin>
+              
+              <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>${sonar.plugin.version}</version>
               </plugin>
 			       			          
         </plugins>
