@@ -12,6 +12,7 @@ updates:
       dependency-type: "production"
     development-dependencies:
       dependency-type: "development"
+  open-pull-requests-limit: 10
 - package-ecosystem: "github-actions"
   directory: "/"
   schedule:
