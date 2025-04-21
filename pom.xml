@@ -32,6 +32,16 @@
         <skipUTs>${skipTests}</skipUTs>
         <skipITs>true</skipITs>
 	</properties>
+    
+    <project>
+      <url>https://github.com/markusblock/soaplab</url>
+      <scm>
+        <url>https://github.com/markusblock/soaplab</url>
+      </scm>
+      <issueManagement>
+        <url>https://github.com/markusblock/soaplab/issues</url>
+      </issueManagement>
+    </project>
 
 	
     <repositories>
