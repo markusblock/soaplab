@@ -1,7 +1,3 @@
-/** @import "theme-editor.css"; **/
-/** @import url('./recipe_entry_list.css');**/
-
-
 [theme~="dark"] html, :host {
   --lumo-base-color: purple;
 }
