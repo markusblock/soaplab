@@ -19,7 +19,7 @@
 		<vaadin.version>24.3.20</vaadin.version>
 		<eclipsestore.version>2.1.2</eclipsestore.version>
 		<beantutils.version>1.9.4</beantutils.version>
-		<springdoc.version>2.0.4</springdoc.version>
+		<springdoc.version>2.8.6</springdoc.version>
 		<equalsverifier.version>3.13</equalsverifier.version>
 		<selenide.version>7.6.0</selenide.version>
 		<!-- Overriding to avoid ClassNotFound in WebDriverManager -->
