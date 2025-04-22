@@ -137,6 +137,9 @@ public class UIIntegrationTestBase {
 	@BeforeAll
 	public static void baseBeforeAll(@Autowired Environment environment) {
 
+		// supress Vaadin devmode popups that prevent clicking on buttons beneath
+		System.setProperty("vaadin.devmode.devTools.enabled", "false");
+
 		configureDefaultLocale();
 
 		configureDatabaseFolder(environment);

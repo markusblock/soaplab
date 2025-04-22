@@ -21,6 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class VaadinUtils {
 
+	/*
+	 * CSS locators <br />
+	 * # -> ID <br />
+	 * . -> class
+	 *
+	 */
+
 	public static WebElementCondition disabled() {
 		return Condition.attribute("disabled");
 	}
