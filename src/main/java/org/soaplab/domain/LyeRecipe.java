@@ -74,6 +74,7 @@ public class LyeRecipe extends Recipe {
 	@Default
 	private Price liquidsCosts = Price.of(0);
 
+	@ToString.Exclude
 	private List<RecipeEntry<Acid>> acids = new ArrayList<>();
 	/**
 	 * Calculated value. Total weight of acids.
@@ -86,6 +87,7 @@ public class LyeRecipe extends Recipe {
 	@Default
 	private Price acidsCosts = Price.of(0);
 
+	@ToString.Exclude
 	private List<RecipeEntry<Additive>> additives = new ArrayList<>();
 	/**
 	 * Calculated value. Total weight of lye additives.

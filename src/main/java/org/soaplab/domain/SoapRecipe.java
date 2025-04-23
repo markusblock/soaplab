@@ -47,10 +47,13 @@ public class SoapRecipe extends Recipe {
 	@Default
 	private Percentage fragranceToFatRatio = Percentage.of(0);
 
+	@ToString.Exclude
 	private LyeRecipe lyeRecipe;
 
+	@ToString.Exclude
 	private FragranceRecipe fragranceRecipe;
 
+	@ToString.Exclude
 	private List<RecipeEntry<Fat>> fats = new ArrayList<>();
 	/**
 	 * Calculated value. Fats costs.
@@ -58,6 +61,7 @@ public class SoapRecipe extends Recipe {
 	@Default
 	private Price fatsCosts = Price.of(0);
 
+	@ToString.Exclude
 	private List<RecipeEntry<Additive>> additives = new ArrayList<>();
 	/**
 	 * Calculated value. Total weight of soap batter additives.

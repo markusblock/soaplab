@@ -26,6 +26,7 @@ import lombok.experimental.SuperBuilder;
 public class FragranceRecipe extends Recipe {
 	private static final long serialVersionUID = 1L;
 
+	@ToString.Exclude
 	private List<RecipeEntry<Fragrance>> fragrances = new ArrayList<>();
 
 	@Override
