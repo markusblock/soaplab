@@ -32,7 +32,7 @@ import lombok.Getter;
 @Getter
 public class RandomIngredientsTestData {
 
-	private final static int STRING_LENGTH = 5;
+	private final static int STRING_LENGTH = 6;
 
 	public RandomIngredientsTestData() {
 	}
