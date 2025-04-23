@@ -173,3 +173,4 @@ package.json
 /vite.generated.ts
 /.vaadin-node-tasks.lock
 /target_test-classes/
+/src/main/bundles/dev.bundle

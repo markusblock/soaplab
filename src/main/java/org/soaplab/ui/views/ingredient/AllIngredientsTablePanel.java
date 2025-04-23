@@ -1,6 +1,7 @@
 package org.soaplab.ui.views.ingredient;
 
 import org.soaplab.domain.Ingredient;
+import org.soaplab.domain.NamedEntity;
 import org.soaplab.ui.views.EntityTableListener;
 import org.soaplab.ui.views.EntityTablePanel;
 import org.soaplab.ui.views.PriceRenderer;
@@ -17,6 +18,7 @@ public class AllIngredientsTablePanel extends EntityTablePanel<Ingredient> {
 	public AllIngredientsTablePanel(EntityTableListener<Ingredient> listener) {
 		super(Ingredient.class, listener);
 
+		addEntityColumn(NamedEntity.Fields.name, "domain.entity.name");
 		addEntityColumn(Ingredient.Fields.inci, "domain.ingredient.inci");
 
 		final Column<Ingredient> priceColumn = addPriceColumn(Ingredient.Fields.cost, "domain.ingredient.price");
