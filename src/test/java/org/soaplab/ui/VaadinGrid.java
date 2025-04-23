@@ -179,7 +179,7 @@ public class VaadinGrid {
 	public List<SelenideElement> getTdsOfColumn(int columnIndex) {
 		Assert.isTrue(columnIndex > 0, "column index must be >0");
 		final List<SelenideElement> tdsOfColumn = new ArrayList<>();
-		final ElementsCollection trs = findElementsInGridShadowRoot(Selectors.byCssSelector("table tbody tr"));
+		final ElementsCollection trs = findElementsInGridShadowRoot(Selectors.byCssSelector("table tbody#items tr"));
 		for (final SelenideElement selenideElement : trs) {
 			final List<SelenideElement> tdsOfRow = selenideElement.$$("td").asFixedIterable().stream().toList();
 			// tdsOfRow 0-based, columnIndex 1-based
@@ -195,7 +195,7 @@ public class VaadinGrid {
 
 	public WebElement getTdWebElement(int rowIdx, int colIdx) {
 		return findWebElementInGridShadowRoot(
-				By.cssSelector("table tbody tr:nth-child(%s) td:nth-child(%s)".formatted(rowIdx, colIdx)));
+				By.cssSelector("table tbody#items tr:nth-child(%s) td:nth-child(%s)".formatted(rowIdx, colIdx)));
 	}
 
 	public SelenideElement getTrElement(int rowIdx) {
@@ -203,7 +203,7 @@ public class VaadinGrid {
 	}
 
 	public WebElement getTrWebElement(int rowIdx) {
-		return findWebElementInGridShadowRoot(By.cssSelector("table tbody tr:nth-child(%s)".formatted(rowIdx)));
+		return findWebElementInGridShadowRoot(By.cssSelector("table tbody#items tr:nth-child(%s)".formatted(rowIdx)));
 	}
 
 	private ElementsCollection findElementsInGridShadowRoot(By cssSelector) {

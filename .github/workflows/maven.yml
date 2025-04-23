@@ -42,7 +42,7 @@ jobs:
       env:
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: mvn -B install org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pproduction -Punit-integration-test -DtestBrowser=firefox -DtestEnvironment=container -DtestLocale=EN -Dheadless=true -Dfailsafe.rerunFailingTestsCount=2
+      run: mvn -B install org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pproduction -DtestBrowser=firefox -DtestEnvironment=container -DtestLocale=EN -Dheadless=true -Dfailsafe.rerunFailingTestsCount=2
     - name: Upload failsafe and surefire testreports on failure
       if: ${{ failure() }}
       uses: actions/upload-artifact@v4
