@@ -30,6 +30,7 @@
         <sonar.projectKey>markusblock_soaplab</sonar.projectKey>
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
         <sonar.qualitygate.timeout>600</sonar.qualitygate.timeout>
+<!--        <sonar.junit.reportPaths>=target/surefire-reports,target/failsafe-reports</sonar.junit.reportPaths>-->
         
 	</properties>
     
@@ -270,28 +271,113 @@
 				</configuration>
             </plugin>
 			
-			<plugin>
-			  <groupId>org.jacoco</groupId>
-			  <artifactId>jacoco-maven-plugin</artifactId>
-			  <version>${jacoco.version}</version>
-			  <executions>
-			     <!--first execution : for preparing JaCoCo runtime agent-->
-			      <execution>
-			      	<id>prepare-agent</id>
-			            <goals>
-			             <goal>prepare-agent</goal>
-			            </goals>
-			      </execution>
-			     <!--second execution : for creating code coverage reports-->
-			      <execution>
-			            <id>report</id>
-			            <phase>test</phase>
-			               <goals>
-			                 <goal>report</goal>
-			               </goals>
-			        </execution>
-			    </executions>
-			 </plugin>  
+<!--			<plugin>-->
+<!--			  <groupId>org.jacoco</groupId>-->
+<!--			  <artifactId>jacoco-maven-plugin</artifactId>-->
+<!--			  <version>${jacoco.version}</version>-->
+<!--			  <executions>-->
+<!--			     first execution : for preparing JaCoCo runtime agent-->
+<!--			     <execution>-->
+<!--			     	<id>prepare-agent</id>-->
+<!--			        <goals>-->
+<!--                        <goal>prepare-agent</goal>-->
+<!--			        </goals>-->
+<!--			      </execution>-->
+<!--			     second execution : for creating code coverage reports-->
+<!--			      <execution>-->
+<!--			         <id>report</id>-->
+<!--			         <phase>test</phase>-->
+<!--			         <goals>-->
+<!--                        <goal>report</goal>-->
+<!--			         </goals>-->
+<!--			     </execution>-->
+<!--			    </executions>-->
+<!--			 </plugin>  -->
+			 
+			 <plugin>
+               <groupId>org.jacoco</groupId>
+               <artifactId>jacoco-maven-plugin</artifactId>
+               <version>${jacoco.version}</version>
+            
+               <executions>
+                   <execution>
+                       <id>pre-unit-test</id>
+                       <goals>
+                           <goal>prepare-agent</goal>
+                       </goals>
+                       <configuration>
+                           <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
+                           <propertyName>surefireArgLine</propertyName>
+                       </configuration>
+                   </execution>
+                   <!-- Surefire unit Tests-->
+                   <execution>
+                       <id>post-unit-test</id>
+                       <phase>test</phase>
+                       <goals>
+                           <goal>report</goal>
+                       </goals>
+                       <configuration>
+                           <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
+                           <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+                       </configuration>
+                   </execution>
+                   <!-- FailsafeIntegration Tests -->
+                   <execution>
+                       <id>pre-integration-test</id>
+                       <phase>pre-integration-test</phase>
+                       <goals>
+                           <goal>prepare-agent</goal>
+                       </goals>
+                       <configuration>
+                           <destFile>${project.build.directory}/coverage-reports/jacoco-it.exec</destFile>
+                           <propertyName>failsafeArgLine</propertyName>
+                       </configuration>
+                   </execution>
+                   <execution>
+                       <id>post-integration-test</id>
+                       <phase>post-integration-test</phase>
+                       <goals>
+                           <goal>report</goal>
+                       </goals>
+                       <configuration>
+                           <dataFile>${project.build.directory}/coverage-reports/jacoco-it.exec</dataFile>
+                           <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
+                       </configuration>
+                   </execution>
+
+                    <!-- Merged test coverage report -->
+                    <execution>
+                        <id>merge-unit-and-integration</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>merge</goal>
+                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <directory>${project.build.directory}/coverage-reports/</directory>
+                                    <includes>
+                                        <include>*.exec</include>
+                                    </includes>
+                                </fileSet>
+                            </fileSets>
+                            <destFile>${project.build.directory}/coverage-reports/merged.exec</destFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>create-merged-report</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/coverage-reports/merged.exec</dataFile>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-merged-coverage-report</outputDirectory>
+                        </configuration>
+                    </execution>                   
+               </executions>
+           </plugin>
 			 
              <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
@@ -301,20 +387,7 @@
                           <include>**/*Tests.java</include>
                           <include>**/*Test.java</include>
                       </includes>
-                      <parallel>all</parallel>
-                      <threadCount>2</threadCount>
-                      <perCoreThreadCount>true</perCoreThreadCount>                                            
-                      <systemPropertyVariables>
-                          <allure.results.directory>${project.build.directory}/allure-results
-                          </allure.results.directory>
-                      </systemPropertyVariables>
-                      <argLine>${jacoco.agent.ut.arg}</argLine>
-                      <properties>
-                          <property>
-                              <name>listener</name>
-                              <value>io.qameta.allure.junit5.AllureJunit5</value>
-                          </property>
-                      </properties>
+                      <argLine>${surefireArgLine}</argLine>
                   </configuration>
               </plugin>
               <plugin>
@@ -326,23 +399,11 @@
                       </includes>
                       <excludes>
                           <exclude>**/*Test.java</exclude>
+                          <exclude>**/*Tests.java</exclude>
                       </excludes>
-                      <parallel>all</parallel>
-                      <threadCount>2</threadCount>
-                      <perCoreThreadCount>true</perCoreThreadCount>                      
-                      <systemPropertyVariables>
-                          <allure.results.directory>${project.build.directory}/allure-results
-                          </allure.results.directory>
-                      </systemPropertyVariables>
-                      <argLine>${jacoco.agent.it.arg}</argLine>
-                      <properties>
-                          <property>
-                              <name>listener</name>
-                              <value>io.qameta.allure.junit5.AllureJunit5</value>
-                          </property>
-                      </properties>
+                      <argLine>${failsafeArgLine}</argLine>
                   </configuration>
-              </plugin>
+              </plugin>            
               
               <plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
