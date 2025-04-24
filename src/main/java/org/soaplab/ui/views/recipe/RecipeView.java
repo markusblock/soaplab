@@ -17,7 +17,7 @@ import org.soaplab.ui.views.EntityDetailsListener;
 import org.soaplab.ui.views.EntityTableListener;
 import org.soaplab.ui.views.EntityTablePanel;
 import org.soaplab.ui.views.EntityView;
-import org.soaplab.ui.views.NamedEntityTablePanel;
+import org.soaplab.ui.views.RecipeTablePanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
@@ -27,7 +27,6 @@ public class RecipeView extends EntityView<SoapRecipe> {
 
 	private static final long serialVersionUID = 1L;
 
-	private final SoapRecipeRepository repository;
 	private final FatRepository fatRepository;
 	private final SoapCalculatorService soapCalculatorService;
 	private final LyeRecipeRepository lyeRecipeRepository;
@@ -39,7 +38,6 @@ public class RecipeView extends EntityView<SoapRecipe> {
 			FragranceRecipeRepository fragranceRecipeRepository, FatRepository fatRepository,
 			AdditiveRepository additiveRepository, SoapCalculatorService soapCalculatorService) {
 		super(repository, "domain.recipes");
-		this.repository = repository;
 		this.lyeRecipeRepository = lyeRecipeRepository;
 		this.fatRepository = fatRepository;
 		this.fragranceRecipeRepository = fragranceRecipeRepository;
@@ -49,7 +47,7 @@ public class RecipeView extends EntityView<SoapRecipe> {
 
 	@Override
 	protected EntityTablePanel<SoapRecipe> createEntityTable(EntityTableListener<SoapRecipe> listener) {
-		return new NamedEntityTablePanel<SoapRecipe>(SoapRecipe.class, listener);
+		return new RecipeTablePanel<SoapRecipe>(SoapRecipe.class, listener);
 	}
 
 	@Override

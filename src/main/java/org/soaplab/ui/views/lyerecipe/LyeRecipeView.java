@@ -18,7 +18,7 @@ import org.soaplab.ui.views.EntityDetailsListener;
 import org.soaplab.ui.views.EntityTableListener;
 import org.soaplab.ui.views.EntityTablePanel;
 import org.soaplab.ui.views.EntityView;
-import org.soaplab.ui.views.NamedEntityTablePanel;
+import org.soaplab.ui.views.RecipeTablePanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
@@ -28,7 +28,6 @@ public class LyeRecipeView extends EntityView<LyeRecipe> {
 
 	private static final long serialVersionUID = 1L;
 
-	private final LyeRecipeRepository repository;
 	private final AcidRepository acidRepository;
 	private final LiquidRepository liquidRepository;
 	private final NaOHRepository naOHRepository;
@@ -40,7 +39,6 @@ public class LyeRecipeView extends EntityView<LyeRecipe> {
 			LiquidRepository liquidRepository, NaOHRepository naOHRepository, KOHRepository kOHRepository,
 			AdditiveRepository additiveRepository) {
 		super(repository, "domain.lyerecipes");
-		this.repository = repository;
 		this.acidRepository = acidRepository;
 		this.liquidRepository = liquidRepository;
 		this.naOHRepository = naOHRepository;
@@ -50,7 +48,7 @@ public class LyeRecipeView extends EntityView<LyeRecipe> {
 
 	@Override
 	protected EntityTablePanel<LyeRecipe> createEntityTable(EntityTableListener<LyeRecipe> listener) {
-		return new NamedEntityTablePanel<LyeRecipe>(LyeRecipe.class, listener);
+		return new RecipeTablePanel<LyeRecipe>(LyeRecipe.class, listener);
 	}
 
 	@Override

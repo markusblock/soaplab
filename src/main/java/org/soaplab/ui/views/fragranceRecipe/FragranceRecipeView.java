@@ -12,7 +12,7 @@ import org.soaplab.ui.views.EntityDetailsListener;
 import org.soaplab.ui.views.EntityTableListener;
 import org.soaplab.ui.views.EntityTablePanel;
 import org.soaplab.ui.views.EntityView;
-import org.soaplab.ui.views.NamedEntityTablePanel;
+import org.soaplab.ui.views.RecipeTablePanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.router.Route;
@@ -22,20 +22,18 @@ public class FragranceRecipeView extends EntityView<FragranceRecipe> {
 
 	private static final long serialVersionUID = 1L;
 
-	private final FragranceRecipeRepository fragranceRecipeRepository;
 	private final FragranceRepository fragranceRepository;
 
 	@Autowired
 	public FragranceRecipeView(FragranceRecipeRepository fragranceRecipeRepository,
 			FragranceRepository fragranceRepository) {
 		super(fragranceRecipeRepository, "domain.fragrancerecipes");
-		this.fragranceRecipeRepository = fragranceRecipeRepository;
 		this.fragranceRepository = fragranceRepository;
 	}
 
 	@Override
 	protected EntityTablePanel<FragranceRecipe> createEntityTable(EntityTableListener<FragranceRecipe> listener) {
-		return new NamedEntityTablePanel<FragranceRecipe>(FragranceRecipe.class, listener);
+		return new RecipeTablePanel<FragranceRecipe>(FragranceRecipe.class, listener);
 	}
 
 	@Override

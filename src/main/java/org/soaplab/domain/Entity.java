@@ -20,7 +20,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
@@ -30,6 +30,7 @@ public abstract class Entity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Builder.Default
+	@EqualsAndHashCode.Include
 	private UUID id = UUID.randomUUID();
 
 	/*
