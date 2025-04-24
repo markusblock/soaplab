@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.store.storage.embedded.types.EmbeddedStorageManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
@@ -50,7 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UIIntegrationTestBase {
 
-	private static File databaseFolder;
+	private static String databaseFolderPath;
 
 	private static MutableCapabilities browserOptions;
 
@@ -135,14 +136,15 @@ public class UIIntegrationTestBase {
 	}
 
 	@BeforeAll
-	public static void baseBeforeAll(@Autowired Environment environment) {
+	public static void baseBeforeAll(@Autowired Environment environment,
+			@Autowired EmbeddedStorageManager storageManager) {
 
 		// supress Vaadin devmode popups that prevent clicking on buttons beneath
 		System.setProperty("vaadin.devmode.devTools.enabled", "false");
 
 		configureDefaultLocale();
 
-		configureDatabaseFolder(environment);
+		configureDatabaseFolder(storageManager);
 
 		configureSelenideBaseSetup();
 
@@ -205,12 +207,9 @@ public class UIIntegrationTestBase {
 		}
 	}
 
-	private static void configureDatabaseFolder(Environment environment) {
-		final String databaseFolderProperty = environment.getProperty("org.eclipse.store.storage-directory");
-		if (databaseFolder == null) {
-			databaseFolder = new File(databaseFolderProperty);
-			log.info("Setting database folder to " + databaseFolder);
-		}
+	private static void configureDatabaseFolder(EmbeddedStorageManager storageManager) {
+		databaseFolderPath = storageManager.configuration().fileProvider().baseDirectory().toPathString();
+		log.info("Using database folder for tests" + databaseFolderPath);
 	}
 
 	private static void configureDefaultLocale() {
@@ -247,30 +246,37 @@ public class UIIntegrationTestBase {
 	}
 
 	private synchronized static void removeDatabaseFolder() {
-		log.info("[....] Removing testdatabase: " + databaseFolder);
+		log.info("[....] Removing testdatabase: " + databaseFolderPath);
+
 		try {
-			if (databaseFolder != null) {
-				// also remove old testdatabase files&folders
-				final String[] testDatabasesFolders = databaseFolder.getParentFile()
-						.list((dir, name) -> name.startsWith("test-"));
-				if (testDatabasesFolders != null) {
-					for (int i = 0; i < testDatabasesFolders.length; i++) {
-						try {
-							final File fileToDelete = new File(databaseFolder.getParentFile(), testDatabasesFolders[i]);
-							if (!fileToDelete.exists()) {
-								continue;
+			if (databaseFolderPath != null) {
+				final File databaseFolder = new File(databaseFolderPath);
+				if (databaseFolder.exists()) {
+					// also remove old testdatabase files&folders
+					final String[] testDatabasesFolders = databaseFolder.getParentFile()
+							.list((dir, name) -> name.startsWith("test-"));
+					if (testDatabasesFolders != null) {
+						for (int i = 0; i < testDatabasesFolders.length; i++) {
+							try {
+								final File fileToDelete = new File(databaseFolder.getParentFile(),
+										testDatabasesFolders[i]);
+								if (!fileToDelete.exists()) {
+									continue;
+								}
+								FileUtils.forceDelete(fileToDelete);
+								log.info("[DONE] Removing testdatabase: " + fileToDelete);
+							} catch (final Exception e) {
+								log.error("[ERROR] Error occured while removing testdatabase: " + databaseFolderPath,
+										e);
 							}
-							FileUtils.forceDelete(fileToDelete);
-							log.info("[DONE] Removing testdatabase: " + fileToDelete);
-						} catch (final Exception e) {
-							log.error("[ERROR] Error occured while removing testdatabase: " + databaseFolder, e);
 						}
 					}
 				}
-				databaseFolder = null;
+
+				databaseFolderPath = null;
 			}
 		} catch (final Exception e) {
-			log.error("[ERROR] Error occured while removing testdatabase: " + databaseFolder, e);
+			log.error("[ERROR] Error occured while removing testdatabase: " + databaseFolderPath, e);
 		}
 	}
 

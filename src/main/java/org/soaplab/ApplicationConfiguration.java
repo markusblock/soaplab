@@ -11,33 +11,24 @@ import org.soaplab.repository.microstream.StoreEagerEvaluator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @Slf4j
-//@ComponentScan
 public class ApplicationConfiguration {
-
-//    @Bean
-//    FatRepository getFatRepository(@Value("${microstream.store.location}") final String location){
-//        return new FatRepositoryMSImpl(location);
-//    }
-//
-//    @Bean
-//    MicrostreamRepository getRepository(@Value("${microstream.store.location}") final String location){
-//        return new MicrostreamRepository(location);
-//    }
 
 	@Bean
 	EmbeddedStorageManager configureStorage(@Autowired EclipseStoreProperties myConfiguration,
 			@Autowired EmbeddedStorageManagerFactory managerFactory,
-			@Autowired EmbeddedStorageFoundationFactory foundationFactory) {
+			@Autowired EmbeddedStorageFoundationFactory foundationFactory, @Autowired Environment environment) {
 		// Modify the configuration
 		// myConfiguration.setStorageDirectory(temp.getDir().getAbsolutePath());
 		// Create a new StorageFoundation
 		final EmbeddedStorageFoundation<?> storageFoundation = foundationFactory
 				.createStorageFoundation(myConfiguration);
+
 		storageFoundation.onConnectionFoundation(cf -> {
 			cf.setClassLoaderProvider(ClassLoaderProvider.New(Thread.currentThread().getContextClassLoader()));
 			cf.setReferenceFieldEagerEvaluator(new StoreEagerEvaluator());
@@ -48,6 +39,8 @@ public class ApplicationConfiguration {
 		// Create a new StorageManager
 		final EmbeddedStorageManager storageManager = managerFactory.createStorage(storageFoundation, false);
 		storageManager.start();
+		log.info("Initiliazing storage with directory "
+				+ storageManager.configuration().fileProvider().baseDirectory().toPathString());
 		return storageManager;
 	}
 
