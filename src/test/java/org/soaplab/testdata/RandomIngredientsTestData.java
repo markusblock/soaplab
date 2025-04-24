@@ -87,26 +87,34 @@ public class RandomIngredientsTestData {
 	}
 
 	public static String getRandomString() {
-		return RandomStringUtils.randomAlphabetic(STRING_LENGTH);
+		return RandomStringUtils.insecure().nextAlphanumeric(STRING_LENGTH);
+	}
+
+	public static String getRandomNumericString() {
+		return RandomStringUtils.insecure().nextNumeric(STRING_LENGTH);
+	}
+
+	public static String getRandomAlphabeticString() {
+		return RandomStringUtils.insecure().nextAlphabetic(STRING_LENGTH);
 	}
 
 	public static BigDecimal getRandomBigDecimal() {
-		return new BigDecimal(RandomUtils.nextDouble(1d, 100d)).setScale(2, RoundingMode.CEILING);
+		return new BigDecimal(RandomUtils.insecure().randomDouble(1d, 100d)).setScale(2, RoundingMode.CEILING);
 	}
 
 	public static int getRandomInteger() {
-		return RandomUtils.nextInt(1, 100);
+		return RandomUtils.insecure().randomInt(1, 100);
 	}
 
 	public static double getRandomDouble() {
-		return RandomUtils.nextDouble(0, 10);
+		return RandomUtils.insecure().randomDouble(0, 10);
 	}
 
 	public static Percentage getRandomPercentage() {
-		return Percentage.of(RandomUtils.nextDouble(0, 100));
+		return Percentage.of(RandomUtils.insecure().randomDouble(0, 100));
 	}
 
 	public static Price getRandomPrice() {
-		return Price.of(RandomUtils.nextDouble(0, 10));
+		return Price.of(RandomUtils.insecure().randomDouble(0, 10));
 	}
 }

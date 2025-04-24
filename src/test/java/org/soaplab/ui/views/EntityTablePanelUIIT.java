@@ -1,5 +1,7 @@
 package org.soaplab.ui.views;
 
+import static org.soaplab.testdata.RandomIngredientsTestData.getRandomAlphabeticString;
+import static org.soaplab.testdata.RandomIngredientsTestData.getRandomNumericString;
 import static org.soaplab.ui.pageobjects.EntityTablePanelPageObject.COLUMN_HEADERNAME_INCI;
 import static org.soaplab.ui.pageobjects.EntityTablePanelPageObject.COLUMN_HEADERNAME_NAME;
 
@@ -110,9 +112,12 @@ public class EntityTablePanelUIIT extends UIIntegrationTestBase {
 
 	@Test
 	public void searchIngredientFiltersList() {
-		final Fat ingredient1 = repoHelper.createFat("abc", "123");
-		final Fat ingredient2 = repoHelper.createFat("def", "456");
-		final Fat ingredient3 = repoHelper.createFat("cccX", "555");
+		final Fat ingredient1 = repoHelper.createFat(getRandomNumericString() + "abc",
+				getRandomAlphabeticString() + "123");
+		final Fat ingredient2 = repoHelper.createFat(getRandomNumericString() + "def",
+				getRandomAlphabeticString() + "456");
+		final Fat ingredient3 = repoHelper.createFat(getRandomNumericString() + "cccX",
+				getRandomAlphabeticString() + "555");
 		viewPageObject.refreshPage();
 
 		// search by name - single result
