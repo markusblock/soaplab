@@ -31,7 +31,7 @@ public class Recipe extends NamedEntity {
 	private Date manufacturingDate;
 
 	/**
-	 * Optional notes on the recipt.
+	 * Optional notes on the recipe.
 	 */
 	private String notes;
 

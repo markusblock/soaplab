@@ -42,6 +42,11 @@ public class RecipeEntry<T extends Ingredient> extends Entity {
 	private Price price = Price.of(0);
 
 	/**
+	 * Optional notes on the recipe entry
+	 */
+	private String notes;
+
+	/**
 	 * The {@link Ingredient}.
 	 */
 	private T ingredient;

@@ -132,8 +132,18 @@ public class RecipeEntryTable<T extends Ingredient> extends Div {
 				}, (entry, fieldvalue) -> entry.setPercentage(new Percentage(new BigDecimal(fieldvalue))));
 		percentageColumn.setEditorComponent(percentageField);
 
+		// NOTES COLUMN
+		final Column<RecipeEntry<T>> notesColumn = grid.addColumn(RecipeEntry::getNotes)
+				.setHeader(getTranslation("domain.recipe.notes")).setSortable(true);
+		// NOTES EDITOR
+		final TextField notesField = new TextField();
+		notesField.setWidthFull();
+		grid.getBinder().forField(notesField).withNullRepresentation("").bind(RecipeEntry::getNotes,
+				RecipeEntry::setNotes);
+		notesColumn.setEditorComponent(notesField);
+
 		final HeaderRow headerRowTop = grid.prependHeaderRow();
-		headerRowTop.join(entityNameColumn, percentageColumn);
+		headerRowTop.join(entityNameColumn, percentageColumn, notesColumn);
 		headerRowTop.getCell(entityNameColumn).setComponent(createToolbar(headerTextId));
 
 	}
@@ -250,7 +260,8 @@ public class RecipeEntryTable<T extends Ingredient> extends Div {
 	}
 
 	public List<RecipeEntry<T>> getEntities() {
-		return grid.getEntities();
+		final List<RecipeEntry<T>> entities = grid.getEntities();
+		return entities.stream().filter(entry -> entry.getIngredient() != null).toList();
 	}
 
 	public void setEntityTableListener(EntityTableListener<RecipeEntry<T>> entityTableListener) {
