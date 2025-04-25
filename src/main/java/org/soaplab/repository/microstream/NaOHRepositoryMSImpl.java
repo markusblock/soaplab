@@ -2,6 +2,8 @@ package org.soaplab.repository.microstream;
 
 import java.util.Set;
 
+import org.eclipse.store.storage.embedded.types.EmbeddedStorageManager;
+import org.soaplab.SoaplabProperties;
 import org.soaplab.domain.NaOH;
 import org.soaplab.domain.exception.EntityDeletionFailedException;
 import org.soaplab.domain.exception.EntityDeletionFailedException.REASON;
@@ -12,6 +14,10 @@ import org.springframework.stereotype.Component;
 public class NaOHRepositoryMSImpl extends IngredientRepositoryMSImpl<NaOH> implements NaOHRepository {
 
 	private static final long serialVersionUID = 1L;
+
+	public NaOHRepositoryMSImpl(DataRoot dataRoot, SoaplabProperties properties, EmbeddedStorageManager storageManager) {
+		super(dataRoot, properties, storageManager);
+	}
 
 	@Override
 	protected Set<NaOH> getEntitiesInternal() {

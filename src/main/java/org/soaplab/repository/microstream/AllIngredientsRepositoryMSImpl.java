@@ -7,6 +7,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.eclipse.store.storage.embedded.types.EmbeddedStorageManager;
+import org.soaplab.SoaplabProperties;
 import org.soaplab.domain.Acid;
 import org.soaplab.domain.Additive;
 import org.soaplab.domain.Fat;
@@ -25,10 +27,7 @@ import org.soaplab.repository.LiquidRepository;
 import org.soaplab.repository.NaOHRepository;
 import org.springframework.stereotype.Component;
 
-import lombok.RequiredArgsConstructor;
-
 @Component
-@RequiredArgsConstructor
 public class AllIngredientsRepositoryMSImpl extends EntityRepositoryMSImpl<Ingredient>
 		implements AllIngredientsRepository {
 
@@ -41,6 +40,21 @@ public class AllIngredientsRepositoryMSImpl extends EntityRepositoryMSImpl<Ingre
 	private final KOHRepository kohRepository;
 	private final LiquidRepository liquidRepository;
 	private final NaOHRepository naOHRepository;
+
+	public AllIngredientsRepositoryMSImpl(DataRoot dataRoot, SoaplabProperties properties,
+			EmbeddedStorageManager storageManager, AcidRepository acidRepository, AdditiveRepository additiveRepository,
+			FatRepository fatRepository, FragranceRepository fragranceRepository, KOHRepository kohRepository,
+			LiquidRepository liquidRepository, NaOHRepository naOHRepository) {
+		super(dataRoot, properties, storageManager);
+		this.acidRepository = acidRepository;
+		this.additiveRepository = additiveRepository;
+		this.fatRepository = fatRepository;
+		this.fragranceRepository = fragranceRepository;
+		this.kohRepository = kohRepository;
+		this.liquidRepository = liquidRepository;
+		this.naOHRepository = naOHRepository;
+
+	}
 
 	@Override
 	public List<Ingredient> findByInci(String inci) {

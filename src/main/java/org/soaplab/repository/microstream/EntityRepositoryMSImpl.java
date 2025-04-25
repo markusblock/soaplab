@@ -18,24 +18,22 @@ import org.soaplab.domain.exception.DuplicateIdException;
 import org.soaplab.domain.exception.DuplicateNameException;
 import org.soaplab.domain.exception.EntityNotFoundException;
 import org.soaplab.repository.EntityRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements EntityRepository<T> {
 
 	private static final long serialVersionUID = 1L;
 
-	@Autowired
-	private DataRoot dataRoot;
-	@Autowired
-	private SoaplabProperties properties;
-	@Autowired
-	protected EmbeddedStorageManager repository;
+	private final DataRoot dataRoot;
+	private final SoaplabProperties properties;
+	protected final EmbeddedStorageManager storageManager;
 
 	@Override
 	public T create(T entity) {
@@ -138,11 +136,11 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 	protected abstract Set<T> getEntitiesInternal();
 
 	private void storeEntitiesInRepository() {
-		repository.store(this.getEntitiesInternal());
+		storageManager.store(this.getEntitiesInternal());
 	}
 
 	private void storeEntityInRepository(T entity) {
-		repository.store(entity);
+		storageManager.store(entity);
 	}
 
 	@Override
@@ -175,7 +173,7 @@ public abstract class EntityRepositoryMSImpl<T extends NamedEntity> implements E
 
 		// TODO EXPORT only temporary
 		// new
-		// MicrostreamDatabaseImportExport(repository).export(properties.getInitfolder(),
+		// MicrostreamDatabaseImportExport(storageManager).export(properties.getInitfolder(),
 		// false);
 
 		return (T) persistedEntity.toBuilder().build();

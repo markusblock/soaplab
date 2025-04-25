@@ -3,6 +3,8 @@ package org.soaplab.repository.microstream;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.store.storage.embedded.types.EmbeddedStorageManager;
+import org.soaplab.SoaplabProperties;
 import org.soaplab.domain.Ingredient;
 import org.soaplab.repository.IngredientRepository;
 import org.springframework.stereotype.Component;
@@ -10,6 +12,11 @@ import org.springframework.stereotype.Component;
 @Component
 public abstract class IngredientRepositoryMSImpl<T extends Ingredient> extends EntityRepositoryMSImpl<T>
 		implements IngredientRepository<T> {
+
+	public IngredientRepositoryMSImpl(DataRoot dataRoot, SoaplabProperties properties,
+			EmbeddedStorageManager repository) {
+		super(dataRoot, properties, repository);
+	}
 
 	private static final long serialVersionUID = 1L;
 

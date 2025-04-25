@@ -63,7 +63,7 @@ class SoapRecipeRepositoryIT {
 	@Test
 	/**
 	 * When soap is updated including an changed fat this changed fat is not
-	 * persisted. An update to fat repository should happen separately.
+	 * persisted. An update to fat storageManager should happen separately.
 	 *
 	 * @throws Exception
 	 */

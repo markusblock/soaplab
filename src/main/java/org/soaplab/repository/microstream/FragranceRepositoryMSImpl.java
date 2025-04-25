@@ -2,6 +2,8 @@ package org.soaplab.repository.microstream;
 
 import java.util.Set;
 
+import org.eclipse.store.storage.embedded.types.EmbeddedStorageManager;
+import org.soaplab.SoaplabProperties;
 import org.soaplab.domain.Fragrance;
 import org.soaplab.domain.exception.EntityDeletionFailedException;
 import org.soaplab.domain.exception.EntityDeletionFailedException.REASON;
@@ -12,6 +14,11 @@ import org.springframework.stereotype.Component;
 public class FragranceRepositoryMSImpl extends IngredientRepositoryMSImpl<Fragrance> implements FragranceRepository {
 
 	private static final long serialVersionUID = 1L;
+
+	public FragranceRepositoryMSImpl(DataRoot dataRoot, SoaplabProperties properties,
+			EmbeddedStorageManager repository) {
+		super(dataRoot, properties, repository);
+	}
 
 	@Override
 	protected Set<Fragrance> getEntitiesInternal() {
