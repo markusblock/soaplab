@@ -45,7 +45,7 @@ jobs:
       run: mvn -B install org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Pproduction -DtestBrowser=firefox -DtestEnvironment=container -DtestLocale=EN -Dheadless=true -Dfailsafe.rerunFailingTestsCount=2
     - name: Upload failsafe and surefire testreports on failure
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
           name: test-report
           path: |
